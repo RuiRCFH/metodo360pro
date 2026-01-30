@@ -8,16 +8,16 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <style>
-        :root { --azul: #003366; --ouro: #b8860b; --cinza: #f8f9fa; }
+        :root { --azul: #003366; --ouro: #b8860b; --cinza: #f4f7f6; }
         body { background: var(--cinza); font-family: 'Segoe UI', sans-serif; display: none; padding-bottom: 100px; }
-        .card-pro { background: white; border-radius: 15px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); max-width: 950px; margin: 20px auto; border-top: 10px solid var(--azul); }
-        .secao { display: none; }
+        .card-pro { background: white; border-radius: 20px; padding: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.08); max-width: 900px; margin: 20px auto; border-top: 12px solid var(--azul); }
+        .etapa { display: none; }
         .ativa { display: block; animation: fadeIn 0.4s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .titulo-secao { color: var(--ouro); font-weight: bold; border-bottom: 2px solid #eee; padding-bottom: 5px; margin: 25px 0 15px 0; text-transform: uppercase; font-size: 0.9rem; }
-        .grid-check { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px; }
-        .btn-pro { background: var(--azul); color: white; width: 100%; padding: 15px; border-radius: 12px; border: none; font-weight: bold; margin-top: 30px; }
-        .pulso-box { border: 1px solid #ddd; padding: 10px; border-radius: 8px; margin-bottom: 10px; }
+        .titulo-secao { color: var(--ouro); font-weight: bold; border-bottom: 2px solid #eee; padding-bottom: 8px; margin: 25px 0 15px 0; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px; }
+        .grid-check { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+        .btn-pro { background: var(--azul); color: white; width: 100%; padding: 18px; border-radius: 15px; border: none; font-weight: bold; margin-top: 30px; font-size: 1.1rem; }
+        .pulso-label { font-size: 0.8rem; font-weight: bold; color: #555; }
     </style>
 </head>
 <body id="corpoApp">
@@ -26,67 +26,82 @@
     <div class="card-pro">
         <h2 class="text-center fw-bold mb-4" style="color:var(--azul)">MÉTODO 360 PRO</h2>
 
-        <div id="s1" class="secao ativa">
-            <h5 class="titulo-secao">1. Identificação do Paciente</h5>
+        <div id="e1" class="etapa ativa">
+            <h5 class="titulo-secao">1. Identificação & Queixa</h5>
             <div class="row g-3">
-                <div class="col-md-6"><input type="text" id="nome" class="form-control" placeholder="Nome Completo"></div>
-                <div class="col-md-3"><input type="text" id="peso" class="form-control" placeholder="Peso (kg)"></div>
-                <div class="col-md-3"><input type="text" id="altura" class="form-control" placeholder="Altura (cm)"></div>
+                <div class="col-md-8"><input type="text" id="nome" class="form-control" placeholder="Nome do Paciente"></div>
+                <div class="col-md-4"><input type="text" id="idade" class="form-control" placeholder="Idade"></div>
                 <div class="col-md-12"><textarea id="qp" class="form-control" rows="2" placeholder="Queixa Principal (QP)"></textarea></div>
-                <div class="col-md-12"><textarea id="hma" class="form-control" rows="3" placeholder="História da Moléstia Atual (HMA)"></textarea></div>
+                <div class="col-md-12"><textarea id="hma" class="form-control" rows="2" placeholder="História (HMA)"></textarea></div>
             </div>
-            <button class="btn-pro" onclick="ir(2)">PRÓXIMO: INSPEÇÃO E LÍNGUA</button>
+            <button class="btn-pro" onclick="ir(2)">PRÓXIMO: INSPEÇÃO (VISUAL)</button>
         </div>
 
-        <div id="s2" class="secao">
-            <h5 class="titulo-secao">2. Inspeção da Língua</h5>
-            <div class="grid-check mb-4">
-                <div class="form-check"><input class="form-check-input" type="checkbox" value="Pálida/Seca" id="l1"><label class="form-check-label">Pálida e Seca (def Xue)</label></div>
-                <div class="form-check"><input class="form-check-input" type="checkbox" value="Pálida/Úmida" id="l2"><label class="form-check-label">Pálida e Úmida (def Yang Qi)</label></div>
-                <div class="form-check"><input class="form-check-input" type="checkbox" value="Vermelha" id="l3"><label class="form-check-label">Vermelha (Calor/Def Yin)</label></div>
-                <div class="form-check"><input class="form-check-input" type="checkbox" value="Denteada" id="l4"><label class="form-check-label">Denteada (Umidade/Def BP)</label></div>
-                <div class="form-check"><input class="form-check-input" type="checkbox" value="Saburra Amarela" id="l5"><label class="form-check-label">Saburra Amarela (Calor)</label></div>
-                <div class="form-check"><input class="form-check-input" type="checkbox" value="Púrpura" id="l6"><label class="form-check-label">Púrpura (Estase de Xue)</label></div>
-            </div>
-            <h5 class="titulo-secao">3. Cor da Face</h5>
-            <select id="face" class="form-select">
-                <option>Normal (Brilhante)</option><option>Opaca (Def Qi)</option><option>Pálida (Frio/Def Xue)</option>
-                <option>Amarelada (E/BP)</option><option>Avermelhada (Calor/Fogo F)</option><option>Esverdeada (Estagnação F)</option>
-            </select>
-            <button class="btn-pro" onclick="ir(3)">PRÓXIMO: INTERROGATÓRIO MTC</button>
-        </div>
-
-        <div id="s3" class="secao">
-            <h5 class="titulo-secao">4. Interrogatório Sistêmico</h5>
+        <div id="e2" class="etapa">
+            <h5 class="titulo-secao">2. Inspeção (O que você vê)</h5>
             <div class="row g-3">
-                <div class="col-md-6"><label class="small fw-bold">SONO:</label><select id="sono" class="form-select"><option>Dorme bem</option><option>Insônia</option><option>Muito sono</option><option>Sonhos em excesso</option></select></div>
-                <div class="col-md-6"><label class="small fw-bold">EMOÇÃO DOMINANTE:</label><select id="emocao" class="form-select"><option>Equilibrado</option><option>Medo (R)</option><option>Raiva (F)</option><option>Preocupação (BP)</option><option>Tristeza (P)</option></select></div>
-                <div class="col-md-6"><label class="small fw-bold">SABOR PREFERIDO:</label><select id="sabor" class="form-select"><option>Nenhum</option><option>Salgado (R)</option><option>Doce (BP)</option><option>Picante (P)</option><option>Amargo (C)</option><option>Azedo (F)</option></select></div>
-                <div class="col-md-6"><label class="small fw-bold">DISFUNÇÃO GI:</label><select id="gi" class="form-select"><option>Normal</option><option>Constipação</option><option>Azia</option><option>Gastrite</option><option>Diarreia</option></select></div>
+                <div class="col-md-6"><label class="small fw-bold">ESPÍRITO (SHEN):</label><select id="shen" class="form-select"><option>Com Brilho (Shen Vivo)</option><option>Sem Brilho (Shen Apagado)</option><option>Agitado (Shen Perturbado)</option></select></div>
+                <div class="col-md-6"><label class="small fw-bold">TEZ (FACE):</label><select id="face" class="form-select"><option>Brilhante</option><option>Pálida</option><option>Amarelada</option><option>Avermelhada</option><option>Esverdeada</option><option>Escura</option></select></div>
+                <div class="col-md-12">
+                    <label class="small fw-bold">LÍNGUA (Múltiplas opções):</label>
+                    <div class="grid-check p-2 border rounded">
+                        <div class="form-check"><input class="form-check-input" type="checkbox" value="Pálida" id="l1"><label class="form-check-label small">Pálida</label></div>
+                        <div class="form-check"><input class="form-check-input" type="checkbox" value="Vermelha" id="l2"><label class="form-check-label small">Vermelha</label></div>
+                        <div class="form-check"><input class="form-check-input" type="checkbox" value="Denteada" id="l3"><label class="form-check-label small">Denteada</label></div>
+                        <div class="form-check"><input class="form-check-input" type="checkbox" value="Saburra Amarela" id="l4"><label class="form-check-label small">Saburra Amarela</label></div>
+                        <div class="form-check"><input class="form-check-input" type="checkbox" value="Saburra Branca" id="l5"><label class="form-check-label small">Saburra Branca</label></div>
+                        <div class="form-check"><input class="form-check-input" type="checkbox" value="Fissurada" id="l6"><label class="form-check-label small">Fissurada</label></div>
+                    </div>
+                </div>
             </div>
-            <button class="btn-pro" onclick="ir(4)">PRÓXIMO: PULSOS E ALGIAS</button>
+            <button class="btn-pro" onclick="ir(3)">PRÓXIMO: INTERROGATÓRIO</button>
         </div>
 
-        <div id="s4" class="secao">
+        <div id="e3" class="etapa">
+            <h5 class="titulo-secao">3. Interrogatório Sistémico</h5>
+            <div class="row g-3">
+                <div class="col-md-4"><label class="small fw-bold">PREFERÊNCIA:</label><select id="termica" class="form-select"><option>Normal</option><option>Aversão ao Frio</option><option>Aversão ao Calor</option></select></div>
+                <div class="col-md-4"><label class="small fw-bold">SUOR:</label><select id="suor" class="form-select"><option>Normal</option><option>Espontâneo (Diurno)</option><option>Nocturno</option></select></div>
+                <div class="col-md-4"><label class="small fw-bold">SEDE:</label><select id="sede" class="form-select"><option>Normal</option><option>Muita Sede</option><option>Ausência de Sede</option></select></div>
+                <div class="col-md-6"><label class="small fw-bold">DIGESTÃO/APETITE:</label><textarea id="dig" class="form-control" rows="1"></textarea></div>
+                <div class="col-md-6"><label class="small fw-bold">EXCREÇÕES (Fezes/Urina):</label><textarea id="exc" class="form-control" rows="1"></textarea></div>
+            </div>
+            <button class="btn-pro" onclick="ir(4)">PRÓXIMO: PULSOS & EXAME FÍSICO</button>
+        </div>
+
+        <div id="e4" class="etapa">
+            <h5 class="titulo-secao">4. Exame Físico & Palpação</h5>
+            <div class="row g-3 mb-3">
+                <div class="col-md-6"><label class="small fw-bold">TEMP. MÃOS/PÉS:</label><input type="text" id="temp" class="form-control" placeholder="Frios? Quentes?"></div>
+                <div class="col-md-6"><label class="small fw-bold">ABDÓMEN:</label><input type="text" id="abd" class="form-control" placeholder="Dor à palpação? Massas?"></div>
+            </div>
+            <h5 class="titulo-secao">5. Pulsologia (D / E)</h5>
             <div class="row">
-                <div class="col-md-6">
-                    <h5 class="titulo-secao">Punho Direito</h5>
-                    <div class="pulso-box"><label>P (Metal):</label><input type="text" id="p_dir_p" class="form-control" placeholder="Ex: ok, rápido, corda"></div>
-                    <div class="pulso-box"><label>BP (Terra):</label><input type="text" id="p_dir_bp" class="form-control"></div>
-                    <div class="pulso-box"><label>CS (Fogo):</label><input type="text" id="p_dir_cs" class="form-control"></div>
+                <div class="col-6 border-end">
+                    <p class="text-center small fw-bold text-primary">DIREITO</p>
+                    <div class="mb-2"><span class="pulso-label">P:</span> <input type="text" id="pdp" class="form-control form-control-sm"></div>
+                    <div class="mb-2"><span class="pulso-label">BP:</span> <input type="text" id="pdbp" class="form-control form-control-sm"></div>
+                    <div class="mb-2"><span class="pulso-label">CS:</span> <input type="text" id="pdcs" class="form-control form-control-sm"></div>
                 </div>
-                <div class="col-md-6">
-                    <h5 class="titulo-secao">Punho Esquerdo</h5>
-                    <div class="pulso-box"><label>C (Fogo):</label><input type="text" id="p_esq_c" class="form-control"></div>
-                    <div class="pulso-box"><label>F (Madeira):</label><input type="text" id="p_esq_f" class="form-control"></div>
-                    <div class="pulso-box"><label>R (Água):</label><input type="text" id="p_esq_r" class="form-control"></div>
+                <div class="col-6">
+                    <p class="text-center small fw-bold text-primary">ESQUERDO</p>
+                    <div class="mb-2"><span class="pulso-label">C:</span> <input type="text" id="pec" class="form-control form-control-sm"></div>
+                    <div class="mb-2"><span class="pulso-label">F:</span> <input type="text" id="pef" class="form-control form-control-sm"></div>
+                    <div class="mb-2"><span class="pulso-label">R:</span> <input type="text" id="per" class="form-control form-control-sm"></div>
                 </div>
             </div>
-            <h5 class="titulo-secao">Síndrome Bi (Algias)</h5>
-            <select id="bi" class="form-select">
-                <option>Nenhuma</option><option>Bi Errante (Vento)</option><option>Bi Fixa (Umidade)</option><option>Bi Dolorida (Frio)</option><option>Bi Febril (Calor)</option>
-            </select>
-            <button id="btnSalvar" class="btn-pro" style="background:#198754" onclick="finalizarAtendimento()">FINALIZAR E ARQUIVAR PRONTUÁRIO</button>
+            <button class="btn-pro" onclick="ir(5)">PRÓXIMO: CONDUTA</button>
+        </div>
+
+        <div id="e5" class="etapa">
+            <h5 class="titulo-secao">6. Diagnóstico & Tratamento</h5>
+            <textarea id="diag" class="form-control mb-3" rows="2" placeholder="Diagnóstico Energético"></textarea>
+            <textarea id="pontos" class="form-control mb-3" rows="2" placeholder="Pontos Utilizados (Ex: E36, IG4, F3)"></textarea>
+            <div class="row mb-3">
+                <div class="col-6"><label class="small fw-bold">EVA ANTES:</label><input type="number" id="e_ant" class="form-control"></div>
+                <div class="col-6"><label class="small fw-bold">EVA DEPOIS:</label><input type="number" id="e_dep" class="form-control"></div>
+            </div>
+            <button id="btnSalvar" class="btn-pro" style="background:#198754" onclick="salvarFinal()">FINALIZAR ATENDIMENTO</button>
         </div>
 
     </div>
@@ -108,31 +123,26 @@
     const db = firebase.firestore();
 
     function ir(n) { 
-        document.querySelectorAll('.secao').forEach(s => s.classList.remove('ativa')); 
-        document.getElementById('s' + n).classList.add('ativa'); 
+        document.querySelectorAll('.etapa').forEach(e => e.classList.remove('ativa')); 
+        document.getElementById('e' + n).classList.add('ativa'); 
         window.scrollTo(0,0);
     }
 
-    function finalizarAtendimento() {
+    function salvarFinal() {
         const btn = document.getElementById('btnSalvar');
-        btn.disabled = true; btn.innerText = "ARQUIVANDO...";
-        
-        const dados = {
+        btn.innerText = "A GUARDAR..."; btn.disabled = true;
+
+        const ficha = {
             paciente: document.getElementById('nome').value,
             data: new Date().toLocaleString(),
-            queixa: document.getElementById('qp').value,
-            lingua: document.querySelector('input[type="checkbox"]:checked')?.value || "Normal",
-            face: document.getElementById('face').value,
-            emocao: document.getElementById('emocao').value,
-            bi_sindrome: document.getElementById('bi').value,
-            pulsos: {
-                p_dir: document.getElementById('p_dir_p').value,
-                p_esq: document.getElementById('p_esq_c').value
-            }
+            qp: document.getElementById('qp').value,
+            diagnostico: document.getElementById('diag').value,
+            pontos: document.getElementById('pontos').value,
+            eva_evolucao: `${document.getElementById('e_ant').value} -> ${document.getElementById('e_dep').value}`
         };
 
-        db.collection("atendimentos").add(dados).then(() => {
-            alert("Prontuário completo salvo no seu arquivo digital!");
+        db.collection("atendimentos").add(ficha).then(() => {
+            alert("Prontuário arquivado com sucesso!");
             location.reload();
         }).catch(e => { alert("Erro ao salvar."); btn.disabled = false; });
     }
