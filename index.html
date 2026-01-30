@@ -3,160 +3,139 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MÉTODO 360 PRO | Prontuário Oficial</title>
+    <title>MÉTODO 360 PRO | Ficha Clínica MTC</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <style>
-        :root { --azul: #003366; --cinza: #f8f9fa; --verde: #198754; }
-        body { background: var(--cinza); font-family: 'Segoe UI', sans-serif; display: none; padding-bottom: 60px; }
-        .card-clinico { background: white; border-radius: 15px; padding: 25px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); margin: 15px auto; max-width: 700px; border-top: 8px solid var(--azul); }
-        .etapa { display: none; }
-        .ativa { display: block; animation: fadeIn 0.3s; }
+        :root { --azul: #003366; --ouro: #b8860b; --cinza: #f8f9fa; }
+        body { background: var(--cinza); font-family: 'Segoe UI', sans-serif; display: none; padding-bottom: 100px; }
+        .card-pro { background: white; border-radius: 15px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); max-width: 950px; margin: 20px auto; border-top: 10px solid var(--azul); }
+        .secao { display: none; }
+        .ativa { display: block; animation: fadeIn 0.4s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .grid-pulsos { display: grid; grid-template-columns: 1fr; gap: 10px; }
-        .item-pulso { background: #fff; border: 1px solid #eee; padding: 12px; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; }
-        .sigla { font-weight: 800; color: var(--azul); width: 50px; font-size: 1.1rem; }
-        .btn-scale { font-size: 0.75rem; padding: 6px 4px; min-width: 35px; border: 1px solid #ddd; background: white; }
-        .btn-check:checked + .btn { background: var(--azul) !important; color: white !important; }
-        .btn-pro { background: var(--azul); color: white; width: 100%; padding: 18px; border-radius: 15px; border: none; font-weight: bold; margin-top: 25px; font-size: 1.2rem; box-shadow: 0 4px 10px rgba(0,51,102,0.2); }
-        .pergunta { border-bottom: 1px solid #f0f0f0; padding: 15px 0; font-size: 1rem; color: #444; }
+        .titulo-secao { color: var(--ouro); font-weight: bold; border-bottom: 2px solid #eee; padding-bottom: 5px; margin: 25px 0 15px 0; text-transform: uppercase; font-size: 0.9rem; }
+        .grid-check { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px; }
+        .btn-pro { background: var(--azul); color: white; width: 100%; padding: 15px; border-radius: 12px; border: none; font-weight: bold; margin-top: 30px; }
+        .pulso-box { border: 1px solid #ddd; padding: 10px; border-radius: 8px; margin-bottom: 10px; }
     </style>
 </head>
 <body id="corpoApp">
 
-    <div id="p1" class="etapa ativa container mt-4">
-        <div class="card-clinico text-center">
-            <h3 class="fw-bold mb-4" style="color:var(--azul)">MÉTODO 360 PRO</h3>
-            <div class="text-start">
-                <label class="small fw-bold">ID DO PACIENTE:</label>
-                <input type="text" id="pacienteId" class="form-control mb-3 form-control-lg" placeholder="Ex: MRO 5005">
-                <label class="small fw-bold">QUEIXA PRINCIPAL:</label>
-                <textarea id="queixa" class="form-control mb-3" rows="4" placeholder="Descreva o motivo da consulta..."></textarea>
+<div class="container">
+    <div class="card-pro">
+        <h2 class="text-center fw-bold mb-4" style="color:var(--azul)">MÉTODO 360 PRO</h2>
+
+        <div id="s1" class="secao ativa">
+            <h5 class="titulo-secao">1. Identificação do Paciente</h5>
+            <div class="row g-3">
+                <div class="col-md-6"><input type="text" id="nome" class="form-control" placeholder="Nome Completo"></div>
+                <div class="col-md-3"><input type="text" id="peso" class="form-control" placeholder="Peso (kg)"></div>
+                <div class="col-md-3"><input type="text" id="altura" class="form-control" placeholder="Altura (cm)"></div>
+                <div class="col-md-12"><textarea id="qp" class="form-control" rows="2" placeholder="Queixa Principal (QP)"></textarea></div>
+                <div class="col-md-12"><textarea id="hma" class="form-control" rows="3" placeholder="História da Moléstia Atual (HMA)"></textarea></div>
             </div>
-            <button class="btn-pro" onclick="ir(2)">PRÓXIMO: GAD-7 (ANSIEDADE)</button>
+            <button class="btn-pro" onclick="ir(2)">PRÓXIMO: INSPEÇÃO E LÍNGUA</button>
         </div>
-    </div>
 
-    <div id="p2" class="etapa container mt-4">
-        <div class="card-clinico">
-            <h5 class="fw-bold border-bottom pb-2">GAD-7 (Ansiedade)</h5>
-            <div id="boxGad"></div>
-            <button class="btn-pro" onclick="ir(3)">PRÓXIMO: IGI (SONO)</button>
-        </div>
-    </div>
-
-    <div id="p3" class="etapa container mt-4">
-        <div class="card-clinico">
-            <h5 class="fw-bold border-bottom pb-2">IGI (Índice de Sono)</h5>
-            <div id="boxIgi"></div>
-            <button class="btn-pro" onclick="ir(4)">PRÓXIMO: EVA ANTES</button>
-        </div>
-    </div>
-
-    <div id="p4" class="etapa container mt-4">
-        <div class="card-clinico text-center">
-            <h5 class="fw-bold border-bottom pb-2">EVA (Nível de Dor/Desconforto Antes)</h5>
-            <div id="evaPreBox" class="d-flex flex-wrap justify-content-center mt-4"></div>
-            <button class="btn-pro" onclick="ir(5)">PRÓXIMO: EXAME DOS PULSOS</button>
-        </div>
-    </div>
-
-    <div id="p5" class="etapa container mt-4">
-        <div class="card-clinico">
-            <h5 class="fw-bold border-bottom pb-2 text-center">Diagnóstico Energético (12 Pulsos)</h5>
-            <div class="grid-pulsos mt-3" id="pulsosBox"></div>
-            <hr>
-            <label class="fw-bold mb-2">AVALIAÇÃO DA LÍNGUA:</label>
-            <select id="lingua" class="form-select form-select-lg">
-                <option>Normal (Rosada/Saburra Fina)</option>
-                <option>Pálida (Deficiência de Qi/Xue)</option>
-                <option>Vermelha (Calor)</option>
-                <option>Roxa/Cianótica (Estase)</option>
-                <option>Saburra Grossa/Amarela (Umidade-Calor)</option>
+        <div id="s2" class="secao">
+            <h5 class="titulo-secao">2. Inspeção da Língua</h5>
+            <div class="grid-check mb-4">
+                <div class="form-check"><input class="form-check-input" type="checkbox" value="Pálida/Seca" id="l1"><label class="form-check-label">Pálida e Seca (def Xue)</label></div>
+                <div class="form-check"><input class="form-check-input" type="checkbox" value="Pálida/Úmida" id="l2"><label class="form-check-label">Pálida e Úmida (def Yang Qi)</label></div>
+                <div class="form-check"><input class="form-check-input" type="checkbox" value="Vermelha" id="l3"><label class="form-check-label">Vermelha (Calor/Def Yin)</label></div>
+                <div class="form-check"><input class="form-check-input" type="checkbox" value="Denteada" id="l4"><label class="form-check-label">Denteada (Umidade/Def BP)</label></div>
+                <div class="form-check"><input class="form-check-input" type="checkbox" value="Saburra Amarela" id="l5"><label class="form-check-label">Saburra Amarela (Calor)</label></div>
+                <div class="form-check"><input class="form-check-input" type="checkbox" value="Púrpura" id="l6"><label class="form-check-label">Púrpura (Estase de Xue)</label></div>
+            </div>
+            <h5 class="titulo-secao">3. Cor da Face</h5>
+            <select id="face" class="form-select">
+                <option>Normal (Brilhante)</option><option>Opaca (Def Qi)</option><option>Pálida (Frio/Def Xue)</option>
+                <option>Amarelada (E/BP)</option><option>Avermelhada (Calor/Fogo F)</option><option>Esverdeada (Estagnação F)</option>
             </select>
-            <button class="btn-pro" onclick="ir(6)" style="background:var(--verde)">IR PARA FINALIZAÇÃO (EVA PÓS)</button>
+            <button class="btn-pro" onclick="ir(3)">PRÓXIMO: INTERROGATÓRIO MTC</button>
         </div>
-    </div>
 
-    <div id="p6" class="etapa container mt-4">
-        <div class="card-clinico text-center">
-            <h5 class="fw-bold border-bottom pb-2">EVA (Resultado Após Atendimento)</h5>
-            <div id="evaPosBox" class="d-flex flex-wrap justify-content-center mt-4"></div>
-            <button id="btnSalvar" class="btn-pro" onclick="salvarProntuarioFinal()">FINALIZAR E ARQUIVAR</button>
+        <div id="s3" class="secao">
+            <h5 class="titulo-secao">4. Interrogatório Sistêmico</h5>
+            <div class="row g-3">
+                <div class="col-md-6"><label class="small fw-bold">SONO:</label><select id="sono" class="form-select"><option>Dorme bem</option><option>Insônia</option><option>Muito sono</option><option>Sonhos em excesso</option></select></div>
+                <div class="col-md-6"><label class="small fw-bold">EMOÇÃO DOMINANTE:</label><select id="emocao" class="form-select"><option>Equilibrado</option><option>Medo (R)</option><option>Raiva (F)</option><option>Preocupação (BP)</option><option>Tristeza (P)</option></select></div>
+                <div class="col-md-6"><label class="small fw-bold">SABOR PREFERIDO:</label><select id="sabor" class="form-select"><option>Nenhum</option><option>Salgado (R)</option><option>Doce (BP)</option><option>Picante (P)</option><option>Amargo (C)</option><option>Azedo (F)</option></select></div>
+                <div class="col-md-6"><label class="small fw-bold">DISFUNÇÃO GI:</label><select id="gi" class="form-select"><option>Normal</option><option>Constipação</option><option>Azia</option><option>Gastrite</option><option>Diarreia</option></select></div>
+            </div>
+            <button class="btn-pro" onclick="ir(4)">PRÓXIMO: PULSOS E ALGIAS</button>
         </div>
+
+        <div id="s4" class="secao">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5 class="titulo-secao">Punho Direito</h5>
+                    <div class="pulso-box"><label>P (Metal):</label><input type="text" id="p_dir_p" class="form-control" placeholder="Ex: ok, rápido, corda"></div>
+                    <div class="pulso-box"><label>BP (Terra):</label><input type="text" id="p_dir_bp" class="form-control"></div>
+                    <div class="pulso-box"><label>CS (Fogo):</label><input type="text" id="p_dir_cs" class="form-control"></div>
+                </div>
+                <div class="col-md-6">
+                    <h5 class="titulo-secao">Punho Esquerdo</h5>
+                    <div class="pulso-box"><label>C (Fogo):</label><input type="text" id="p_esq_c" class="form-control"></div>
+                    <div class="pulso-box"><label>F (Madeira):</label><input type="text" id="p_esq_f" class="form-control"></div>
+                    <div class="pulso-box"><label>R (Água):</label><input type="text" id="p_esq_r" class="form-control"></div>
+                </div>
+            </div>
+            <h5 class="titulo-secao">Síndrome Bi (Algias)</h5>
+            <select id="bi" class="form-select">
+                <option>Nenhuma</option><option>Bi Errante (Vento)</option><option>Bi Fixa (Umidade)</option><option>Bi Dolorida (Frio)</option><option>Bi Febril (Calor)</option>
+            </select>
+            <button id="btnSalvar" class="btn-pro" style="background:#198754" onclick="finalizarAtendimento()">FINALIZAR E ARQUIVAR PRONTUÁRIO</button>
+        </div>
+
     </div>
+</div>
 
-    <script>
-        // SEGURANÇA
-        const pin = prompt("PIN DE ACESSO:");
-        if(pin === "1234") { document.body.style.display = "block"; } else { alert("Acesso Negado"); }
+<script>
+    if(prompt("PIN:") !== "1234") { document.body.innerHTML = "Acesso Negado"; } else { document.body.style.display = "block"; }
 
-        // CONFIGURAÇÃO FIREBASE
-        const firebaseConfig = {
-            apiKey: "AIzaSyAI5X-Cb0Xf0G_cRoBX9YWqW1bn0nv-RA",
-            authDomain: "metodo360pro-db0aa.firebaseapp.com",
-            projectId: "metodo360pro-db0aa",
-            storageBucket: "metodo360pro-db0aa.firebasestorage.app",
-            messagingSenderId: "1088396585788",
-            appId: "1:1088396585788:web:57853a7b0ff17c8306ec39",
-            measurementId: "G-589QFHBJC4"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
+    const firebaseConfig = {
+        apiKey: "AIzaSyAI5X-Cb0Xf0G_cRoBX9YWqW1bn0nv-RA",
+        authDomain: "metodo360pro-db0aa.firebaseapp.com",
+        projectId: "metodo360pro-db0aa",
+        storageBucket: "metodo360pro-db0aa.firebasestorage.app",
+        messagingSenderId: "1088396585788",
+        appId: "1:1088396585788:web:57853a7b0ff17c8306ec39",
+        measurementId: "G-589QFHBJC4"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
 
-        // GERADOR DE CONTEÚDO
-        const meridianos = ["P", "IG", "BP", "E", "C", "ID", "R", "B", "CS", "TA", "F", "VB"];
-        const niveisPulsos = ["---", "--", "-", "ok", "+", "++", "+++"];
-        const perguntasGad = ["Sentir-se nervoso ou ansioso", "Não ser capaz de parar de se preocupar", "Preocupar-se demais com várias coisas", "Dificuldade para relaxar", "Inquietude (não conseguir ficar parado)", "Tornar-se facilmente irritável", "Sentir medo como se algo ruim fosse acontecer"];
-        const perguntasIgi = ["Dificuldade em adormecer", "Dificuldade em manter o sono", "Problemas por acordar muito cedo", "Satisfação com o padrão atual de sono", "Quanto o sono interfere no funcionamento diário"];
+    function ir(n) { 
+        document.querySelectorAll('.secao').forEach(s => s.classList.remove('ativa')); 
+        document.getElementById('s' + n).classList.add('ativa'); 
+        window.scrollTo(0,0);
+    }
 
-        function inicializar() {
-            // Gerar GAD-7
-            perguntasGad.forEach((q, i) => {
-                let html = `<div class="pergunta"><strong>${i+1}.</strong> ${q}<br><div class="btn-group mt-2">`;
-                for(let n=0; n<=3; n++) html += `<input type="radio" class="btn-check" name="gad${i}" id="g${i}${n}" value="${n}"><label class="btn btn-outline-primary btn-sm me-1" for="g${i}${n}">${n}</label>`;
-                document.getElementById('boxGad').innerHTML += html + `</div></div>`;
-            });
-            // Gerar IGI
-            perguntasIgi.forEach((q, i) => {
-                let html = `<div class="pergunta"><strong>${i+1}.</strong> ${q}<br><div class="btn-group mt-2">`;
-                for(let n=0; n<=4; n++) html += `<input type="radio" class="btn-check" name="igi${i}" id="i${i}${n}" value="${n}"><label class="btn btn-outline-primary btn-sm me-1" for="i${i}${n}">${n}</label>`;
-                document.getElementById('boxIgi').innerHTML += html + `</div></div>`;
-            });
-            // Gerar EVAs
-            for(let n=0; n<=10; n++) {
-                document.getElementById('evaPreBox').innerHTML += `<input type="radio" class="btn-check" name="pre" id="pre${n}" value="${n}"><label class="btn btn-outline-primary m-1" for="pre${n}">${n}</label>`;
-                document.getElementById('evaPosBox').innerHTML += `<input type="radio" class="btn-check" name="pos" id="pos${n}" value="${n}"><label class="btn btn-outline-primary m-1" for="pos${n}">${n}</label>`;
+    function finalizarAtendimento() {
+        const btn = document.getElementById('btnSalvar');
+        btn.disabled = true; btn.innerText = "ARQUIVANDO...";
+        
+        const dados = {
+            paciente: document.getElementById('nome').value,
+            data: new Date().toLocaleString(),
+            queixa: document.getElementById('qp').value,
+            lingua: document.querySelector('input[type="checkbox"]:checked')?.value || "Normal",
+            face: document.getElementById('face').value,
+            emocao: document.getElementById('emocao').value,
+            bi_sindrome: document.getElementById('bi').value,
+            pulsos: {
+                p_dir: document.getElementById('p_dir_p').value,
+                p_esq: document.getElementById('p_esq_c').value
             }
-            // Gerar Pulsos
-            meridianos.forEach(m => {
-                let btns = niveisPulsos.map(n => `<input type="radio" class="btn-check" name="p_${m}" id="${m}_${n}" value="${n}" ${n==='ok'?'checked':''}><label class="btn btn-outline-secondary btn-scale" for="${m}_${n}">${n}</label>`).join('');
-                document.getElementById('pulsosBox').innerHTML += `<div class="item-pulso"><span class="sigla">${m}</span><div class="btn-group">${btns}</div></div>`;
-            });
-        }
-        inicializar();
+        };
 
-        function ir(n) { document.querySelectorAll('.etapa').forEach(e => e.classList.remove('ativa')); document.getElementById('p' + n).classList.add('ativa'); window.scrollTo(0,0); }
-
-        function salvarProntuarioFinal() {
-            const btn = document.getElementById('btnSalvar');
-            btn.disabled = true; btn.innerText = "ARQUIVANDO...";
-            
-            const doc = {
-                paciente: document.getElementById('pacienteId').value,
-                queixa: document.getElementById('queixa').value,
-                data: new Date().toLocaleString(),
-                evaAntes: document.querySelector('[name="pre"]:checked')?.value || "0",
-                evaDepois: document.querySelector('[name="pos"]:checked')?.value || "0",
-                lingua: document.getElementById('lingua').value
-            };
-
-            db.collection("atendimentos").add(doc).then(() => {
-                alert("Prontuário salvo com sucesso no arquivo seguro!");
-                location.reload();
-            }).catch(e => { alert("Erro ao salvar."); btn.disabled = false; });
-        }
-    </script>
+        db.collection("atendimentos").add(dados).then(() => {
+            alert("Prontuário completo salvo no seu arquivo digital!");
+            location.reload();
+        }).catch(e => { alert("Erro ao salvar."); btn.disabled = false; });
+    }
+</script>
 </body>
 </html>
