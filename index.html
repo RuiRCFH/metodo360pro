@@ -3,89 +3,92 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MÉTODO 360 PRO | Clínica</title>
+    <title>MÉTODO 360 PRO | Evolutivo</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        :root { --azul: #003366; --dourado: #B8860B; --cinza: #f8f9fa; }
+        :root { --azul: #003366; --cinza: #f8f9fa; --verde: #28a745; }
         body { background: var(--cinza); font-family: 'Segoe UI', sans-serif; display: none; padding-bottom: 50px; }
-        .card-clinico { background: white; border-radius: 15px; padding: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); margin: 15px auto; max-width: 600px; border-top: 6px solid var(--azul); }
+        .card-clinico { background: white; border-radius: 15px; padding: 25px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); margin: 15px auto; max-width: 600px; border-top: 6px solid var(--azul); }
         .etapa { display: none; }
         .ativa { display: block; animation: fadeIn 0.3s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .pergunta-escala { border-bottom: 1px solid #eee; padding: 10px 0; }
-        .label-pergunta { font-size: 0.9rem; font-weight: 500; display: block; margin-bottom: 8px; }
+        .pergunta-escala { border-bottom: 1px solid #eee; padding: 12px 0; }
+        .label-pergunta { font-size: 0.85rem; font-weight: 500; display: block; margin-bottom: 8px; color: #444; }
         .sigla { font-weight: 800; color: var(--azul); width: 45px; }
         .grid-pulsos { display: grid; grid-template-columns: 1fr; gap: 8px; }
         .item-pulso { background: #fff; border: 1px solid #eee; padding: 10px; border-radius: 10px; display: flex; align-items: center; justify-content: space-between; }
         .btn-scale { font-size: 0.7rem; padding: 5px 2px; min-width: 32px; border: 1px solid #ddd; }
         .btn-check:checked + .btn { background: var(--azul) !important; color: white !important; }
-        .btn-pro { background: var(--azul); color: white; width: 100%; padding: 15px; border-radius: 12px; border: none; font-weight: bold; margin-top: 20px; }
-        .badge-resultado { font-size: 1rem; padding: 10px; border-radius: 8px; display: block; text-align: center; margin-top: 10px; }
+        .btn-pro { background: var(--azul); color: white; width: 100%; padding: 15px; border-radius: 12px; border: none; font-weight: bold; margin-top: 20px; font-size: 1rem; }
+        .evolucao-box { background: #e9ecef; border-radius: 10px; padding: 15px; margin-top: 10px; }
     </style>
 </head>
 <body id="corpoApp">
 
     <div id="p1" class="etapa ativa container mt-4">
-        <div class="card-clinico text-center">
-            <h3 class="fw-bold" style="color:var(--azul)">MÉTODO 360 PRO</h3>
-            <p class="text-muted">Prontuário de Diagnóstico Integrado</p>
-            <input type="text" id="pacienteId" class="form-control form-control-lg mb-3" placeholder="ID do Paciente">
-            <button class="btn-pro" onclick="ir(2)">INICIAR GAD-7 (ANSIEDADE)</button>
+        <div class="card-clinico">
+            <h4 class="fw-bold text-center mb-4" style="color:var(--azul)">MÉTODO 360 PRO</h4>
+            <label class="small fw-bold">ID do Paciente:</label>
+            <input type="text" id="pacienteId" class="form-control mb-3" placeholder="Ex: MRO 5005">
+            <label class="small fw-bold">Queixa Principal:</label>
+            <textarea id="queixa" class="form-control mb-3" rows="3" placeholder="Descreva o motivo da consulta..."></textarea>
+            <button class="btn-pro" onclick="ir(2)">INICIAR AVALIAÇÃO PRÉ</button>
         </div>
     </div>
 
     <div id="p2" class="etapa container mt-4">
         <div class="card-clinico">
-            <h5 class="fw-bold border-bottom pb-2">Escala GAD-7 (Ansiedade)</h5>
-            <p class="small text-muted">Nas últimas 2 semanas, com que frequência foi incomodado por:</p>
-            
-            <div id="questoesGad"></div> <button class="btn-pro" onclick="ir(3)">PRÓXIMO: IGI (SONO)</button>
+            <h5 class="fw-bold border-bottom pb-2">GAD-7 (Antes do Atendimento)</h5>
+            <div id="questoesGadPre"></div>
+            <button class="btn-pro" onclick="ir(3)">PRÓXIMO: SONO (IGI)</button>
         </div>
     </div>
 
     <div id="p3" class="etapa container mt-4">
         <div class="card-clinico">
-            <h5 class="fw-bold border-bottom pb-2">Índice IGI (Insônia)</h5>
-            <p class="small text-muted">Avalie a gravidade dos seus problemas de sono na última semana:</p>
-            
-            <div id="questoesIgi"></div> <button class="btn-pro" onclick="ir(4)">PRÓXIMO: PULSOS</button>
+            <h5 class="fw-bold border-bottom pb-2">Índice IGI (Sono)</h5>
+            <div id="questoesIgi"></div>
+            <button class="btn-pro" onclick="ir(4)">PRÓXIMO: EXAME FÍSICO</button>
         </div>
     </div>
 
     <div id="p4" class="etapa container mt-4">
         <div class="card-clinico">
-            <h5 class="fw-bold border-bottom pb-2">Exame dos 12 Pulsos</h5>
+            <h5 class="fw-bold border-bottom pb-2 text-primary">Diagnóstico de Língua e Pulsos</h5>
+            <div class="row mb-3">
+                <div class="col-6"><label class="small fw-bold">Cor:</label><select id="cor" class="form-select"><option value="Rosada">Rosada</option><option value="Pálida">Pálida</option><option value="Vermelha">Vermelha</option><option value="Roxa">Roxa</option></select></div>
+                <div class="col-6"><label class="small fw-bold">Saburra:</label><select id="sab" class="form-select"><option value="Fina">Fina</option><option value="Grossa">Grossa</option><option value="Geográfica">Geográfica</option></select></div>
+            </div>
             <div class="grid-pulsos" id="listaPulsos"></div>
-            <button class="btn-pro" onclick="ir(5)">PRÓXIMO: LÍNGUA</button>
+            <button class="btn-pro" onclick="ir(5)" style="background:var(--verde)">REALIZAR ATENDIMENTO (PÓS)</button>
         </div>
     </div>
 
     <div id="p5" class="etapa container mt-4">
         <div class="card-clinico">
-            <h5 class="fw-bold border-bottom pb-2">Análise de Língua</h5>
-            <label class="small fw-bold">Cor:</label>
-            <select id="cor" class="form-select mb-3"><option value="Rosada">Rosada</option><option value="Pálida">Pálida</option><option value="Vermelha">Vermelha</option><option value="Roxa">Roxa</option></select>
-            <label class="small fw-bold">Saburra:</label>
-            <select id="sab" class="form-select"><option value="Fina">Fina</option><option value="Grossa">Grossa</option><option value="Geográfica">Geográfica</option></select>
-            <button class="btn-pro" onclick="finalizar()">FINALIZAR DIAGNÓSTICO</button>
+            <h5 class="fw-bold border-bottom pb-2">GAD-7 (Após o Atendimento)</h5>
+            <p class="small text-muted">Como o paciente se sente *agora*?</p>
+            <div id="questoesGadPos"></div>
+            <button class="btn-pro" onclick="finalizar()">FINALIZAR E COMPARAR</button>
         </div>
     </div>
 
     <div id="p6" class="etapa container mt-4">
         <div class="card-clinico">
-            <h4 class="fw-bold text-success border-bottom pb-2">Relatório Clínico</h4>
+            <h4 class="fw-bold text-success border-bottom pb-2 text-center">Relatório 360 PRO</h4>
             <div id="relatorio" class="mt-3"></div>
-            <button class="btn-pro" style="background:#25D366" onclick="window.print()">IMPRIMIR / PDF</button>
+            <button class="btn-pro" onclick="window.print()">SALVAR EM PDF / IMPRIMIR</button>
             <button class="btn btn-link w-100 mt-2 text-muted" onclick="location.reload()">Novo Atendimento</button>
         </div>
     </div>
 
     <script>
         const PIN = "1234";
-        if(prompt("PIN do Terapeuta:") !== PIN) { document.body.innerHTML = "Acesso Negado"; } else { document.body.style.display = "block"; }
+        const entrada = prompt("PIN do Terapeuta:");
+        if(entrada !== PIN) { document.body.innerHTML = "Acesso Negado"; } else { document.body.style.display = "block"; }
 
-        const gadPerguntas = ["Sentir-se nervoso, ansioso ou muito tenso", "Não ser capaz de impedir ou de controlar as preocupações", "Preocupar-se demais com diversas coisas", "Dificuldade para relaxar", "Ficar tão agitado que se torna difícil permanecer sentado", "Tornar-se facilmente irritável ou chateado", "Sentir medo como se algo horrível fosse acontecer"];
-        const igiPerguntas = ["Dificuldade em adormecer", "Dificuldade em manter o sono", "Problemas por acordar muito cedo", "Satisfação com o padrão atual de sono", "Interferência no funcionamento diário", "Perceção dos outros sobre o seu problema", "Preocupação/Angústia com o sono"];
+        const gadPerguntas = ["Sentir-se nervoso ou tenso", "Controlar preocupações", "Preocupar-se demais", "Dificuldade para relaxar", "Agitação", "Irritabilidade", "Medo de algo horrível"];
+        const igiPerguntas = ["Dificuldade adormecer", "Dificuldade manter sono", "Acordar cedo demais", "Satisfação com sono", "Interferência diária", "Perceção alheia", "Angústia com sono"];
 
         function gerarEscala(idAlvo, perguntas, max) {
             const container = document.getElementById(idAlvo);
@@ -98,7 +101,8 @@
             });
         }
 
-        gerarEscala("questoesGad", gadPerguntas, 3);
+        gerarEscala("questoesGadPre", gadPerguntas, 3);
+        gerarEscala("questoesGadPos", gadPerguntas, 3);
         gerarEscala("questoesIgi", igiPerguntas, 4);
 
         const meridianos = ["P", "IG", "BP", "E", "C", "ID", "R", "B", "CS", "TA", "F", "VB"];
@@ -111,20 +115,26 @@
         function ir(n) { document.querySelectorAll('.etapa').forEach(e => e.classList.remove('ativa')); document.getElementById('p' + n).classList.add('ativa'); window.scrollTo(0,0); }
 
         function finalizar() {
-            let totalGad = 0; document.querySelectorAll('[name^="questoesGad_"]:checked').forEach(i => totalGad += parseInt(i.value));
-            let totalIgi = 0; document.querySelectorAll('[name^="questoesIgi_"]:checked').forEach(i => totalIgi += parseInt(i.value));
-            
-            let statusGad = totalGad <= 4 ? "Mínima" : totalGad <= 9 ? "Leve" : totalGad <= 14 ? "Moderada" : "Grave";
-            let statusIgi = totalIgi <= 7 ? "Ausente" : totalIgi <= 14 ? "Sub-clínica" : totalIgi <= 21 ? "Moderada" : "Grave";
-
+            let pre = 0; document.querySelectorAll('[name^="questoesGadPre_"]:checked').forEach(i => pre += parseInt(i.value));
+            let pos = 0; document.querySelectorAll('[name^="questoesGadPos_"]:checked').forEach(i => pos += parseInt(i.value));
+            let igi = 0; document.querySelectorAll('[name^="questoesIgi_"]:checked').forEach(i => igi += parseInt(i.value));
             let pulsos = []; meridianos.forEach(m => { let v = document.querySelector(`input[name="p_${m}"]:checked`).value; if(v!=='ok') pulsos.push(`<b>${m}:</b> ${v}`); });
 
+            const diff = pre - pos;
+            const melhoraTxt = diff > 0 ? `<b class='text-success'>Melhora imediata de ${diff} pontos no GAD-7</b>` : `Estabilidade nos níveis de tensão.`;
+
             document.getElementById('relatorio').innerHTML = `
-                <b>Paciente:</b> ${document.getElementById('pacienteId').value}<br>
-                <b>Data:</b> ${new Date().toLocaleDateString()}<hr>
-                <div class="badge-resultado bg-primary text-white">GAD-7: ${totalGad} pts (${statusGad})</div>
-                <div class="badge-resultado bg-info text-white mt-2">IGI: ${totalIgi} pts (${statusIgi})</div>
-                <hr><b>Pulsos Alterados:</b> ${pulsos.join(' | ') || 'Equilíbrio'}<br>
+                <div class='mb-2'><b>Paciente:</b> ${document.getElementById('pacienteId').value}</div>
+                <div class='mb-2'><b>Queixa:</b> ${document.getElementById('queixa').value}</div>
+                <hr>
+                <div class='evolucao-box'>
+                    <b>Evolução da Ansiedade (GAD-7):</b><br>
+                    Antes: ${pre} pts | Depois: ${pos} pts<br>
+                    ${melhoraTxt}
+                </div>
+                <div class='mt-2'><b>Gravidade Insônia (IGI):</b> ${igi} pts</div>
+                <hr>
+                <b>Pulsos Alterados:</b> ${pulsos.join(' | ') || 'Nenhum'}<br>
                 <b>Língua:</b> ${document.getElementById('cor').value} / ${document.getElementById('sab').value}
             `;
             ir(6);
