@@ -3,25 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MÉTODO 360 PRO | Padrão LGPD</title>
+    <title>MÉTODO 360 PRO | Prontuário Científico Avançado</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <style>
-        :root { --azul: #003366; --ouro: #b8860b; --cinza: #f4f7f6; --verde: #198754; }
+        :root { --azul: #003366; --ouro: #b8860b; --cinza: #f4f7f6; --verde: #198754; --voltar: #6c757d; }
         body { background: var(--cinza); font-family: 'Segoe UI', sans-serif; display: none; padding-bottom: 100px; }
         .card-pro { background: white; border-radius: 20px; padding: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); max-width: 1000px; margin: 20px auto; border-top: 12px solid var(--azul); }
         .etapa { display: none; }
         .ativa { display: block; animation: fadeIn 0.4s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .titulo-secao { color: var(--ouro); font-weight: bold; border-bottom: 2px solid #eee; padding-bottom: 8px; margin: 25px 0 15px 0; text-transform: uppercase; font-size: 0.9rem; }
+        .pergunta-full { background: #fdfdfd; padding: 12px; border-radius: 10px; border-left: 4px solid #dee2e6; margin-bottom: 12px; font-size: 0.95rem; }
         .item-pulso { background: #fff; border: 1px solid #eee; padding: 10px; border-radius: 12px; margin-bottom: 8px; }
+        .btn-check:checked + .btn-outline-primary { background-color: var(--azul) !important; color: white !important; }
         .btn-scale { font-size: 0.65rem; padding: 4px 2px; min-width: 35px; }
         .score-box { background: #e9ecef; padding: 12px; border-radius: 8px; font-weight: bold; border-left: 5px solid var(--azul); }
         .btn-pro { background: var(--azul); color: white; padding: 15px 25px; border-radius: 12px; border: none; font-weight: bold; flex-grow: 1; }
-        .btn-voltar { background: #6c757d; color: white; padding: 15px 25px; border-radius: 12px; border: none; font-weight: bold; margin-right: 10px; }
+        .btn-voltar { background: var(--voltar); color: white; padding: 15px 25px; border-radius: 12px; border: none; font-weight: bold; margin-right: 10px; }
         .btn-ia { background: #6f42c1; color: white; width: 100%; padding: 15px; border-radius: 15px; border: none; font-weight: bold; margin-top: 10px; }
-        .aviso-lgpd { font-size: 0.75rem; color: #555; background: #fff3cd; padding: 10px; border-radius: 8px; margin-top: 10px; border-left: 4px solid #ffc107; }
+        .grid-lingua { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 10px; }
     </style>
 </head>
 <body id="corpoApp">
@@ -31,36 +33,46 @@
         <h2 class="text-center fw-bold mb-4" style="color:var(--azul)">MÉTODO 360 PRO</h2>
 
         <div id="e1" class="etapa ativa">
-            <h5 class="titulo-secao">1. Identificação e Segurança LGPD</h5>
-            <div class="row g-3 mb-3">
-                <div class="col-md-6"><label class="small fw-bold">NOME COMPLETO:</label><input type="text" id="nome" class="form-control" placeholder="Uso exclusivo do terapeuta"></div>
+            <h5 class="titulo-secao">1. Identificação e Consentimento</h5>
+            <div class="row g-3 mb-4">
+                <div class="col-md-6"><label class="small fw-bold">NOME COMPLETO:</label><input type="text" id="nome" class="form-control"></div>
                 <div class="col-md-3"><label class="small fw-bold">DATA NASC.:</label><input type="date" id="nasc" class="form-control" onchange="calcIdade()"></div>
                 <div class="col-md-3"><label class="small fw-bold">IDADE:</label><input type="text" id="idade" class="form-control" readonly></div>
                 <div class="col-md-12">
-                    <div class="aviso-lgpd">
+                    <div class="p-3 bg-warning bg-opacity-10 border border-warning rounded small">
                         <input type="checkbox" id="consentimento" class="form-check-input me-2">
-                        <strong>TERMO DE CONSENTIMENTO:</strong> Autorizo o tratamento dos meus dados pessoais sensíveis para fins de diagnóstico e tratamento terapêutico, ciente de que o armazenamento é seguro e que meus dados serão anonimizados para análises de Inteligência Artificial.
+                        Autorizo o tratamento dos meus dados conforme as diretrizes da LGPD para fins terapêuticos.
                     </div>
                 </div>
                 <div class="col-md-12"><textarea id="qp" class="form-control" rows="2" placeholder="Queixa Principal (QP)"></textarea></div>
             </div>
-            <h5 class="titulo-secao">2. GAD-7 (Ansiedade)</h5>
+            
+            <h5 class="titulo-secao">2. GAD-7: Escala de Ansiedade Generalizada</h5>
+            <p class="small text-muted">Nas últimas 2 semanas, com que frequência você foi incomodado pelos problemas abaixo?</p>
             <div id="gadBox"></div>
-            <div id="gadResult" class="score-box mt-3">Score GAD-7: 0</div>
+            <div id="gadResult" class="score-box mt-3">Score GAD-7: 0 | Classificação: -</div>
             <button class="btn-pro w-100 mt-4" onclick="verificarLGPD(2)">PRÓXIMO: IGI (SONO)</button>
         </div>
 
         <div id="e2" class="etapa">
-            <h5 class="titulo-secao">3. IGI (Índice de Insônia)</h5>
+            <h5 class="titulo-secao">3. IGI: Índice de Gravidade de Insônia</h5>
             <div id="igiBox"></div>
-            <div id="igiResult" class="score-box mt-3">Score IGI: 0</div>
-            <h5 class="titulo-secao">4. Língua (MTC)</h5>
-            <div class="row g-2 bg-light p-3 border rounded" id="linguaBox">
-                <div class="col-md-4"><div class="form-check"><input class="form-check-input" type="checkbox" value="Pálida" name="lingua"><label class="form-check-label small">Pálida</label></div></div>
-                <div class="col-md-4"><div class="form-check"><input class="form-check-input" type="checkbox" value="Vermelha" name="lingua"><label class="form-check-label small">Vermelha</label></div></div>
-                <div class="col-md-4"><div class="form-check"><input class="form-check-input" type="checkbox" value="Denteada" name="lingua"><label class="form-check-label small">Denteada</label></div></div>
-                <div class="col-md-4"><div class="form-check"><input class="form-check-input" type="checkbox" value="Saburra Amarela" name="lingua"><label class="form-check-label small">Saburra Amarela</label></div></div>
+            <div id="igiResult" class="score-box mt-3">Score IGI: 0 | Classificação: -</div>
+            
+            <h5 class="titulo-secao">4. Semiologia da Língua (Documento Coloração.docx)</h5>
+            <div class="row">
+                <div class="col-md-6">
+                    <h6 class="fw-bold small text-primary text-uppercase">Coloração:</h6>
+                    <div class="grid-lingua p-2 border rounded bg-light" id="linguaCor">
+                        </div>
+                </div>
+                <div class="col-md-6">
+                    <h6 class="fw-bold small text-primary text-uppercase">Forma:</h6>
+                    <div class="grid-lingua p-2 border rounded bg-light" id="linguaForma">
+                        </div>
+                </div>
             </div>
+            
             <div class="d-flex mt-4">
                 <button class="btn-voltar" onclick="ir(1)">VOLTAR</button>
                 <button class="btn-pro" onclick="ir(3)">PRÓXIMO: 12 PULSOS</button>
@@ -68,7 +80,7 @@
         </div>
 
         <div id="e3" class="etapa">
-            <h5 class="titulo-secao">5. Pulsologia 12 Zang-Fu</h5>
+            <h5 class="titulo-secao">5. Pulsologia 12 Zang-Fu (D / E)</h5>
             <div class="row">
                 <div class="col-md-6 border-end" id="pulsosD"></div>
                 <div class="col-md-6" id="pulsosE"></div>
@@ -80,24 +92,24 @@
         </div>
 
         <div id="e4" class="etapa">
-            <h5 class="titulo-secao">6. Dor (EVA) e Conduta</h5>
+            <h5 class="titulo-secao">6. Avaliação de Dor e Conduta</h5>
             <div class="row g-3 mb-4">
-                <div class="col-md-6"><label class="fw-bold">EVA ANTES:</label><input type="number" id="eva_a" class="form-control"></div>
-                <div class="col-md-6"><label class="fw-bold">EVA DEPOIS:</label><input type="number" id="eva_d" class="form-control"></div>
+                <div class="col-md-6"><label class="fw-bold">EVA ANTES (0-10):</label><input type="number" id="eva_a" class="form-control" onchange="calcEva('a')"><div id="evaAResult" class="small fw-bold"></div></div>
+                <div class="col-md-6"><label class="fw-bold">EVA DEPOIS (0-10):</label><input type="number" id="eva_d" class="form-control" onchange="calcEva('d')"><div id="evaDResult" class="small fw-bold"></div></div>
             </div>
-            <textarea id="diag" class="form-control mb-3" rows="3" placeholder="Diagnóstico Energético"></textarea>
+            <textarea id="diag" class="form-control mb-3" rows="3" placeholder="Diagnóstico e Plano Terapêutico"></textarea>
             
-            <button class="btn-ia" onclick="gerarResumoIA()">✨ GERAR RESUMO ANONIMIZADO (IA)</button>
+            <button class="btn-ia" onclick="gerarResumoIA()">✨ GERAR RELATÓRIO CIENTÍFICO PARA IA</button>
             <div class="d-flex mt-3">
                 <button class="btn-voltar" onclick="ir(3)">VOLTAR</button>
-                <button id="btnSalvar" class="btn-pro" style="background:var(--verde)" onclick="salvarTudo()">ARQUIVAR COM SEGURANÇA</button>
+                <button id="btnSalvar" class="btn-pro" style="background:var(--verde)" onclick="salvarTudo()">ARQUIVAR PRONTUÁRIO</button>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    if(prompt("PIN:") !== "1234") { document.body.innerHTML = "Acesso Negado"; } else { document.body.style.display = "block"; }
+    if(prompt("PIN DE ACESSO:") !== "1234") { document.body.innerHTML = "Bloqueado"; } else { document.body.style.display = "block"; }
 
     const firebaseConfig = {
         apiKey: "AIzaSyAI5X-Cb0Xf0G_cRoBX9YWqW1bn0nv-RA",
@@ -111,77 +123,26 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    function init() {
-        const gadP = ["Ansiedade", "Controle", "Preocupação", "Relaxar", "Inquietude", "Irritabilidade", "Medo"];
-        const igiP = ["Início", "Manutenção", "Acordar cedo", "Satisfação", "Interferência", "Aparência", "Preocupação"];
-        gadP.forEach((q, i) => document.getElementById('gadBox').innerHTML += `<div class="mb-2 small border-bottom pb-1">${q}: <select class="form-select form-select-sm d-inline-block w-auto ms-2" onchange="calc()" id="g${i}"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></div>`);
-        igiP.forEach((q, i) => document.getElementById('igiBox').innerHTML += `<div class="mb-2 small border-bottom pb-1">${q}: <select class="form-select form-select-sm d-inline-block w-auto ms-2" onchange="calc()" id="i${i}"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option></select></div>`);
+    // DADOS TÉCNICOS
+    const gadPerguntas = [
+        "Sentir-se nervoso(a), ansioso(a) ou muito tenso(a)",
+        "Não ser capaz de impedir ou de controlar as preocupações",
+        "Preocupar-se demais com diversas coisas",
+        "Dificuldade para relaxar",
+        "Ficar tão inquieto(a) que é difícil permanecer sentado(a)",
+        "Ficar facilmente aborrecido(a) ou irritado(a)",
+        "Sentir medo como se algo horrível fosse acontecer"
+    ];
+    
+    const igiPerguntas = [
+        "Dificuldade para iniciar o sono",
+        "Dificuldade para manter o sono",
+        "Problema de despertar precocemente",
+        "Satisfação com o padrão de sono atual",
+        "Interferência do sono no funcionamento diário",
+        "Percepção alheia sobre seu prejuízo de qualidade de vida",
+        "Preocupação/Aflição com os problemas de sono"
+    ];
 
-        const escalaP = ["+++", "++", "+", "ok", "-", "--", "---", "Nulo"];
-        const d_list = ["Cun: P", "Cun: IG", "Guan: BP", "Guan: E", "Chi: CS", "Chi: TA"];
-        const e_list = ["Cun: C", "Cun: ID", "Guan: F", "Guan: VB", "Chi: R", "Chi: B"];
-        
-        function criarP(cont, lista, pref) {
-            lista.forEach((p, idx) => {
-                let h = `<div class="item-pulso"><label class="small fw-bold d-block mb-1">${p}</label><div class="btn-group w-100">`;
-                escalaP.forEach(v => h += `<input type="radio" class="btn-check" name="${pref}${idx}" id="${pref}${idx}${v}" value="${v}" ${v==='ok'?'checked':''}><label class="btn btn-outline-primary btn-scale" for="${pref}${idx}${v}">${v}</label>`);
-                document.getElementById(cont).innerHTML += h + `</div></div>`;
-            });
-        }
-        criarP('pulsosD', d_list, 'pd'); criarP('pulsosE', e_list, 'pe');
-    }
-    init();
-
-    function verificarLGPD(n) {
-        if(!document.getElementById('consentimento').checked) {
-            alert("⚠️ É obrigatório aceitar o Termo de Consentimento para seguir a LGPD.");
-            return;
-        }
-        ir(n);
-    }
-
-    function calcIdade() {
-        const n = new Date(document.getElementById('nasc').value);
-        const h = new Date();
-        let i = h.getFullYear() - n.getFullYear();
-        if (h.getMonth() < n.getMonth() || (h.getMonth() == n.getMonth() && h.getDate() < n.getDate())) i--;
-        document.getElementById('idade').value = i + " anos";
-    }
-
-    function calc() {
-        let g = 0; for(let i=0; i<7; i++) g += parseInt(document.getElementById('g'+i).value);
-        let s = 0; for(let i=0; i<7; i++) s += parseInt(document.getElementById('i'+i).value);
-        document.getElementById('gadResult').innerText = `Score GAD-7: ${g}`;
-        document.getElementById('igiResult').innerText = `Score IGI: ${s}`;
-    }
-
-    function ir(n) { document.querySelectorAll('.etapa').forEach(e => e.classList.remove('ativa')); document.getElementById('e' + n).classList.add('ativa'); window.scrollTo(0,0); }
-
-    function gerarResumoIA() {
-        const getP = (p) => document.querySelector(`input[name="${p}"]:checked`).value;
-        const resumo = `
-RELATÓRIO ANONIMIZADO (LGPD) - MÉTODO 360 PRO
-Paciente Ref: [ID CODIFICADO] | Idade: ${document.getElementById('idade').value}
-Scores: GAD-7(${document.getElementById('gadResult').innerText}) | IGI(${document.getElementById('igiResult').innerText})
-EVA: ${document.getElementById('eva_a').value} -> ${document.getElementById('eva_d').value}
-PULSOS DIREITO: P(${getP('pd0')}), IG(${getP('pd1')}), BP(${getP('pd2')}), E(${getP('pd3')}), CS(${getP('pd4')}), TA(${getP('pd5')})
-PULSOS ESQUERDO: C(${getP('pe0')}), ID(${getP('pe1')}), F(${getP('pe2')}), VB(${getP('pe3')}), R(${getP('pe4')}), B(${getP('pe5')})
-Análise Solicitada: Aplique a bibliografia do Método 360 Pro para sugerir tratamento.
-        `;
-        navigator.clipboard.writeText(resumo).then(() => alert("✨ Resumo Anonimizado Copiado!"));
-    }
-
-    function salvarTudo() {
-        const btn = document.getElementById('btnSalvar'); btn.disabled = true;
-        const doc = {
-            paciente_cripto: btoa(document.getElementById('nome').value), // Codifica o nome para segurança básica
-            data: new Date().toLocaleString(),
-            lgpd_status: "Autorizado",
-            idade: document.getElementById('idade').value,
-            diagnostico: document.getElementById('diag').value
-        };
-        db.collection("atendimentos").add(doc).then(() => { alert("Prontuário arquivado sob regras LGPD!"); location.reload(); });
-    }
-</script>
-</body>
-</html>
+    const linguaCores = [
+        {v: "Pálida Úmida", d: "Pálida Úmida (Def.
