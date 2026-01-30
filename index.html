@@ -3,44 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>360 PRO | Pulsologia Rápida</title>
+    <title>360 PRO | Pulsologia de Precisão</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         :root { --azul: #003366; --cinza: #f8f9fa; }
-        body { background: var(--cinza); font-family: sans-serif; padding-bottom: 50px; }
-        .card-clinico { background: white; border-radius: 15px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin: 10px auto; max-width: 500px; border-top: 6px solid var(--azul); }
+        body { background: var(--cinza); font-family: 'Segoe UI', sans-serif; padding-bottom: 50px; }
+        .card-clinico { background: white; border-radius: 20px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); margin: 15px auto; max-width: 600px; border-top: 8px solid var(--azul); }
         .etapa { display: none; }
-        .ativa { display: block; }
+        .ativa { display: block; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         
-        /* Grid de Pulsos */
-        .grid-pulsos { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 15px; }
-        .item-pulso { background: #fff; border: 1px solid #dee2e6; padding: 8px; border-radius: 10px; text-align: center; }
-        .sigla { font-weight: bold; color: var(--azul); display: block; margin-bottom: 5px; font-size: 0.9rem; }
+        /* Grid de Pulsos Aperfeiçoado */
+        .grid-pulsos { display: grid; grid-template-columns: 1fr; gap: 12px; margin-top: 20px; }
+        .item-pulso { background: #fff; border: 1px solid #eee; padding: 12px; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; }
+        .sigla { font-weight: 800; color: var(--azul); width: 40px; font-size: 1rem; }
         
-        .btn-group-sm .btn { padding: 2px 8px; font-size: 0.8rem; font-weight: bold; }
-        .btn-check:checked + .btn-outline-danger { background-color: #dc3545; color: #fff; }
-        .btn-check:checked + .btn-outline-success { background-color: #198754; color: #fff; }
-        .btn-check:checked + .btn-outline-primary { background-color: #0d6efd; color: #fff; }
+        /* Escala de Cores para Intensidade */
+        .btn-scale { font-size: 0.7rem; font-weight: bold; padding: 5px 2px; min-width: 32px; border: 1px solid #ddd; color: #666; }
+        
+        /* Estilização Manual dos Checks para Cores */
+        .v3 { background: #8b0000 !important; color: white !important; } /* --- Dark Red */
+        .v2 { background: #cc0000 !important; color: white !important; } /* --  Red */
+        .v1 { background: #ff6666 !important; color: white !important; } /* -   Light Red */
+        .ok { background: #0d6efd !important; color: white !important; } /* ok  Blue */
+        .e1 { background: #90ee90 !important; color: black !important; } /* +   Light Green */
+        .e2 { background: #32cd32 !important; color: white !important; } /* ++  Green */
+        .e3 { background: #006400 !important; color: white !important; } /* +++ Dark Green */
 
-        .btn-pro { background: var(--azul); color: white; width: 100%; padding: 12px; border-radius: 10px; border: none; font-weight: bold; margin-top: 20px; }
+        .btn-check:not(:checked) + .btn { background: white !important; color: #666 !important; }
+        .btn-pro { background: var(--azul); color: white; width: 100%; padding: 15px; border-radius: 12px; border: none; font-weight: bold; margin-top: 25px; box-shadow: 0 4px 15px rgba(0,51,102,0.2); }
     </style>
 </head>
 <body>
 
     <div id="p1" class="etapa ativa container mt-4">
         <div class="card-clinico text-center">
-            <h4 class="fw-bold">MÉTODO 360 PRO</h4>
-            <input type="text" id="pacienteId" class="form-control my-3" placeholder="ID do Paciente (Ex: MRO 5005)">
-            <button class="btn-pro" onclick="ir(2)">AVALIAÇÃO BIO-PSÍQUICA</button>
+            <h3 class="fw-bold mb-4" style="color:var(--azul)">MÉTODO 360 PRO</h3>
+            <input type="text" id="pacienteId" class="form-control form-control-lg mb-3" placeholder="ID do Paciente">
+            <button class="btn-pro" onclick="ir(2)">INICIAR AVALIAÇÃO</button>
         </div>
     </div>
 
     <div id="p2" class="etapa container mt-4">
         <div class="card-clinico">
-            <h6 class="fw-bold">Ansiedade & Sono</h6>
-            <label class="small">GAD-7 (0 a 3):</label>
-            <select id="ans" class="form-select mb-3"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select>
-            <label class="small">IGI (Sono):</label>
+            <h5 class="fw-bold mb-3 border-bottom pb-2">Psique & Sono</h5>
+            <label class="small fw-bold mb-1">Ansiedade (GAD-7):</label>
+            <select id="ans" class="form-select mb-3"><option value="0">0 - Ausente</option><option value="1">1 - Leve</option><option value="2">2 - Moderada</option><option value="3">3 - Severa</option></select>
+            <label class="small fw-bold mb-1">Sono (IGI):</label>
             <select id="sono" class="form-select"><option value="0">Bom</option><option value="1">Médio</option><option value="2">Ruim</option></select>
             <button class="btn-pro" onclick="ir(3)">PRÓXIMO: PULSOS</button>
         </div>
@@ -48,8 +57,8 @@
 
     <div id="p3" class="etapa container mt-4">
         <div class="card-clinico">
-            <h6 class="fw-bold mb-0">Exame dos 12 Pulsos</h6>
-            <p class="text-muted" style="font-size: 0.7rem;">Marque (-) Vazio, (ok) Normal ou (+) Excesso</p>
+            <h5 class="fw-bold mb-0 border-bottom pb-2">Exame dos 12 Pulsos</h5>
+            <p class="text-muted small mt-2">Selecione a intensidade de cada meridiano:</p>
             
             <div class="grid-pulsos" id="listaPulsos">
                 </div>
@@ -59,43 +68,55 @@
     </div>
 
     <div id="p4" class="etapa container mt-4">
-        <div class="card-p">
-            <div class="card-clinico">
-                <h6 class="fw-bold">Análise Visual</h6>
-                <select id="cor" class="form-select mb-2"><option value="rosada">Rosada</option><option value="palida">Pálida</option><option value="vermelha">Vermelha</option></select>
-                <select id="sab" class="form-select mb-3"><option value="fina">Saburra Fina</option><option value="grossa">Saburra Grossa</option></select>
-                <button class="btn-pro" onclick="finalizar()">FINALIZAR E GERAR CONDUTA</button>
-             </div>
+        <div class="card-clinico">
+            <h5 class="fw-bold mb-3 border-bottom pb-2">Análise de Língua</h5>
+            <label class="small fw-bold mb-1">Cor da Língua:</label>
+            <select id="cor" class="form-select mb-3"><option value="rosada">Rosada (Normal)</option><option value="palida">Pálida (Frio/Vazio)</option><option value="vermelha">Vermelha (Calor)</option><option value="roxa">Roxa (Estase)</option></select>
+            <label class="small fw-bold mb-1">Saburra:</label>
+            <select id="sab" class="form-select mb-4"><option value="fina">Fina</option><option value="grossa">Grossa</option><option value="nenhuma">Sem saburra (Geográfica)</option></select>
+            <button class="btn-pro" onclick="finalizar()">FINALIZAR DIAGNÓSTICO</button>
         </div>
     </div>
 
     <div id="p5" class="etapa container mt-4">
-        <div class="card-clinico" style="border-left-color: #198754;">
-            <h5 class="fw-bold">Diagnóstico 360</h5>
-            <div id="relatorio" class="small mt-3"></div>
-            <div id="sugestao" class="p-2 mt-2 rounded" style="background:#fff3cd; font-size: 0.85rem;"></div>
-            <button class="btn-pro" style="background:#25D366;" onclick="compartilhar()">ENVIAR PARA WHATSAPP</button>
+        <div class="card-clinico" style="border-left: 10px solid #198754;">
+            <h4 class="fw-bold text-success">Síntese Final</h4>
+            <div id="relatorio" class="mt-3 p-3 bg-light rounded" style="font-size: 0.9rem; line-height: 1.6;"></div>
+            <button class="btn-pro" style="background:#25D366;" onclick="compartilhar()">ENVIAR RELATÓRIO (WHATSAPP)</button>
+            <button class="btn btn-link w-100 text-muted mt-2" onclick="location.reload()">Novo Atendimento</button>
         </div>
     </div>
 
     <script>
         const meridianos = ["P", "IG", "BP", "E", "C", "ID", "R", "B", "CS", "TA", "F", "VB"];
-        
-        // Criar os botões de pulso automaticamente
         const grid = document.getElementById('listaPulsos');
+        
+        // Geração dos botões de 7 níveis
         meridianos.forEach(m => {
             grid.innerHTML += `
                 <div class="item-pulso">
                     <span class="sigla">${m}</span>
                     <div class="btn-group btn-group-sm" role="group">
-                        <input type="radio" class="btn-check" name="p_${m}" id="m_${m}_v" value="-" autocomplete="off">
-                        <label class="btn btn-outline-danger" for="m_${m}_v">-</label>
+                        <input type="radio" class="btn-check" name="p_${m}" id="m_${m}_v3" value="---" autocomplete="off">
+                        <label class="btn btn-outline-secondary btn-scale v3" for="m_${m}_v3">---</label>
+                        
+                        <input type="radio" class="btn-check" name="p_${m}" id="m_${m}_v2" value="--" autocomplete="off">
+                        <label class="btn btn-outline-secondary btn-scale v2" for="m_${m}_v2">--</label>
+                        
+                        <input type="radio" class="btn-check" name="p_${m}" id="m_${m}_v1" value="-" autocomplete="off">
+                        <label class="btn btn-outline-secondary btn-scale v1" for="m_${m}_v1">-</label>
                         
                         <input type="radio" class="btn-check" name="p_${m}" id="m_${m}_n" value="ok" autocomplete="off" checked>
-                        <label class="btn btn-outline-primary" for="m_${m}_n">ok</label>
+                        <label class="btn btn-outline-secondary btn-scale ok" for="m_${m}_n">ok</label>
                         
-                        <input type="radio" class="btn-check" name="p_${m}" id="m_${m}_e" value="+" autocomplete="off">
-                        <label class="btn btn-outline-success" for="m_${m}_e">+</label>
+                        <input type="radio" class="btn-check" name="p_${m}" id="m_${m}_e1" value="+" autocomplete="off">
+                        <label class="btn btn-outline-secondary btn-scale e1" for="m_${m}_e1">+</label>
+                        
+                        <input type="radio" class="btn-check" name="p_${m}" id="m_${m}_e2" value="++" autocomplete="off">
+                        <label class="btn btn-outline-secondary btn-scale e2" for="m_${m}_e2">++</label>
+                        
+                        <input type="radio" class="btn-check" name="p_${m}" id="m_${m}_e3" value="+++" autocomplete="off">
+                        <label class="btn btn-outline-secondary btn-scale e3" for="m_${m}_e3">+++</label>
                     </div>
                 </div>`;
         });
@@ -103,34 +124,23 @@
         function ir(n) { document.querySelectorAll('.etapa').forEach(e => e.classList.remove('ativa')); document.getElementById('p' + n).classList.add('ativa'); window.scrollTo(0,0); }
 
         function finalizar() {
-            let resumoPulsos = [];
-            let taStatus = "ok";
+            let resPulsos = [];
             meridianos.forEach(m => {
-                let val = document.querySelector(`input[name="p_${m}"]:checked`).value;
-                if(val !== 'ok') resumoPulsos.push(`${m}${val}`);
-                if(m === 'TA') taStatus = val;
+                let v = document.querySelector(`input[name="p_${m}"]:checked`).value;
+                if(v !== 'ok') resPulsos.push(`<b>${m}:</b> ${v}`);
             });
 
-            const ans = document.getElementById('ans').value;
-            const sab = document.getElementById('sab').value;
-            let conduta = "<b>Conduta:</b> Harmonização dos meridianos afetados.";
-
-            // Inteligência Clínica Simples
-            if(taStatus === '-' || sab === 'grossa') {
-                conduta = "<b>Estratégia:</b> Aquecer Yang e eliminar Humidade.<br><b>Pontos:</b> VC12, TA5, BP9.";
-            }
-
             document.getElementById('relatorio').innerHTML = `
-                <b>Paciente:</b> ${document.getElementById('pacienteId').value}<br>
-                <b>Alterações:</b> ${resumoPulsos.join(', ') || 'Nenhuma'}<br>
-                <b>Língua:</b> ${document.getElementById('cor').value} / ${sab}
+                <b>Paciente:</b> ${document.getElementById('pacienteId').value || 'Não informado'}<br>
+                <b>Data:</b> ${new Date().toLocaleDateString()}<br><hr>
+                <b>Alterações de Pulso:</b><br> ${resPulsos.join(' | ') || 'Pulsos em equilíbrio'}<br><hr>
+                <b>Análise Visual:</b> Língua ${document.getElementById('cor').value} com saburra ${document.getElementById('sab').value}.
             `;
-            document.getElementById('sugestao').innerHTML = conduta;
             ir(5);
         }
 
         function compartilhar() {
-            const txt = document.getElementById('relatorio').innerText + "\n" + document.getElementById('sugestao').innerText;
+            const txt = "*MÉTODO 360 - RELATÓRIO*\n" + document.getElementById('relatorio').innerText.replace(/<[^>]*>/g, '');
             window.open(`https://wa.me/?text=${encodeURIComponent(txt)}`);
         }
     </script>
