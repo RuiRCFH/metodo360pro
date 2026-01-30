@@ -8,16 +8,17 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <style>
-        :root { --azul: #003366; --ouro: #b8860b; --cinza: #f4f7f6; }
+        :root { --azul: #003366; --ouro: #b8860b; --cinza: #f4f7f6; --vermelho: #dc3545; }
         body { background: var(--cinza); font-family: 'Segoe UI', sans-serif; display: none; padding-bottom: 100px; }
-        .card-pro { background: white; border-radius: 20px; padding: 35px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); max-width: 950px; margin: 20px auto; border-top: 12px solid var(--azul); }
+        .card-pro { background: white; border-radius: 20px; padding: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); max-width: 900px; margin: 20px auto; border-top: 12px solid var(--azul); }
         .etapa { display: none; }
         .ativa { display: block; animation: fadeIn 0.4s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .titulo-secao { color: var(--ouro); font-weight: bold; border-bottom: 2px solid #eee; padding-bottom: 8px; margin: 30px 0 15px 0; text-transform: uppercase; font-size: 0.9rem; letter-spacing: 1px; }
-        .grid-check { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 10px; }
-        .btn-pro { background: var(--azul); color: white; width: 100%; padding: 18px; border-radius: 15px; border: none; font-weight: bold; margin-top: 30px; font-size: 1.1rem; }
-        .pergunta-escala { background: #f9f9f9; padding: 10px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid var(--azul); }
+        .titulo-secao { color: var(--ouro); font-weight: bold; border-bottom: 2px solid #eee; padding-bottom: 8px; margin: 25px 0 15px 0; text-transform: uppercase; font-size: 0.9rem; }
+        .btn-check:checked + .btn-outline-danger { background-color: var(--vermelho) !important; color: white !important; }
+        .grid-pontos { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+        .btn-pro { background: var(--azul); color: white; width: 100%; padding: 18px; border-radius: 15px; border: none; font-weight: bold; margin-top: 25px; font-size: 1.1rem; }
+        .score-box { background: #e9ecef; padding: 10px; border-radius: 8px; font-weight: bold; margin-top: 10px; border-left: 5px solid var(--azul); }
     </style>
 </head>
 <body id="corpoApp">
@@ -27,105 +28,82 @@
         <h2 class="text-center fw-bold mb-4" style="color:var(--azul)">MÉTODO 360 PRO</h2>
 
         <div id="e1" class="etapa ativa">
-            <h5 class="titulo-secao">1. Identificação & Queixa</h5>
+            <h5 class="titulo-secao">1. Identificação</h5>
             <div class="row g-3 mb-4">
-                <div class="col-md-6"><input type="text" id="nome" class="form-control" placeholder="Nome do Paciente"></div>
-                <div class="col-md-3"><input type="text" id="idade" class="form-control" placeholder="Idade"></div>
-                <div class="col-md-3"><input type="text" id="peso_alt" class="form-control" placeholder="Peso/Altura"></div>
-                <div class="col-md-12"><textarea id="qp" class="form-control" rows="2" placeholder="Queixa Principal (QP)"></textarea></div>
+                <div class="col-md-8"><input type="text" id="nome" class="form-control" placeholder="Nome do Paciente"></div>
+                <div class="col-md-4"><input type="text" id="idade" class="form-control" placeholder="Idade"></div>
+                <div class="col-md-12"><textarea id="qp" class="form-control" rows="2" placeholder="Queixa Principal"></textarea></div>
             </div>
-
-            <h5 class="titulo-secao">2. Escala EVA & GAD-7 (Ansiedade)</h5>
-            <div class="row mb-3">
-                <div class="col-md-4"><label class="fw-bold">EVA INICIAL (0-10):</label><input type="number" id="eva_ini" class="form-control"></div>
-                <div class="col-md-8">
-                    <label class="fw-bold">GAD-7 (Frequência 0 a 3):</label>
-                    <div id="gadBox"></div>
-                </div>
-            </div>
-            <button class="btn-pro" onclick="ir(2)">PRÓXIMO: IGI & INSPEÇÃO MTC</button>
+            
+            <h5 class="titulo-secao">2. GAD-7 (Ansiedade)</h5>
+            <div id="gadBox"></div>
+            <div id="gadResult" class="score-box">Total GAD-7: 0 - Mínimo</div>
+            <button class="btn-pro" onclick="ir(2)">PRÓXIMO: IGI (SONO)</button>
         </div>
 
         <div id="e2" class="etapa">
             <h5 class="titulo-secao">3. IGI (Índice de Insônia)</h5>
-            <div id="igiBox" class="mb-4"></div>
-
-            <h5 class="titulo-secao">4. Inspeção MTC (Shen e Face)</h5>
+            <div id="igiBox"></div>
+            <div id="igiResult" class="score-box">Total IGI: 0 - Sem insônia</div>
+            
+            <h5 class="titulo-secao">4. Inspeção MTC</h5>
             <div class="row g-3">
-                <div class="col-md-6"><label class="small fw-bold">ESPÍRITO (SHEN):</label><select id="shen" class="form-select"><option>Com Brilho</option><option>Sem Brilho</option><option>Agitado</option></select></div>
-                <div class="col-md-6"><label class="small fw-bold">COR DA FACE:</label><select id="face" class="form-select"><option>Brilhante</option><option>Pálida</option><option>Amarelada</option><option>Avermelhada</option><option>Esverdeada</option><option>Escura</option></select></div>
-                <div class="col-md-12">
-                    <label class="small fw-bold">LÍNGUA (Selecione o que observar):</label>
-                    <div class="grid-check p-2 border rounded bg-light">
-                        <div class="form-check"><input class="form-check-input" type="checkbox" value="Pálida" name="lingua"><label class="form-check-label small">Pálida/Seca</label></div>
-                        <div class="form-check"><input class="form-check-input" type="checkbox" value="Vermelha" name="lingua"><label class="form-check-label small">Vermelha (Calor)</label></div>
-                        <div class="form-check"><input class="form-check-input" type="checkbox" value="Denteada" name="lingua"><label class="form-check-label small">Denteada (Def BP)</label></div>
-                        <div class="form-check"><input class="form-check-input" type="checkbox" value="Saburra Amarela" name="lingua"><label class="form-check-label small">Saburra Amarela</label></div>
-                        <div class="form-check"><input class="form-check-input" type="checkbox" value="Geográfica" name="lingua"><label class="form-check-label small">Geográfica</label></div>
-                        <div class="form-check"><input class="form-check-input" type="checkbox" value="Púrpura" name="lingua"><label class="form-check-label small">Púrpura (Estase)</label></div>
-                    </div>
-                </div>
+                <div class="col-md-6"><label class="small fw-bold">SHEN (OLHOS/MENTE):</label><select id="shen" class="form-select"><option>Com Brilho</option><option>Sem Brilho</option><option>Agitado</option></select></div>
+                <div class="col-md-6"><label class="small fw-bold">FACE (COR):</label><select id="face" class="form-select"><option>Normal</option><option>Pálida</option><option>Vermelha</option><option>Amarela</option><option>Escura</option></select></div>
+                <div class="col-md-12"><label class="small fw-bold">LÍNGUA:</label><input type="text" id="lingua" class="form-control" placeholder="Ex: Pálida, denteada, saburra branca"></div>
             </div>
-            <button class="btn-pro" onclick="ir(3)">PRÓXIMO: INTERROGATÓRIO MTC</button>
+            <button class="btn-pro" onclick="ir(3)">PRÓXIMO: MAPA ABDOMINAL</button>
         </div>
 
         <div id="e3" class="etapa">
-            <h5 class="titulo-secao">5. Interrogatório dos 8 Pilares</h5>
-            <div class="row g-3">
-                <div class="col-md-4"><label class="small fw-bold">SENS. TÉRMICA:</label><select id="termica" class="form-select"><option>Normal</option><option>Aversão ao Frio</option><option>Aversão ao Calor</option><option>Febre</option></select></div>
-                <div class="col-md-4"><label class="small fw-bold">TRANSPIRAÇÃO:</label><select id="suor" class="form-select"><option>Normal</option><option>Espontânea</option><option>Noturna</option></select></div>
-                <div class="col-md-4"><label class="small fw-bold">SEDE/BEBIDA:</label><select id="sede" class="form-select"><option>Normal</option><option>Muita Sede</option><option>Pref. Gelados</option><option>Sem Sede</option></select></div>
-                <div class="col-md-6"><label class="small fw-bold">DIGESTÃO/FEZES:</label><textarea id="dig" class="form-control" rows="2"></textarea></div>
-                <div class="col-md-6"><label class="small fw-bold">URINA:</label><textarea id="urina" class="form-control" rows="2"></textarea></div>
-                <div class="col-md-12"><label class="small fw-bold">GINECOLOGIA (Ciclo/Leucorreia):</label><input type="text" id="gino" class="form-control"></div>
+            <h5 class="titulo-secao">5. Palpação Abdominal (Pontos Mu/Alarme)</h5>
+            <p class="small text-muted mb-3">Selecione os pontos que apresentam sensibilidade ou dor à palpação:</p>
+            <div class="grid-pontos mb-4">
+                <input type="checkbox" class="btn-check" id="m1" value="VC17"><label class="btn btn-outline-danger" for="m1">VC17 (CS)</label>
+                <input type="checkbox" class="btn-check" id="m2" value="VC14"><label class="btn btn-outline-danger" for="m2">VC14 (C)</label>
+                <input type="checkbox" class="btn-check" id="m3" value="VC12"><label class="btn btn-outline-danger" for="m3">VC12 (E)</label>
+                <input type="checkbox" class="btn-check" id="m4" value="F14"><label class="btn btn-outline-danger" for="m4">F14 (F)</label>
+                <input type="checkbox" class="btn-check" id="m5" value="VB24"><label class="btn btn-outline-danger" for="m5">VB24 (VB)</label>
+                <input type="checkbox" class="btn-check" id="m6" value="LR13"><label class="btn btn-outline-danger" for="m6">LR13 (BP)</label>
+                <input type="checkbox" class="btn-check" id="m7" value="E25"><label class="btn btn-outline-danger" for="m7">E25 (IG)</label>
+                <input type="checkbox" class="btn-check" id="m8" value="VC6/4"><label class="btn btn-outline-danger" for="m8">VC6/4 (R/IG)</label>
+                <input type="checkbox" class="btn-check" id="m9" value="VC3"><label class="btn btn-outline-danger" for="m9">VC3 (B)</label>
+                <input type="checkbox" class="btn-check" id="m10" value="VB25"><label class="btn btn-outline-danger" for="m10">VB25 (R)</label>
             </div>
-            <button class="btn-pro" onclick="ir(4)">PRÓXIMO: PULSOS (D / E)</button>
+
+            <h5 class="titulo-secao">6. Pulsologia Bilateral</h5>
+            <div class="row">
+                <div class="col-6"><p class="small fw-bold text-center">DIREITO</p>
+                    <input type="text" id="pd_c" class="form-control mb-2" placeholder="Cun (P)">
+                    <input type="text" id="pd_g" class="form-control mb-2" placeholder="Guan (BP)">
+                    <input type="text" id="pd_ch" class="form-control" placeholder="Chi (CS)">
+                </div>
+                <div class="col-6"><p class="small fw-bold text-center">ESQUERDO</p>
+                    <input type="text" id="pe_c" class="form-control mb-2" placeholder="Cun (C)">
+                    <input type="text" id="pe_g" class="form-control mb-2" placeholder="Guan (F)">
+                    <input type="text" id="pe_ch" class="form-control" placeholder="Chi (R)">
+                </div>
+            </div>
+            <button class="btn-pro" onclick="ir(4)">PRÓXIMO: CONDUTA FINAL</button>
         </div>
 
         <div id="e4" class="etapa">
-            <h5 class="titulo-secao">6. Pulsologia Bilateral</h5>
-            <div class="row">
-                <div class="col-6 border-end">
-                    <p class="text-center small fw-bold text-primary">PUNHO DIREITO</p>
-                    <div class="mb-2"><label class="small">P/IG (Cun):</label><input type="text" id="pd_cun" class="form-control form-control-sm"></div>
-                    <div class="mb-2"><label class="small">BP/E (Guan):</label><input type="text" id="pd_guan" class="form-control form-control-sm"></div>
-                    <div class="mb-2"><label class="small">CS/TA (Chi):</label><input type="text" id="pd_chi" class="form-control form-control-sm"></div>
-                </div>
-                <div class="col-6">
-                    <p class="text-center small fw-bold text-primary">PUNHO ESQUERDO</p>
-                    <div class="mb-2"><label class="small">C/ID (Cun):</label><input type="text" id="pe_cun" class="form-control form-control-sm"></div>
-                    <div class="mb-2"><label class="small">F/VB (Guan):</label><input type="text" id="pe_guan" class="form-control form-control-sm"></div>
-                    <div class="mb-2"><label class="small">R/B (Chi):</label><input type="text" id="pe_chi" class="form-control form-control-sm"></div>
-                </div>
+            <h5 class="titulo-secao">7. Diagnóstico & Plano</h5>
+            <div class="row mb-3">
+                <div class="col-6"><label class="small fw-bold">EVA ANTES:</label><input type="number" id="eva_a" class="form-control"></div>
+                <div class="col-6"><label class="small fw-bold">EVA DEPOIS:</label><input type="number" id="eva_d" class="form-control"></div>
             </div>
-            <h5 class="titulo-secao">7. Palpação & Algias</h5>
-            <div class="row">
-                <div class="col-md-6"><label class="small fw-bold">SÍNDROME BI:</label><select id="bi" class="form-select"><option>Nenhuma</option><option>Errante (Vento)</option><option>Fixa (Umidade)</option><option>Dolorida (Frio)</option><option>Febril (Calor)</option></select></div>
-                <div class="col-md-6"><label class="small fw-bold">PALPAÇÃO ABDOMINAL:</label><input type="text" id="abd" class="form-control"></div>
-            </div>
-            <button class="btn-pro" onclick="ir(5)">PRÓXIMO: CONDUTA FINAL</button>
+            <textarea id="diag" class="form-control mb-3" rows="2" placeholder="Diagnóstico Energético"></textarea>
+            <textarea id="pontos" class="form-control mb-3" rows="2" placeholder="Pontos de Tratamento"></textarea>
+            <button id="btnSalvar" class="btn-pro" style="background:#198754" onclick="salvarProntuario()">FINALIZAR ATENDIMENTO</button>
         </div>
-
-        <div id="e5" class="etapa">
-            <h5 class="titulo-secao">8. Diagnóstico Energético & Pontos</h5>
-            <textarea id="diag" class="form-control mb-3" rows="2" placeholder="Ex: Deficiência de Qi do BP com Estagnação de F..."></textarea>
-            <textarea id="pontos" class="form-control mb-3" rows="2" placeholder="Pontos Utilizados na Sessão"></textarea>
-            
-            <div class="row mb-3 bg-light p-3 rounded">
-                <div class="col-6"><label class="fw-bold">EVA FINAL (0-10):</label><input type="number" id="eva_fim" class="form-control"></div>
-                <div class="col-6 d-flex align-items-end"><p class="small text-muted mb-2">Este dado validará a eficácia do tratamento.</p></div>
-            </div>
-
-            <button id="btnSalvar" class="btn-pro" style="background:#198754" onclick="salvarProntuarioIntegrado()">FINALIZAR E ARQUIVAR SESSÃO</button>
-        </div>
-
     </div>
 </div>
 
 <script>
     if(prompt("PIN:") !== "1234") { document.body.innerHTML = "Acesso Negado"; } else { document.body.style.display = "block"; }
 
-    // FIREBASE CONFIG
+    // Firebase Config (Suas chaves da imagem original)
     const firebaseConfig = {
         apiKey: "AIzaSyAI5X-Cb0Xf0G_cRoBX9YWqW1bn0nv-RA",
         authDomain: "metodo360pro-db0aa.firebaseapp.com",
@@ -138,39 +116,51 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // GERAR PERGUNTAS GAD-7 E IGI
-    const gadP = ["Nervosismo/Ansiedade", "Incapaz de controlar preocupação", "Preocupação excessiva", "Dificuldade para relaxar", "Inquietude", "Irritabilidade", "Sentir medo"];
-    const igiP = ["Dificuldade adormecer", "Dificuldade manter sono", "Acordar cedo demais", "Satisfação com sono", "Interferência diária"];
+    // Gerar Questionários
+    const gadP = ["Nervosismo", "Não controlar preocupação", "Preocupação excessiva", "Dificuldade relaxar", "Inquietude", "Irritabilidade", "Sentir medo"];
+    const igiP = ["Dificuldade adormecer", "Manter sono", "Acordar cedo", "Satisfação", "Interferência diária", "Percepção alheia", "Preocupação com sono"];
 
-    function montarPerguntas() {
+    function init() {
+        const g = document.getElementById('gadBox');
         gadP.forEach((q, i) => {
-            document.getElementById('gadBox').innerHTML += `<div class="pergunta-escala small">${q}: <input type="number" id="gad${i}" min="0" max="3" class="form-control d-inline-block w-25 shadow-sm"></div>`;
+            g.innerHTML += `<div class="mb-2 small border-bottom pb-1">${q}: 
+                <select class="form-select form-select-sm d-inline-block w-auto" onchange="calcGad()" id="g${i}">
+                <option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></div>`;
         });
+        const iBox = document.getElementById('igiBox');
         igiP.forEach((q, i) => {
-            document.getElementById('igiBox').innerHTML += `<div class="pergunta-escala small">${q}: <input type="number" id="igi${i}" min="0" max="4" class="form-control d-inline-block w-25 shadow-sm"></div>`;
+            iBox.innerHTML += `<div class="mb-2 small border-bottom pb-1">${q}: 
+                <select class="form-select form-select-sm d-inline-block w-auto" onchange="calcIgi()" id="i${i}">
+                <option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option></select></div>`;
         });
     }
-    montarPerguntas();
+    init();
+
+    function calcGad() {
+        let soma = 0; for(let i=0; i<7; i++) soma += parseInt(document.getElementById('g'+i).value);
+        let n = soma <= 4 ? "Mínimo" : soma <= 9 ? "Leve" : soma <= 14 ? "Moderado" : "Grave";
+        document.getElementById('gadResult').innerText = `Total GAD-7: ${soma} - ${n}`;
+    }
+    function calcIgi() {
+        let soma = 0; for(let i=0; i<7; i++) soma += parseInt(document.getElementById('i'+i).value);
+        let n = soma <= 7 ? "Sem insônia" : soma <= 14 ? "Sub-limiar" : soma <= 21 ? "Moderada" : "Grave";
+        document.getElementById('igiResult').innerText = `Total IGI: ${soma} - ${n}`;
+    }
 
     function ir(n) { document.querySelectorAll('.etapa').forEach(e => e.classList.remove('ativa')); document.getElementById('e' + n).classList.add('ativa'); window.scrollTo(0,0); }
 
-    function salvarProntuarioIntegrado() {
-        const btn = document.getElementById('btnSalvar');
-        btn.innerText = "ARQUIVANDO..."; btn.disabled = true;
-
-        const prontuario = {
+    function salvarProntuario() {
+        const btn = document.getElementById('btnSalvar'); btn.innerText = "Gravando..."; btn.disabled = true;
+        const pontosAlgicos = Array.from(document.querySelectorAll('input.btn-check:checked')).map(cb => cb.value);
+        
+        const doc = {
             paciente: document.getElementById('nome').value,
             data: new Date().toLocaleString(),
-            qp: document.getElementById('qp').value,
-            eva_evolucao: `${document.getElementById('eva_ini').value} -> ${document.getElementById('eva_fim').value}`,
-            diagnostico_mtc: document.getElementById('diag').value,
-            pontos_acupuntura: document.getElementById('pontos').value
+            pontosMu_Algicos: pontosAlgicos,
+            eva_evolucao: `${document.getElementById('eva_a').value} -> ${document.getElementById('eva_d').value}`,
+            diagnostico: document.getElementById('diag').value
         };
-
-        db.collection("atendimentos").add(prontuario).then(() => {
-            alert("Atendimento MTC Pro arquivado com sucesso!");
-            location.reload();
-        }).catch(e => { alert("Erro ao salvar."); btn.disabled = false; });
+        db.collection("atendimentos").add(doc).then(() => { alert("Arquivado!"); location.reload(); });
     }
 </script>
 </body>
