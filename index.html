@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MÉTODO 360 PRO | Prontuário Científico</title>
+    <title>MÉTODO 360 PRO | Inteligência Clínica</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <style>
-        :root { --azul: #003366; --ouro: #b8860b; --cinza: #f4f7f6; }
+        :root { --azul: #003366; --ouro: #b8860b; --cinza: #f4f7f6; --verde: #198754; }
         body { background: var(--cinza); font-family: 'Segoe UI', sans-serif; display: none; padding-bottom: 100px; }
         .card-pro { background: white; border-radius: 20px; padding: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); max-width: 950px; margin: 20px auto; border-top: 12px solid var(--azul); }
         .etapa { display: none; }
@@ -17,7 +17,8 @@
         .titulo-secao { color: var(--ouro); font-weight: bold; border-bottom: 2px solid #eee; padding-bottom: 8px; margin: 25px 0 15px 0; text-transform: uppercase; font-size: 0.9rem; }
         .pulso-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         .pulso-item { background: #fdfdfd; border: 1px solid #eee; padding: 10px; border-radius: 8px; }
-        .btn-pro { background: var(--azul); color: white; width: 100%; padding: 18px; border-radius: 15px; border: none; font-weight: bold; margin-top: 25px; }
+        .btn-pro { background: var(--azul); color: white; width: 100%; padding: 18px; border-radius: 15px; border: none; font-weight: bold; margin-top: 25px; font-size: 1.1rem; }
+        .btn-ia { background: #6f42c1; color: white; width: 100%; padding: 15px; border-radius: 15px; border: none; font-weight: bold; margin-top: 10px; }
         .score-box { background: #e9ecef; padding: 10px; border-radius: 8px; font-weight: bold; margin-top: 10px; border-left: 5px solid var(--azul); font-size: 0.9rem; }
     </style>
 </head>
@@ -30,47 +31,47 @@
         <div id="e1" class="etapa ativa">
             <h5 class="titulo-secao">1. Identificação</h5>
             <div class="row g-3 mb-4">
-                <div class="col-md-6"><label class="small">Nome do Paciente:</label><input type="text" id="nome" class="form-control"></div>
-                <div class="col-md-3"><label class="small">Data Nasc.:</label><input type="date" id="nasc" class="form-control" onchange="calcIdade()"></div>
-                <div class="col-md-3"><label class="small">Idade:</label><input type="text" id="idade" class="form-control" readonly></div>
-                <div class="col-md-12"><textarea id="qp" class="form-control" rows="2" placeholder="Queixa Principal"></textarea></div>
+                <div class="col-md-6"><label class="small fw-bold">NOME/ID:</label><input type="text" id="nome" class="form-control"></div>
+                <div class="col-md-3"><label class="small fw-bold">DATA NASC.:</label><input type="date" id="nasc" class="form-control" onchange="calcIdade()"></div>
+                <div class="col-md-3"><label class="small fw-bold">IDADE:</label><input type="text" id="idade" class="form-control" readonly></div>
+                <div class="col-md-12"><textarea id="qp" class="form-control" rows="2" placeholder="Queixa Principal (QP)"></textarea></div>
             </div>
             
-            <h5 class="titulo-secao">2. GAD-7 (Ansiedade Oficial)</h5>
+            <h5 class="titulo-secao">2. GAD-7 (Ansiedade)</h5>
             <div id="gadBox"></div>
-            <div id="gadResult" class="score-box">Total GAD-7: 0</div>
+            <div id="gadResult" class="score-box">Score GAD-7: 0</div>
             <button class="btn-pro" onclick="ir(2)">PRÓXIMO: IGI (SONO)</button>
         </div>
 
         <div id="e2" class="etapa">
             <h5 class="titulo-secao">3. IGI (Índice de Insônia)</h5>
             <div id="igiBox"></div>
-            <div id="igiResult" class="score-box">Total IGI: 0</div>
+            <div id="igiResult" class="score-box">Score IGI: 0</div>
             
-            <h5 class="titulo-secao">4. Inspeção da Língua (MTC)</h5>
-            <select id="lingua" class="form-select mb-3">
+            <h5 class="titulo-secao">4. Inspeção da Língua</h5>
+            <select id="lingua" class="form-select">
                 <option value="Normal">Normal (Rosada/Saburra Fina)</option>
-                <option value="Pálida/Seca">Pálida e Seca (Deficiência de Xue)</option>
-                <option value="Pálida/Úmida">Pálida e Úmida (Deficiência de Yang Qi)</option>
-                <option value="Vermelha/Sem Saburra">Vermelha sem Saburra (Calor por Def. de Yin)</option>
+                <option value="Pálida/Seca">Pálida e Seca (Def. de Xue)</option>
+                <option value="Pálida/Úmida">Pálida e Úmida (Def. de Yang Qi)</option>
+                <option value="Vermelha/Sem Saburra">Vermelha sem Saburra (Calor por Def. Yin)</option>
                 <option value="Vermelha/Amarela">Vermelha com Saburra Amarela (Calor Pleno)</option>
-                <option value="Púrpura/Azulada">Púrpura ou Azulada (Estagnação de Xue)</option>
-                <option value="Denteada">Denteada (Deficiência de Qi de BP/Umidade)</option>
+                <option value="Púrpura/Azulada">Púrpura/Azulada (Estagnação Xue)</option>
+                <option value="Denteada">Denteada (Def. Qi de BP/Umidade)</option>
             </select>
-            <button class="btn-pro" onclick="ir(3)">PRÓXIMO: PULSOS COMPLETOS</button>
+            <button class="btn-pro" onclick="ir(3)">PRÓXIMO: PULSOS (ZANG-FU)</button>
         </div>
 
         <div id="e3" class="etapa">
-            <h5 class="titulo-secao">5. Pulsologia Completa (Yin / Yang)</h5>
+            <h5 class="titulo-secao">5. Pulsologia Completa (Yin/Yang)</h5>
             <div class="pulso-grid">
                 <div class="border-end pe-2">
-                    <p class="text-center small fw-bold text-primary">PUNHO DIREITO</p>
+                    <p class="text-center small fw-bold text-primary">DIREITO</p>
                     <div class="pulso-item"><label class="small">Cun: P / IG</label><input type="text" id="pd_cun" class="form-control form-control-sm"></div>
                     <div class="pulso-item"><label class="small">Guan: BP / E</label><input type="text" id="pd_guan" class="form-control form-control-sm"></div>
                     <div class="pulso-item"><label class="small">Chi: CS / TA</label><input type="text" id="pd_chi" class="form-control form-control-sm"></div>
                 </div>
                 <div>
-                    <p class="text-center small fw-bold text-primary">PUNHO ESQUERDO</p>
+                    <p class="text-center small fw-bold text-primary">ESQUERDO</p>
                     <div class="pulso-item"><label class="small">Cun: C / ID</label><input type="text" id="pe_cun" class="form-control form-control-sm"></div>
                     <div class="pulso-item"><label class="small">Guan: F / VB</label><input type="text" id="pe_guan" class="form-control form-control-sm"></div>
                     <div class="pulso-item"><label class="small">Chi: R / B</label><input type="text" id="pe_chi" class="form-control form-control-sm"></div>
@@ -80,20 +81,21 @@
         </div>
 
         <div id="e4" class="etapa">
-            <h5 class="titulo-secao">6. Conduta e Evolução EVA</h5>
+            <h5 class="titulo-secao">6. Avaliação EVA & Conduta</h5>
             <div class="row g-2 mb-3">
                 <div class="col-6"><label class="small">EVA ANTES:</label><input type="number" id="eva_a" class="form-control"></div>
                 <div class="col-6"><label class="small">EVA DEPOIS:</label><input type="number" id="eva_d" class="form-control"></div>
             </div>
             <textarea id="diag" class="form-control mb-3" rows="2" placeholder="Diagnóstico Energético"></textarea>
-            <textarea id="pontos" class="form-control mb-3" rows="2" placeholder="Pontos Utilizados"></textarea>
-            <button id="btnSalvar" class="btn-pro" style="background:#198754" onclick="salvarProntuario()">FINALIZAR E ARQUIVAR NO FIREBASE</button>
+            
+            <button class="btn-ia" onclick="gerarResumoIA()">✨ GERAR RESUMO PARA ANÁLISE IA</button>
+            <button id="btnSalvar" class="btn-pro" style="background:var(--verde)" onclick="salvarTudo()">FINALIZAR E ARQUIVAR SESSÃO</button>
         </div>
     </div>
 </div>
 
 <script>
-    if(prompt("PIN:") !== "1234") { document.body.innerHTML = "Acesso Negado"; } else { document.body.style.display = "block"; }
+    if(prompt("PIN:") !== "1234") { document.body.innerHTML = "Bloqueado"; } else { document.body.style.display = "block"; }
 
     const firebaseConfig = {
         apiKey: "AIzaSyAI5X-Cb0Xf0G_cRoBX9YWqW1bn0nv-RA",
@@ -107,74 +109,69 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    const gadP = ["Nervosismo", "Não controlar preocupação", "Preocupação excessiva", "Dificuldade relaxar", "Inquietude", "Irritabilidade", "Sentir medo"];
-    const igiP = ["Dificuldade adormecer", "Manter sono", "Acordar cedo", "Satisfação", "Interferência diária", "Percebe que afeta?", "Preocupação com sono"];
+    const gadP = ["Ansiedade", "Controle", "Preocupação", "Relaxar", "Inquietude", "Irritabilidade", "Medo"];
+    const igiP = ["Início", "Manutenção", "Acordar cedo", "Satisfação", "Interferência", "Aparência", "Preocupação"];
 
     function init() {
         gadP.forEach((q, i) => {
-            document.getElementById('gadBox').innerHTML += `<div class="mb-2 small border-bottom pb-1">${q}: 
-                <select class="form-select form-select-sm d-inline-block w-auto ms-2" onchange="calcGad()" id="g${i}">
-                <option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></div>`;
+            document.getElementById('gadBox').innerHTML += `<div class="mb-2 small border-bottom pb-1">${q}: <select class="form-select form-select-sm d-inline-block w-auto" onchange="calc()" id="g${i}"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></div>`;
         });
         igiP.forEach((q, i) => {
-            document.getElementById('igiBox').innerHTML += `<div class="mb-2 small border-bottom pb-1">${q}: 
-                <select class="form-select form-select-sm d-inline-block w-auto ms-2" onchange="calcIgi()" id="i${i}">
-                <option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option></select></div>`;
+            document.getElementById('igiBox').innerHTML += `<div class="mb-2 small border-bottom pb-1">${q}: <select class="form-select form-select-sm d-inline-block w-auto" onchange="calc()" id="i${i}"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option></select></div>`;
         });
     }
     init();
 
     function calcIdade() {
-        const nasc = new Date(document.getElementById('nasc').value);
-        const hoje = new Date();
-        let idade = hoje.getFullYear() - nasc.getFullYear();
-        if (hoje.getMonth() < nasc.getMonth() || (hoje.getMonth() == nasc.getMonth() && hoje.getDate() < nasc.getDate())) idade--;
-        document.getElementById('idade').value = idade + " anos";
+        const n = new Date(document.getElementById('nasc').value);
+        const h = new Date();
+        let i = h.getFullYear() - n.getFullYear();
+        if (h.getMonth() < n.getMonth() || (h.getMonth() == n.getMonth() && h.getDate() < n.getDate())) i--;
+        document.getElementById('idade').value = i + " anos";
     }
 
-    function calcGad() {
-        let soma = 0; for(let i=0; i<7; i++) soma += parseInt(document.getElementById('g'+i).value);
-        document.getElementById('gadResult').innerText = `Total GAD-7: ${soma}`;
-    }
-
-    function calcIgi() {
-        let soma = 0; for(let i=0; i<7; i++) soma += parseInt(document.getElementById('i'+i).value);
-        document.getElementById('igiResult').innerText = `Total IGI: ${soma}`;
+    function calc() {
+        let g = 0; for(let i=0; i<7; i++) g += parseInt(document.getElementById('g'+i).value);
+        let s = 0; for(let i=0; i<7; i++) s += parseInt(document.getElementById('i'+i).value);
+        document.getElementById('gadResult').innerText = "Score GAD-7: " + g;
+        document.getElementById('igiResult').innerText = "Score IGI: " + s;
     }
 
     function ir(n) { document.querySelectorAll('.etapa').forEach(e => e.classList.remove('ativa')); document.getElementById('e' + n).classList.add('ativa'); window.scrollTo(0,0); }
 
-    function salvarProntuario() {
-        const btn = document.getElementById('btnSalvar'); btn.innerText = "Gravando..."; btn.disabled = true;
+    function gerarResumoIA() {
+        const resumo = `
+RELATÓRIO CLÍNICO - MÉTODO 360 PRO
+Paciente: ${document.getElementById('nome').value} | Idade: ${document.getElementById('idade').value}
+Queixa: ${document.getElementById('qp').value}
 
-        const respostasGad = []; for(let i=0; i<7; i++) respostasGad.push(document.getElementById('g'+i).value);
-        const respostasIgi = []; for(let i=0; i<7; i++) respostasIgi.push(document.getElementById('i'+i).value);
+DADOS VALIDADOS:
+- GAD-7 (Ansiedade): ${document.getElementById('gadResult').innerText}
+- IGI (Insónia): ${document.getElementById('igiResult').innerText}
+- EVA: Inicial ${document.getElementById('eva_a').value} -> Final ${document.getElementById('eva_d').value}
 
+DIAGNÓSTICO MTC:
+- Língua: ${document.getElementById('lingua').value}
+- Pulso Direito: Cun(${document.getElementById('pd_cun').value}), Guan(${document.getElementById('pd_guan').value}), Chi(${document.getElementById('pd_chi').value})
+- Pulso Esquerdo: Cun(${document.getElementById('pe_cun').value}), Guan(${document.getElementById('pe_guan').value}), Chi(${document.getElementById('pe_chi').value})
+
+Conduta/Diagnóstico Registado: ${document.getElementById('diag').value}
+
+SOLICITAÇÃO: Analise este caso com base na bibliografia integrada e sugira pontos e racionalidade clínica.
+        `;
+        navigator.clipboard.writeText(resumo).then(() => {
+            alert("✨ Resumo copiado! Agora vá à sua Gem e cole (Ctrl+V).");
+        });
+    }
+
+    function salvarTudo() {
+        const btn = document.getElementById('btnSalvar'); btn.disabled = true;
         const doc = {
             paciente: document.getElementById('nome').value,
-            idade: document.getElementById('idade').value,
             data: new Date().toLocaleString(),
-            queixa: document.getElementById('qp').value,
-            lingua: document.getElementById('lingua').value,
-            scores: {
-                gad7: document.getElementById('gadResult').innerText,
-                gad7_detalhado: respostasGad,
-                igi: document.getElementById('igiResult').innerText,
-                igi_detalhado: respostasIgi
-            },
-            pulsos: {
-                d: { c: document.getElementById('pd_cun').value, g: document.getElementById('pd_guan').value, ch: document.getElementById('pd_chi').value },
-                e: { c: document.getElementById('pe_cun').value, g: document.getElementById('pe_guan').value, ch: document.getElementById('pe_chi').value }
-            },
-            evolucao: { antes: document.getElementById('eva_a').value, depois: document.getElementById('eva_d').value },
-            diagnostico: document.getElementById('diag').value,
-            pontos: document.getElementById('pontos').value
+            diagnostico: document.getElementById('diag').value
         };
-
-        db.collection("atendimentos").add(doc).then(() => {
-            alert("Prontuário salvo com sucesso!");
-            location.reload();
-        }).catch(e => { alert("Erro ao salvar."); btn.disabled = false; });
+        db.collection("atendimentos").add(doc).then(() => { alert("Arquivado!"); location.reload(); });
     }
 </script>
 </body>
