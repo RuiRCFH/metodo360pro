@@ -8,19 +8,20 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <style>
-        :root { --azul: #003366; --ouro: #b8860b; --cinza: #f4f7f6; --verde: #198754; }
+        :root { --azul: #003366; --ouro: #b8860b; --cinza: #f4f7f6; --verde: #198754; --voltar: #6c757d; }
         body { background: var(--cinza); font-family: 'Segoe UI', sans-serif; display: none; padding-bottom: 100px; }
         .card-pro { background: white; border-radius: 20px; padding: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); max-width: 1000px; margin: 20px auto; border-top: 12px solid var(--azul); }
         .etapa { display: none; }
         .ativa { display: block; animation: fadeIn 0.3s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .titulo-secao { color: var(--ouro); font-weight: bold; border-bottom: 2px solid #eee; padding-bottom: 8px; margin: 25px 0 15px 0; text-transform: uppercase; font-size: 0.85rem; }
-        .pergunta-full { background: #fdfdfd; padding: 15px; border-radius: 12px; border-left: 5px solid #dee2e6; margin-bottom: 15px; }
+        .pergunta-full { background: #fdfdfd; padding: 15px; border-radius: 12px; border-left: 5px solid #dee2e6; margin-bottom: 15px; font-size: 1rem; }
         .item-pulso { background: #fff; border: 1px solid #eee; padding: 10px; border-radius: 10px; margin-bottom: 8px; }
+        .btn-check:checked + .btn-outline-primary { background-color: var(--azul) !important; color: white !important; }
         .btn-scale { font-size: 0.65rem; padding: 5px 2px; min-width: 35px; }
         .score-box { background: #e9ecef; padding: 12px; border-radius: 8px; font-weight: bold; border-left: 5px solid var(--azul); }
         .btn-pro { background: var(--azul); color: white; padding: 15px 25px; border-radius: 12px; border: none; font-weight: bold; flex-grow: 1; }
-        .btn-voltar { background: #6c757d; color: white; padding: 15px 25px; border-radius: 12px; border: none; font-weight: bold; margin-right: 10px; }
+        .btn-voltar { background: var(--voltar); color: white; padding: 15px 25px; border-radius: 12px; border: none; font-weight: bold; margin-right: 10px; }
     </style>
 </head>
 <body id="corpoApp">
@@ -30,7 +31,7 @@
         <h2 class="text-center fw-bold mb-4" style="color:var(--azul)">MÉTODO 360 PRO</h2>
 
         <div id="e1" class="etapa ativa">
-            <h5 class="titulo-secao">1. Identificação e Consentimento</h5>
+            <h5 class="titulo-secao">1. Identificação e Segurança (LGPD)</h5>
             <div class="row g-3 mb-4">
                 <div class="col-md-6"><label class="small fw-bold">NOME:</label><input type="text" id="nome" class="form-control"></div>
                 <div class="col-md-3"><label class="small fw-bold">DATA NASC.:</label><input type="date" id="nasc" class="form-control" onchange="calcIdade()"></div>
@@ -42,55 +43,50 @@
                 </div>
                 <div class="col-md-12"><textarea id="qp" class="form-control" rows="2" placeholder="Queixa Principal"></textarea></div>
             </div>
-            <h5 class="titulo-secao">2. GAD-7: Ansiedade</h5>
+            <h5 class="titulo-secao">2. GAD-7: Escala de Ansiedade (Completa)</h5>
             <div id="gadBox"></div>
             <div id="gadResult" class="score-box mt-3">Score GAD-7: 0</div>
             <button class="btn-pro w-100 mt-4" onclick="verificarLGPD(2)">PRÓXIMO</button>
         </div>
 
         <div id="e2" class="etapa">
-            <h5 class="titulo-secao">3. IGI: Índice de Insônia</h5>
+            <h5 class="titulo-secao">3. IGI: Índice de Gravidade de Insônia (Completo)</h5>
             <div id="igiBox"></div>
             <div id="igiResult" class="score-box mt-3">Score IGI: 0</div>
-            <h5 class="titulo-secao">4. Semiologia da Língua</h5>
+            
+            <h5 class="titulo-secao">4. Semiologia da Língua (MTC Avançada)</h5>
             <div class="row">
-                <div class="col-md-6"><h6 class="small fw-bold">COLORAÇÃO:</h6><div id="linguaCor" class="bg-light p-2 border rounded small"></div></div>
-                <div class="col-md-6"><h6 class="small fw-bold">FORMA:</h6><div id="linguaForma" class="bg-light p-2 border rounded small"></div></div>
+                <div class="col-md-6"><h6 class="small fw-bold">COLORAÇÃO:</h6><div id="lCorBox" class="bg-light p-2 border rounded small"></div></div>
+                <div class="col-md-6"><h6 class="small fw-bold">FORMA:</h6><div id="lFormaBox" class="bg-light p-2 border rounded small"></div></div>
             </div>
             <div class="d-flex mt-4"><button class="btn-voltar" onclick="ir(1)">VOLTAR</button><button class="btn-pro" onclick="ir(3)">PRÓXIMO</button></div>
         </div>
 
         <div id="e3" class="etapa">
-            <h5 class="titulo-secao">5. Pulsologia 12 Zang-Fu</h5>
+            <h5 class="titulo-secao">5. Pulsologia 12 Zang-Fu (Direita / Esquerda)</h5>
             <div class="row">
-                <div class="col-md-6 border-end">
-                    <p class="text-center fw-bold text-primary border-bottom">PUNHO DIREITO</p>
-                    <div id="pulsosD"></div>
-                </div>
-                <div class="col-md-6">
-                    <p class="text-center fw-bold text-primary border-bottom">PUNHO ESQUERDO</p>
-                    <div id="pulsosE"></div>
-                </div>
+                <div class="col-md-6 border-end" id="pDir"></div>
+                <div class="col-md-6" id="pEsq"></div>
             </div>
             <div class="d-flex mt-4"><button class="btn-voltar" onclick="ir(2)">VOLTAR</button><button class="btn-pro" onclick="ir(4)">PRÓXIMO</button></div>
         </div>
 
         <div id="e4" class="etapa">
-            <h5 class="titulo-secao">6. EVA e Conduta</h5>
+            <h5 class="titulo-secao">6. Dor (EVA) e Conduta Final</h5>
             <div class="row g-3 mb-4">
-                <div class="col-md-6"><label>EVA ANTES:</label><input type="number" id="eva_a" class="form-control" onchange="calcEva('a')"><div id="evaAResult" class="small fw-bold"></div></div>
-                <div class="col-md-6"><label>EVA DEPOIS:</label><input type="number" id="eva_d" class="form-control" onchange="calcEva('d')"><div id="evaDResult" class="small fw-bold"></div></div>
+                <div class="col-md-6"><label>EVA ANTES:</label><input type="number" id="eva_a" class="form-control" onchange="calcEva('a')"><div id="evaARes" class="small fw-bold"></div></div>
+                <div class="col-md-6"><label>EVA DEPOIS:</label><input type="number" id="eva_d" class="form-control" onchange="calcEva('d')"><div id="evaDRes" class="small fw-bold"></div></div>
             </div>
-            <textarea id="diag" class="form-control mb-3" rows="3" placeholder="Diagnóstico/Tratamento"></textarea>
-            <button class="btn-pro w-100" style="background:#6f42c1" onclick="gerarResumoIA()">✨ GERAR RESUMO PARA IA</button>
-            <div class="d-flex mt-3"><button class="btn-voltar" onclick="ir(3)">VOLTAR</button><button id="btnSalvar" class="btn-pro" style="background:var(--verde)" onclick="salvarTudo()">SALVAR</button></div>
+            <textarea id="diag" class="form-control mb-3" rows="3" placeholder="Diagnóstico Energético e Tratamento"></textarea>
+            <button class="btn-pro w-100 mb-3" style="background:#6f42c1" onclick="gerarResumoIA()">✨ GERAR RESUMO PARA IA</button>
+            <div class="d-flex"><button class="btn-voltar" onclick="ir(3)">VOLTAR</button><button id="btnSalvar" class="btn-pro" style="background:var(--verde)" onclick="salvarTudo()">SALVAR TUDO</button></div>
         </div>
     </div>
 </div>
 
 <script>
-    const pin = prompt("PIN:");
-    if(pin === "1234") { document.getElementById('corpoApp').style.display = "block"; } else { alert("Senha Errada"); }
+    const pass = prompt("PIN:");
+    if(pass === "1234") { document.getElementById('corpoApp').style.display = "block"; } else { alert("Senha Inválida"); }
 
     const firebaseConfig = {
         apiKey: "AIzaSyAI5X-Cb0Xf0G_cRoBX9YWqW1bn0nv-RA",
@@ -104,68 +100,76 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    const gadList = ["Nervoso, ansioso ou muito tenso", "Incapaz de controlar as preocupações", "Preocupar-se demais com diversas coisas", "Dificuldade para relaxar", "Inquietude (difícil ficar parado)", "Facilmente aborrecido ou irritado", "Medo como se algo horrível fosse acontecer"];
-    const igiList = ["Dificuldade para iniciar o sono", "Dificuldade para manter o sono", "Problema de despertar precoce", "Satisfação com o padrão de sono", "Interferência no funcionamento diário", "Percepção alheia da perda de qualidade", "Preocupação com os problemas de sono"];
+    const gadQ = ["Sentir-se nervoso(a), ansioso(a) ou muito tenso(a)", "Não ser capaz de impedir ou de controlar as preocupações", "Preocupar-se demais com diversas coisas", "Dificuldade para relaxar", "Ficar tão inquieto(a) que é difícil permanecer sentado(a)", "Ficar facilmente aborrecido(a) ou irritado(a)", "Sentir medo como se algo horrível fosse acontecer"];
+    const igiQ = ["Dificuldade para iniciar o sono", "Dificuldade para manter o sono", "Problema de despertar precocemente", "Satisfação com o padrão de sono atual", "Interferência do sono no funcionamento diário", "Percepção alheia sobre seu prejuízo de qualidade de vida", "Preocupação/Aflição com os problemas de sono"];
+    const lCor = ["Pálida Úmida (Def. Yang)", "Pálida Seca (Def. Xue)", "Vermelha c/ Revest. (Excesso)", "Vermelha s/ Revest. (Defic.)", "Vermelho-Escura", "Púrpura (Estase)", "Azul (Frio Interno)"];
+    const lForm = ["Magra Pálida (Def. Xue)", "Magra Vermelha (Def. Yin)", "Inchada (Umidade)", "Rígida (Vento)", "Flácida (Def. Liq)", "Longa (Calor C)", "Curta (Frio)", "Fissurada", "Trêmula (Def. Qi BP)", "Denteada (Def. Qi BP)"];
     
-    const coresL = ["Pálida Úmida", "Pálida Seca", "Vermelha c/ Rev", "Vermelha s/ Rev", "Vermelho-escura", "Púrpura", "Azul"];
-    const formasL = ["Magra", "Inchada", "Rígida", "Flácida", "Longa", "Curta", "Fissurada", "Trêmula", "Desviada", "Denteada"];
-
     function init() {
-        gadList.forEach((q, i) => {
+        gadQ.forEach((q, i) => {
             document.getElementById('gadBox').innerHTML += `<div class="pergunta-full">${i+1}. ${q}<br><div class="btn-group mt-2 w-100">` + 
             [0,1,2,3].map(v => `<input type="radio" class="btn-check" name="g${i}" id="g${i}${v}" value="${v}" onchange="calcScores()"><label class="btn btn-outline-primary btn-sm" for="g${i}${v}">${v}</label>`).join('') + `</div></div>`;
         });
-        igiList.forEach((q, i) => {
+        igiQ.forEach((q, i) => {
             document.getElementById('igiBox').innerHTML += `<div class="pergunta-full">${i+1}. ${q}<br><div class="btn-group mt-2 w-100">` + 
             [0,1,2,3,4].map(v => `<input type="radio" class="btn-check" name="i${i}" id="i${i}${v}" value="${v}" onchange="calcScores()"><label class="btn btn-outline-primary btn-sm" for="i${i}${v}">${v}</label>`).join('') + `</div></div>`;
         });
-        coresL.forEach(c => document.getElementById('linguaCor').innerHTML += `<div class="form-check"><input class="form-check-input" type="checkbox" value="${c}" name="lCor"><label class="form-check-label">${c}</label></div>`);
-        formasL.forEach(f => document.getElementById('linguaForma').innerHTML += `<div class="form-check"><input class="form-check-input" type="checkbox" value="${f}" name="lForma"><label class="form-check-label">${f}</label></div>`);
+        lCor.forEach(c => document.getElementById('lCorBox').innerHTML += `<div class="form-check"><input class="form-check-input" type="checkbox" value="${c}" name="lC"><label class="form-check-label">${c}</label></div>`);
+        lForm.forEach(f => document.getElementById('lFormaBox').innerHTML += `<div class="form-check"><input class="form-check-input" type="checkbox" value="${f}" name="lF"><label class="form-check-label">${f}</label></div>`);
         
-        const escala = ["+++","++","+","ok","-","--","---","Nulo"];
-        const d = ["P", "IG", "BP", "E", "CS", "TA"];
-        const e = ["C", "ID", "F", "VB", "R", "B"];
-        const criarP = (id, lista, pref) => {
+        const escalas = ["+++", "++", "+", "ok", "-", "--", "---", "Nulo"];
+        const d_list = ["P (Metal)", "IG (Metal)", "BP (Terra)", "E (Terra)", "CS (Fogo)", "TA (Fogo)"];
+        const e_list = ["C (Fogo)", "ID (Fogo)", "F (Madeira)", "VB (Madeira)", "R (Água)", "B (Água)"];
+        
+        const montar = (el, lista, pref) => {
             lista.forEach((p, idx) => {
                 let h = `<div class="item-pulso"><label class="small fw-bold">${p}</label><div class="btn-group w-100">`;
-                escala.forEach(v => h += `<input type="radio" class="btn-check" name="${pref}${idx}" id="${pref}${idx}${v}" value="${v}" ${v==='ok'?'checked':''}><label class="btn btn-outline-primary btn-scale" for="${pref}${idx}${v}">${v}</label>`);
-                document.getElementById(id).innerHTML += h + `</div></div>`;
+                escalas.forEach(v => h += `<input type="radio" class="btn-check" name="${pref}${idx}" id="${pref}${idx}${v}" value="${v}" ${v==='ok'?'checked':''}><label class="btn btn-outline-primary btn-scale" for="${pref}${idx}${v}">${v}</label>`);
+                document.getElementById(el).innerHTML += h + `</div></div>`;
             });
         };
-        criarP('pulsosD', d, 'pd'); criarP('pulsosE', e, 'pe');
+        montar('pDir', d_list, 'pd'); montar('pEsq', e_list, 'pe');
     }
     init();
 
     function calcScores() {
         let g=0; document.querySelectorAll('input[name^="g"]:checked').forEach(e => g += parseInt(e.value));
         let s=0; document.querySelectorAll('input[name^="i"]:checked').forEach(e => s += parseInt(e.value));
-        document.getElementById('gadResult').innerText = "Score GAD-7: " + g;
-        document.getElementById('igiResult').innerText = "Score IGI: " + s;
+        let gC = g <= 4 ? "Mínimo" : g <= 9 ? "Leve" : g <= 14 ? "Moderado" : "Grave";
+        let sC = s <= 7 ? "Sem Insônia" : s <= 14 ? "Sub-limiar" : s <= 21 ? "Moderada" : "Grave";
+        document.getElementById('gadResult').innerText = `Score GAD-7: ${g} (${gC})`;
+        document.getElementById('igiResult').innerText = `Score IGI: ${s} (${sC})`;
     }
+
     function calcEva(t) {
         let v = parseInt(document.getElementById('eva_'+t).value) || 0;
         let c = v === 0 ? "Sem Dor" : v <= 3 ? "Leve" : v <= 6 ? "Moderada" : v <= 9 ? "Forte" : "Insuportável";
-        document.getElementById('eva' + t.toUpperCase() + 'Result').innerText = c;
+        document.getElementById('eva' + t.toUpperCase() + 'Res').innerText = c;
     }
+
     function calcIdade() {
         const n = new Date(document.getElementById('nasc').value); const h = new Date();
         let i = h.getFullYear() - n.getFullYear();
         if (h.getMonth() < n.getMonth() || (h.getMonth() == n.getMonth() && h.getDate() < n.getDate())) i--;
         document.getElementById('idade').value = i + " anos";
     }
+
     function ir(n) { document.querySelectorAll('.etapa').forEach(e => e.classList.remove('ativa')); document.getElementById('e'+n).classList.add('ativa'); window.scrollTo(0,0); }
     function verificarLGPD(n) { if(!document.getElementById('consentimento').checked) { alert("Aceite o Termo LGPD."); return; } ir(n); }
     
     function gerarResumoIA() {
-        const p = (n) => document.querySelector(`input[name="${n}"]:checked`).value;
-        const resumo = `METODO 360 PRO - RESUMO IA\nIdade: ${document.getElementById('idade').value}\n` +
+        const getP = (n) => document.querySelector(`input[name="${n}"]:checked`).value;
+        const res = `METODO 360 PRO - IA\nIdade: ${document.getElementById('idade').value}\n` +
         `GAD-7: ${document.getElementById('gadResult').innerText}\nIGI: ${document.getElementById('igiResult').innerText}\n` +
-        `PULSOS D: P(${p('pd0')}), IG(${p('pd1')}), BP(${p('pd2')}), E(${p('pd3')}), CS(${p('pd4')}), TA(${p('pd5')})\n` +
-        `PULSOS E: C(${p('pe0')}), ID(${p('pe1')}), F(${p('pe2')}), VB(${p('pe3')}), R(${p('pe4')}), B(${p('pe5')})`;
-        navigator.clipboard.writeText(resumo).then(() => alert("Resumo Copiado!"));
+        `PULSOS D: P(${getP('pd0')}), IG(${getP('pd1')}), BP(${getP('pd2')}), E(${getP('pd3')}), CS(${getP('pd4')}), TA(${getP('pd5')})\n` +
+        `PULSOS E: C(${getP('pe0')}), ID(${getP('pe1')}), F(${getP('pe2')}), VB(${getP('pe3')}), R(${getP('pe4')}), B(${getP('pe5')})`;
+        navigator.clipboard.writeText(res).then(() => alert("Copiado!"));
     }
+
     function salvarTudo() {
-        db.collection("atendimentos").add({ paciente: btoa(document.getElementById('nome').value), data: new Date().toLocaleString() }).then(() => { alert("Salvo!"); location.reload(); });
+        const btn = document.getElementById('btnSalvar'); btn.disabled = true;
+        const dados = { pac: btoa(document.getElementById('nome').value), data: new Date().toLocaleString() };
+        db.collection("atendimentos").add(dados).then(() => { alert("Salvo!"); location.reload(); });
     }
 </script>
 </body>
