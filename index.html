@@ -3,21 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MÉTODO 360 PRO | Ficha Clínica MTC</title>
+    <title>MÉTODO 360 PRO | Prontuário Integrado</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <style>
         :root { --azul: #003366; --ouro: #b8860b; --cinza: #f4f7f6; }
         body { background: var(--cinza); font-family: 'Segoe UI', sans-serif; display: none; padding-bottom: 100px; }
-        .card-pro { background: white; border-radius: 20px; padding: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.08); max-width: 900px; margin: 20px auto; border-top: 12px solid var(--azul); }
+        .card-pro { background: white; border-radius: 20px; padding: 35px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); max-width: 950px; margin: 20px auto; border-top: 12px solid var(--azul); }
         .etapa { display: none; }
         .ativa { display: block; animation: fadeIn 0.4s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .titulo-secao { color: var(--ouro); font-weight: bold; border-bottom: 2px solid #eee; padding-bottom: 8px; margin: 25px 0 15px 0; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px; }
-        .grid-check { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+        .titulo-secao { color: var(--ouro); font-weight: bold; border-bottom: 2px solid #eee; padding-bottom: 8px; margin: 30px 0 15px 0; text-transform: uppercase; font-size: 0.9rem; letter-spacing: 1px; }
+        .grid-check { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 10px; }
         .btn-pro { background: var(--azul); color: white; width: 100%; padding: 18px; border-radius: 15px; border: none; font-weight: bold; margin-top: 30px; font-size: 1.1rem; }
-        .pulso-label { font-size: 0.8rem; font-weight: bold; color: #555; }
+        .pergunta-escala { background: #f9f9f9; padding: 10px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid var(--azul); }
     </style>
 </head>
 <body id="corpoApp">
@@ -28,80 +28,95 @@
 
         <div id="e1" class="etapa ativa">
             <h5 class="titulo-secao">1. Identificação & Queixa</h5>
-            <div class="row g-3">
-                <div class="col-md-8"><input type="text" id="nome" class="form-control" placeholder="Nome do Paciente"></div>
-                <div class="col-md-4"><input type="text" id="idade" class="form-control" placeholder="Idade"></div>
+            <div class="row g-3 mb-4">
+                <div class="col-md-6"><input type="text" id="nome" class="form-control" placeholder="Nome do Paciente"></div>
+                <div class="col-md-3"><input type="text" id="idade" class="form-control" placeholder="Idade"></div>
+                <div class="col-md-3"><input type="text" id="peso_alt" class="form-control" placeholder="Peso/Altura"></div>
                 <div class="col-md-12"><textarea id="qp" class="form-control" rows="2" placeholder="Queixa Principal (QP)"></textarea></div>
-                <div class="col-md-12"><textarea id="hma" class="form-control" rows="2" placeholder="História (HMA)"></textarea></div>
             </div>
-            <button class="btn-pro" onclick="ir(2)">PRÓXIMO: INSPEÇÃO (VISUAL)</button>
+
+            <h5 class="titulo-secao">2. Escala EVA & GAD-7 (Ansiedade)</h5>
+            <div class="row mb-3">
+                <div class="col-md-4"><label class="fw-bold">EVA INICIAL (0-10):</label><input type="number" id="eva_ini" class="form-control"></div>
+                <div class="col-md-8">
+                    <label class="fw-bold">GAD-7 (Frequência 0 a 3):</label>
+                    <div id="gadBox"></div>
+                </div>
+            </div>
+            <button class="btn-pro" onclick="ir(2)">PRÓXIMO: IGI & INSPEÇÃO MTC</button>
         </div>
 
         <div id="e2" class="etapa">
-            <h5 class="titulo-secao">2. Inspeção (O que você vê)</h5>
+            <h5 class="titulo-secao">3. IGI (Índice de Insônia)</h5>
+            <div id="igiBox" class="mb-4"></div>
+
+            <h5 class="titulo-secao">4. Inspeção MTC (Shen e Face)</h5>
             <div class="row g-3">
-                <div class="col-md-6"><label class="small fw-bold">ESPÍRITO (SHEN):</label><select id="shen" class="form-select"><option>Com Brilho (Shen Vivo)</option><option>Sem Brilho (Shen Apagado)</option><option>Agitado (Shen Perturbado)</option></select></div>
-                <div class="col-md-6"><label class="small fw-bold">TEZ (FACE):</label><select id="face" class="form-select"><option>Brilhante</option><option>Pálida</option><option>Amarelada</option><option>Avermelhada</option><option>Esverdeada</option><option>Escura</option></select></div>
+                <div class="col-md-6"><label class="small fw-bold">ESPÍRITO (SHEN):</label><select id="shen" class="form-select"><option>Com Brilho</option><option>Sem Brilho</option><option>Agitado</option></select></div>
+                <div class="col-md-6"><label class="small fw-bold">COR DA FACE:</label><select id="face" class="form-select"><option>Brilhante</option><option>Pálida</option><option>Amarelada</option><option>Avermelhada</option><option>Esverdeada</option><option>Escura</option></select></div>
                 <div class="col-md-12">
-                    <label class="small fw-bold">LÍNGUA (Múltiplas opções):</label>
-                    <div class="grid-check p-2 border rounded">
-                        <div class="form-check"><input class="form-check-input" type="checkbox" value="Pálida" id="l1"><label class="form-check-label small">Pálida</label></div>
-                        <div class="form-check"><input class="form-check-input" type="checkbox" value="Vermelha" id="l2"><label class="form-check-label small">Vermelha</label></div>
-                        <div class="form-check"><input class="form-check-input" type="checkbox" value="Denteada" id="l3"><label class="form-check-label small">Denteada</label></div>
-                        <div class="form-check"><input class="form-check-input" type="checkbox" value="Saburra Amarela" id="l4"><label class="form-check-label small">Saburra Amarela</label></div>
-                        <div class="form-check"><input class="form-check-input" type="checkbox" value="Saburra Branca" id="l5"><label class="form-check-label small">Saburra Branca</label></div>
-                        <div class="form-check"><input class="form-check-input" type="checkbox" value="Fissurada" id="l6"><label class="form-check-label small">Fissurada</label></div>
+                    <label class="small fw-bold">LÍNGUA (Selecione o que observar):</label>
+                    <div class="grid-check p-2 border rounded bg-light">
+                        <div class="form-check"><input class="form-check-input" type="checkbox" value="Pálida" name="lingua"><label class="form-check-label small">Pálida/Seca</label></div>
+                        <div class="form-check"><input class="form-check-input" type="checkbox" value="Vermelha" name="lingua"><label class="form-check-label small">Vermelha (Calor)</label></div>
+                        <div class="form-check"><input class="form-check-input" type="checkbox" value="Denteada" name="lingua"><label class="form-check-label small">Denteada (Def BP)</label></div>
+                        <div class="form-check"><input class="form-check-input" type="checkbox" value="Saburra Amarela" name="lingua"><label class="form-check-label small">Saburra Amarela</label></div>
+                        <div class="form-check"><input class="form-check-input" type="checkbox" value="Geográfica" name="lingua"><label class="form-check-label small">Geográfica</label></div>
+                        <div class="form-check"><input class="form-check-input" type="checkbox" value="Púrpura" name="lingua"><label class="form-check-label small">Púrpura (Estase)</label></div>
                     </div>
                 </div>
             </div>
-            <button class="btn-pro" onclick="ir(3)">PRÓXIMO: INTERROGATÓRIO</button>
+            <button class="btn-pro" onclick="ir(3)">PRÓXIMO: INTERROGATÓRIO MTC</button>
         </div>
 
         <div id="e3" class="etapa">
-            <h5 class="titulo-secao">3. Interrogatório Sistémico</h5>
+            <h5 class="titulo-secao">5. Interrogatório dos 8 Pilares</h5>
             <div class="row g-3">
-                <div class="col-md-4"><label class="small fw-bold">PREFERÊNCIA:</label><select id="termica" class="form-select"><option>Normal</option><option>Aversão ao Frio</option><option>Aversão ao Calor</option></select></div>
-                <div class="col-md-4"><label class="small fw-bold">SUOR:</label><select id="suor" class="form-select"><option>Normal</option><option>Espontâneo (Diurno)</option><option>Nocturno</option></select></div>
-                <div class="col-md-4"><label class="small fw-bold">SEDE:</label><select id="sede" class="form-select"><option>Normal</option><option>Muita Sede</option><option>Ausência de Sede</option></select></div>
-                <div class="col-md-6"><label class="small fw-bold">DIGESTÃO/APETITE:</label><textarea id="dig" class="form-control" rows="1"></textarea></div>
-                <div class="col-md-6"><label class="small fw-bold">EXCREÇÕES (Fezes/Urina):</label><textarea id="exc" class="form-control" rows="1"></textarea></div>
+                <div class="col-md-4"><label class="small fw-bold">SENS. TÉRMICA:</label><select id="termica" class="form-select"><option>Normal</option><option>Aversão ao Frio</option><option>Aversão ao Calor</option><option>Febre</option></select></div>
+                <div class="col-md-4"><label class="small fw-bold">TRANSPIRAÇÃO:</label><select id="suor" class="form-select"><option>Normal</option><option>Espontânea</option><option>Noturna</option></select></div>
+                <div class="col-md-4"><label class="small fw-bold">SEDE/BEBIDA:</label><select id="sede" class="form-select"><option>Normal</option><option>Muita Sede</option><option>Pref. Gelados</option><option>Sem Sede</option></select></div>
+                <div class="col-md-6"><label class="small fw-bold">DIGESTÃO/FEZES:</label><textarea id="dig" class="form-control" rows="2"></textarea></div>
+                <div class="col-md-6"><label class="small fw-bold">URINA:</label><textarea id="urina" class="form-control" rows="2"></textarea></div>
+                <div class="col-md-12"><label class="small fw-bold">GINECOLOGIA (Ciclo/Leucorreia):</label><input type="text" id="gino" class="form-control"></div>
             </div>
-            <button class="btn-pro" onclick="ir(4)">PRÓXIMO: PULSOS & EXAME FÍSICO</button>
+            <button class="btn-pro" onclick="ir(4)">PRÓXIMO: PULSOS (D / E)</button>
         </div>
 
         <div id="e4" class="etapa">
-            <h5 class="titulo-secao">4. Exame Físico & Palpação</h5>
-            <div class="row g-3 mb-3">
-                <div class="col-md-6"><label class="small fw-bold">TEMP. MÃOS/PÉS:</label><input type="text" id="temp" class="form-control" placeholder="Frios? Quentes?"></div>
-                <div class="col-md-6"><label class="small fw-bold">ABDÓMEN:</label><input type="text" id="abd" class="form-control" placeholder="Dor à palpação? Massas?"></div>
-            </div>
-            <h5 class="titulo-secao">5. Pulsologia (D / E)</h5>
+            <h5 class="titulo-secao">6. Pulsologia Bilateral</h5>
             <div class="row">
                 <div class="col-6 border-end">
-                    <p class="text-center small fw-bold text-primary">DIREITO</p>
-                    <div class="mb-2"><span class="pulso-label">P:</span> <input type="text" id="pdp" class="form-control form-control-sm"></div>
-                    <div class="mb-2"><span class="pulso-label">BP:</span> <input type="text" id="pdbp" class="form-control form-control-sm"></div>
-                    <div class="mb-2"><span class="pulso-label">CS:</span> <input type="text" id="pdcs" class="form-control form-control-sm"></div>
+                    <p class="text-center small fw-bold text-primary">PUNHO DIREITO</p>
+                    <div class="mb-2"><label class="small">P/IG (Cun):</label><input type="text" id="pd_cun" class="form-control form-control-sm"></div>
+                    <div class="mb-2"><label class="small">BP/E (Guan):</label><input type="text" id="pd_guan" class="form-control form-control-sm"></div>
+                    <div class="mb-2"><label class="small">CS/TA (Chi):</label><input type="text" id="pd_chi" class="form-control form-control-sm"></div>
                 </div>
                 <div class="col-6">
-                    <p class="text-center small fw-bold text-primary">ESQUERDO</p>
-                    <div class="mb-2"><span class="pulso-label">C:</span> <input type="text" id="pec" class="form-control form-control-sm"></div>
-                    <div class="mb-2"><span class="pulso-label">F:</span> <input type="text" id="pef" class="form-control form-control-sm"></div>
-                    <div class="mb-2"><span class="pulso-label">R:</span> <input type="text" id="per" class="form-control form-control-sm"></div>
+                    <p class="text-center small fw-bold text-primary">PUNHO ESQUERDO</p>
+                    <div class="mb-2"><label class="small">C/ID (Cun):</label><input type="text" id="pe_cun" class="form-control form-control-sm"></div>
+                    <div class="mb-2"><label class="small">F/VB (Guan):</label><input type="text" id="pe_guan" class="form-control form-control-sm"></div>
+                    <div class="mb-2"><label class="small">R/B (Chi):</label><input type="text" id="pe_chi" class="form-control form-control-sm"></div>
                 </div>
             </div>
-            <button class="btn-pro" onclick="ir(5)">PRÓXIMO: CONDUTA</button>
+            <h5 class="titulo-secao">7. Palpação & Algias</h5>
+            <div class="row">
+                <div class="col-md-6"><label class="small fw-bold">SÍNDROME BI:</label><select id="bi" class="form-select"><option>Nenhuma</option><option>Errante (Vento)</option><option>Fixa (Umidade)</option><option>Dolorida (Frio)</option><option>Febril (Calor)</option></select></div>
+                <div class="col-md-6"><label class="small fw-bold">PALPAÇÃO ABDOMINAL:</label><input type="text" id="abd" class="form-control"></div>
+            </div>
+            <button class="btn-pro" onclick="ir(5)">PRÓXIMO: CONDUTA FINAL</button>
         </div>
 
         <div id="e5" class="etapa">
-            <h5 class="titulo-secao">6. Diagnóstico & Tratamento</h5>
-            <textarea id="diag" class="form-control mb-3" rows="2" placeholder="Diagnóstico Energético"></textarea>
-            <textarea id="pontos" class="form-control mb-3" rows="2" placeholder="Pontos Utilizados (Ex: E36, IG4, F3)"></textarea>
-            <div class="row mb-3">
-                <div class="col-6"><label class="small fw-bold">EVA ANTES:</label><input type="number" id="e_ant" class="form-control"></div>
-                <div class="col-6"><label class="small fw-bold">EVA DEPOIS:</label><input type="number" id="e_dep" class="form-control"></div>
+            <h5 class="titulo-secao">8. Diagnóstico Energético & Pontos</h5>
+            <textarea id="diag" class="form-control mb-3" rows="2" placeholder="Ex: Deficiência de Qi do BP com Estagnação de F..."></textarea>
+            <textarea id="pontos" class="form-control mb-3" rows="2" placeholder="Pontos Utilizados na Sessão"></textarea>
+            
+            <div class="row mb-3 bg-light p-3 rounded">
+                <div class="col-6"><label class="fw-bold">EVA FINAL (0-10):</label><input type="number" id="eva_fim" class="form-control"></div>
+                <div class="col-6 d-flex align-items-end"><p class="small text-muted mb-2">Este dado validará a eficácia do tratamento.</p></div>
             </div>
-            <button id="btnSalvar" class="btn-pro" style="background:#198754" onclick="salvarFinal()">FINALIZAR ATENDIMENTO</button>
+
+            <button id="btnSalvar" class="btn-pro" style="background:#198754" onclick="salvarProntuarioIntegrado()">FINALIZAR E ARQUIVAR SESSÃO</button>
         </div>
 
     </div>
@@ -110,6 +125,7 @@
 <script>
     if(prompt("PIN:") !== "1234") { document.body.innerHTML = "Acesso Negado"; } else { document.body.style.display = "block"; }
 
+    // FIREBASE CONFIG
     const firebaseConfig = {
         apiKey: "AIzaSyAI5X-Cb0Xf0G_cRoBX9YWqW1bn0nv-RA",
         authDomain: "metodo360pro-db0aa.firebaseapp.com",
@@ -122,27 +138,37 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    function ir(n) { 
-        document.querySelectorAll('.etapa').forEach(e => e.classList.remove('ativa')); 
-        document.getElementById('e' + n).classList.add('ativa'); 
-        window.scrollTo(0,0);
+    // GERAR PERGUNTAS GAD-7 E IGI
+    const gadP = ["Nervosismo/Ansiedade", "Incapaz de controlar preocupação", "Preocupação excessiva", "Dificuldade para relaxar", "Inquietude", "Irritabilidade", "Sentir medo"];
+    const igiP = ["Dificuldade adormecer", "Dificuldade manter sono", "Acordar cedo demais", "Satisfação com sono", "Interferência diária"];
+
+    function montarPerguntas() {
+        gadP.forEach((q, i) => {
+            document.getElementById('gadBox').innerHTML += `<div class="pergunta-escala small">${q}: <input type="number" id="gad${i}" min="0" max="3" class="form-control d-inline-block w-25 shadow-sm"></div>`;
+        });
+        igiP.forEach((q, i) => {
+            document.getElementById('igiBox').innerHTML += `<div class="pergunta-escala small">${q}: <input type="number" id="igi${i}" min="0" max="4" class="form-control d-inline-block w-25 shadow-sm"></div>`;
+        });
     }
+    montarPerguntas();
 
-    function salvarFinal() {
+    function ir(n) { document.querySelectorAll('.etapa').forEach(e => e.classList.remove('ativa')); document.getElementById('e' + n).classList.add('ativa'); window.scrollTo(0,0); }
+
+    function salvarProntuarioIntegrado() {
         const btn = document.getElementById('btnSalvar');
-        btn.innerText = "A GUARDAR..."; btn.disabled = true;
+        btn.innerText = "ARQUIVANDO..."; btn.disabled = true;
 
-        const ficha = {
+        const prontuario = {
             paciente: document.getElementById('nome').value,
             data: new Date().toLocaleString(),
             qp: document.getElementById('qp').value,
-            diagnostico: document.getElementById('diag').value,
-            pontos: document.getElementById('pontos').value,
-            eva_evolucao: `${document.getElementById('e_ant').value} -> ${document.getElementById('e_dep').value}`
+            eva_evolucao: `${document.getElementById('eva_ini').value} -> ${document.getElementById('eva_fim').value}`,
+            diagnostico_mtc: document.getElementById('diag').value,
+            pontos_acupuntura: document.getElementById('pontos').value
         };
 
-        db.collection("atendimentos").add(ficha).then(() => {
-            alert("Prontuário arquivado com sucesso!");
+        db.collection("atendimentos").add(prontuario).then(() => {
+            alert("Atendimento MTC Pro arquivado com sucesso!");
             location.reload();
         }).catch(e => { alert("Erro ao salvar."); btn.disabled = false; });
     }
