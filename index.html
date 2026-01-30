@@ -3,23 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MÉTODO 360 PRO | Inteligência Clínica</title>
+    <title>MÉTODO 360 PRO | Diagnóstico Avançado</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <style>
         :root { --azul: #003366; --ouro: #b8860b; --cinza: #f4f7f6; --verde: #198754; }
         body { background: var(--cinza); font-family: 'Segoe UI', sans-serif; display: none; padding-bottom: 100px; }
-        .card-pro { background: white; border-radius: 20px; padding: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); max-width: 950px; margin: 20px auto; border-top: 12px solid var(--azul); }
+        .card-pro { background: white; border-radius: 20px; padding: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); max-width: 1000px; margin: 20px auto; border-top: 12px solid var(--azul); }
         .etapa { display: none; }
         .ativa { display: block; animation: fadeIn 0.4s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .titulo-secao { color: var(--ouro); font-weight: bold; border-bottom: 2px solid #eee; padding-bottom: 8px; margin: 25px 0 15px 0; text-transform: uppercase; font-size: 0.9rem; }
-        .pulso-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .pulso-item { background: #fdfdfd; border: 1px solid #eee; padding: 10px; border-radius: 8px; }
+        .grid-pulsos { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
+        .item-pulso { background: #fff; border: 1px solid #eee; padding: 12px; border-radius: 12px; }
+        .btn-check:checked + .btn-outline-primary { background-color: var(--azul) !important; color: white !important; }
+        .btn-scale { font-size: 0.65rem; padding: 4px 2px; min-width: 32px; }
+        .score-box { background: #e9ecef; padding: 12px; border-radius: 8px; font-weight: bold; margin-top: 10px; border-left: 5px solid var(--azul); }
+        .grid-lingua { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; }
         .btn-pro { background: var(--azul); color: white; width: 100%; padding: 18px; border-radius: 15px; border: none; font-weight: bold; margin-top: 25px; font-size: 1.1rem; }
         .btn-ia { background: #6f42c1; color: white; width: 100%; padding: 15px; border-radius: 15px; border: none; font-weight: bold; margin-top: 10px; }
-        .score-box { background: #e9ecef; padding: 10px; border-radius: 8px; font-weight: bold; margin-top: 10px; border-left: 5px solid var(--azul); font-size: 0.9rem; }
     </style>
 </head>
 <body id="corpoApp">
@@ -34,59 +37,64 @@
                 <div class="col-md-6"><label class="small fw-bold">NOME/ID:</label><input type="text" id="nome" class="form-control"></div>
                 <div class="col-md-3"><label class="small fw-bold">DATA NASC.:</label><input type="date" id="nasc" class="form-control" onchange="calcIdade()"></div>
                 <div class="col-md-3"><label class="small fw-bold">IDADE:</label><input type="text" id="idade" class="form-control" readonly></div>
-                <div class="col-md-12"><textarea id="qp" class="form-control" rows="2" placeholder="Queixa Principal (QP)"></textarea></div>
+                <div class="col-md-12"><textarea id="qp" class="form-control" rows="2" placeholder="Queixa Principal"></textarea></div>
             </div>
             
-            <h5 class="titulo-secao">2. GAD-7 (Ansiedade)</h5>
+            <h5 class="titulo-secao">2. GAD-7 (Escala de Ansiedade)</h5>
             <div id="gadBox"></div>
-            <div id="gadResult" class="score-box">Score GAD-7: 0</div>
+            <div id="gadResult" class="score-box text-uppercase">Score GAD-7: 0 | Classificação: -</div>
             <button class="btn-pro" onclick="ir(2)">PRÓXIMO: IGI (SONO)</button>
         </div>
 
         <div id="e2" class="etapa">
             <h5 class="titulo-secao">3. IGI (Índice de Insônia)</h5>
             <div id="igiBox"></div>
-            <div id="igiResult" class="score-box">Score IGI: 0</div>
+            <div id="igiResult" class="score-box text-uppercase">Score IGI: 0 | Classificação: -</div>
             
-            <h5 class="titulo-secao">4. Inspeção da Língua</h5>
-            <select id="lingua" class="form-select">
-                <option value="Normal">Normal (Rosada/Saburra Fina)</option>
-                <option value="Pálida/Seca">Pálida e Seca (Def. de Xue)</option>
-                <option value="Pálida/Úmida">Pálida e Úmida (Def. de Yang Qi)</option>
-                <option value="Vermelha/Sem Saburra">Vermelha sem Saburra (Calor por Def. Yin)</option>
-                <option value="Vermelha/Amarela">Vermelha com Saburra Amarela (Calor Pleno)</option>
-                <option value="Púrpura/Azulada">Púrpura/Azulada (Estagnação Xue)</option>
-                <option value="Denteada">Denteada (Def. Qi de BP/Umidade)</option>
-            </select>
-            <button class="btn-pro" onclick="ir(3)">PRÓXIMO: PULSOS (ZANG-FU)</button>
+            <h5 class="titulo-secao">4. Inspeção da Língua (Múltipla Escolha)</h5>
+            <div class="grid-lingua bg-light p-3 border rounded" id="linguaBox">
+                <div class="form-check"><input class="form-check-input" type="checkbox" value="Pálida/Seca" name="lingua"><label class="form-check-label small">Pálida/Seca (Def. Xue)</label></div>
+                <div class="form-check"><input class="form-check-input" type="checkbox" value="Pálida/Úmida" name="lingua"><label class="form-check-label small">Pálida/Úmida (Def. Yang)</label></div>
+                <div class="form-check"><input class="form-check-input" type="checkbox" value="Vermelha" name="lingua"><label class="form-check-label small">Vermelha (Calor)</label></div>
+                <div class="form-check"><input class="form-check-input" type="checkbox" value="Vermelha s/ Saburra" name="lingua"><label class="form-check-label small">Verm. s/ Saburra (Def. Yin)</label></div>
+                <div class="form-check"><input class="form-check-input" type="checkbox" value="Denteada" name="lingua"><label class="form-check-label small">Denteada (Def. Qi/Umidade)</label></div>
+                <div class="form-check"><input class="form-check-input" type="checkbox" value="Púrpura" name="lingua"><label class="form-check-label small">Púrpura (Estase Xue)</label></div>
+                <div class="form-check"><input class="form-check-input" type="checkbox" value="Saburra Amarela" name="lingua"><label class="form-check-label small">Saburra Amarela</label></div>
+                <div class="form-check"><input class="form-check-input" type="checkbox" value="Saburra Grossa" name="lingua"><label class="form-check-label small">Saburra Grossa</label></div>
+            </div>
+            <button class="btn-pro" onclick="ir(3)">PRÓXIMO: 12 PULSOS</button>
         </div>
 
         <div id="e3" class="etapa">
-            <h5 class="titulo-secao">5. Pulsologia Completa (Yin/Yang)</h5>
-            <div class="pulso-grid">
-                <div class="border-end pe-2">
-                    <p class="text-center small fw-bold text-primary">DIREITO</p>
-                    <div class="pulso-item"><label class="small">Cun: P / IG</label><input type="text" id="pd_cun" class="form-control form-control-sm"></div>
-                    <div class="pulso-item"><label class="small">Guan: BP / E</label><input type="text" id="pd_guan" class="form-control form-control-sm"></div>
-                    <div class="pulso-item"><label class="small">Chi: CS / TA</label><input type="text" id="pd_chi" class="form-control form-control-sm"></div>
+            <h5 class="titulo-secao">5. Pulsologia Automática (D / E)</h5>
+            <div class="row">
+                <div class="col-md-6 border-end">
+                    <p class="text-center fw-bold text-primary">PUNHO DIREITO</p>
+                    <div id="pulsosD"></div>
                 </div>
-                <div>
-                    <p class="text-center small fw-bold text-primary">ESQUERDO</p>
-                    <div class="pulso-item"><label class="small">Cun: C / ID</label><input type="text" id="pe_cun" class="form-control form-control-sm"></div>
-                    <div class="pulso-item"><label class="small">Guan: F / VB</label><input type="text" id="pe_guan" class="form-control form-control-sm"></div>
-                    <div class="pulso-item"><label class="small">Chi: R / B</label><input type="text" id="pe_chi" class="form-control form-control-sm"></div>
+                <div class="col-md-6">
+                    <p class="text-center fw-bold text-primary">PUNHO ESQUERDO</p>
+                    <div id="pulsosE"></div>
                 </div>
             </div>
-            <button class="btn-pro" onclick="ir(4)">PRÓXIMO: FINALIZAÇÃO</button>
+            <button class="btn-pro" onclick="ir(4)">PRÓXIMO: EVA E FINALIZAÇÃO</button>
         </div>
 
         <div id="e4" class="etapa">
-            <h5 class="titulo-secao">6. Avaliação EVA & Conduta</h5>
-            <div class="row g-2 mb-3">
-                <div class="col-6"><label class="small">EVA ANTES:</label><input type="number" id="eva_a" class="form-control"></div>
-                <div class="col-6"><label class="small">EVA DEPOIS:</label><input type="number" id="eva_d" class="form-control"></div>
+            <h5 class="titulo-secao">6. Escala de Dor (EVA) e Conduta</h5>
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <label class="fw-bold">EVA ANTES (0-10):</label>
+                    <input type="number" id="eva_a" class="form-control" onchange="calcEva('a')">
+                    <div id="evaAResult" class="small fw-bold mt-1 text-primary">-</div>
+                </div>
+                <div class="col-md-6">
+                    <label class="fw-bold">EVA DEPOIS (0-10):</label>
+                    <input type="number" id="eva_d" class="form-control" onchange="calcEva('d')">
+                    <div id="evaDResult" class="small fw-bold mt-1 text-primary">-</div>
+                </div>
             </div>
-            <textarea id="diag" class="form-control mb-3" rows="2" placeholder="Diagnóstico Energético"></textarea>
+            <textarea id="diag" class="form-control mb-3" rows="3" placeholder="Diagnóstico e Pontos Utilizados"></textarea>
             
             <button class="btn-ia" onclick="gerarResumoIA()">✨ GERAR RESUMO PARA ANÁLISE IA</button>
             <button id="btnSalvar" class="btn-pro" style="background:var(--verde)" onclick="salvarTudo()">FINALIZAR E ARQUIVAR SESSÃO</button>
@@ -111,14 +119,33 @@
 
     const gadP = ["Ansiedade", "Controle", "Preocupação", "Relaxar", "Inquietude", "Irritabilidade", "Medo"];
     const igiP = ["Início", "Manutenção", "Acordar cedo", "Satisfação", "Interferência", "Aparência", "Preocupação"];
+    const escalaP = ["+++", "++", "+", "Normal", "-", "--", "---", "Nulo"];
 
     function init() {
+        // GAD7 & IGI
         gadP.forEach((q, i) => {
-            document.getElementById('gadBox').innerHTML += `<div class="mb-2 small border-bottom pb-1">${q}: <select class="form-select form-select-sm d-inline-block w-auto" onchange="calc()" id="g${i}"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></div>`;
+            document.getElementById('gadBox').innerHTML += `<div class="mb-2 small border-bottom pb-1">${q}: <select class="form-select form-select-sm d-inline-block w-auto ms-2" onchange="calcScores()" id="g${i}"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></div>`;
         });
         igiP.forEach((q, i) => {
-            document.getElementById('igiBox').innerHTML += `<div class="mb-2 small border-bottom pb-1">${q}: <select class="form-select form-select-sm d-inline-block w-auto" onchange="calc()" id="i${i}"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option></select></div>`;
+            document.getElementById('igiBox').innerHTML += `<div class="mb-2 small border-bottom pb-1">${q}: <select class="form-select form-select-sm d-inline-block w-auto ms-2" onchange="calcScores()" id="i${i}"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option></select></div>`;
         });
+
+        // PULSOS
+        const pulsosD = ["Cun: P / IG", "Guan: BP / E", "Chi: CS / TA"];
+        const pulsosE = ["Cun: C / ID", "Guan: F / VB", "Chi: R / B"];
+        
+        function gerarBtnsPulso(container, lista, prefixo) {
+            const cont = document.getElementById(container);
+            lista.forEach((p, idx) => {
+                let html = `<div class="item-pulso mb-3"><label class="small fw-bold d-block mb-1">${p}</label><div class="btn-group w-100">`;
+                escalaP.forEach(v => {
+                    html += `<input type="radio" class="btn-check" name="${prefixo}${idx}" id="${prefixo}${idx}${v}" value="${v}" ${v==='Normal'?'checked':''}><label class="btn btn-outline-primary btn-scale" for="${prefixo}${idx}${v}">${v}</label>`;
+                });
+                cont.innerHTML += html + `</div></div>`;
+            });
+        }
+        gerarBtnsPulso('pulsosD', pulsosD, 'pd');
+        gerarBtnsPulso('pulsosE', pulsosE, 'pe');
     }
     init();
 
@@ -130,48 +157,60 @@
         document.getElementById('idade').value = i + " anos";
     }
 
-    function calc() {
+    function calcScores() {
         let g = 0; for(let i=0; i<7; i++) g += parseInt(document.getElementById('g'+i).value);
         let s = 0; for(let i=0; i<7; i++) s += parseInt(document.getElementById('i'+i).value);
-        document.getElementById('gadResult').innerText = "Score GAD-7: " + g;
-        document.getElementById('igiResult').innerText = "Score IGI: " + s;
+        
+        let gClass = g <= 4 ? "Mínimo" : g <= 9 ? "Leve" : g <= 14 ? "Moderado" : "Grave";
+        let sClass = s <= 7 ? "Sem Insônia" : s <= 14 ? "Sub-limiar" : s <= 21 ? "Moderada" : "Grave";
+        
+        document.getElementById('gadResult').innerText = `Score GAD-7: ${g} | Classificação: ${gClass}`;
+        document.getElementById('igiResult').innerText = `Score IGI: ${s} | Classificação: ${sClass}`;
+    }
+
+    function calcEva(tipo) {
+        let val = parseInt(document.getElementById('eva_'+tipo).value);
+        let c = val === 0 ? "Sem Dor" : val <= 3 ? "Leve" : val <= 6 ? "Moderada" : val <= 9 ? "Forte" : "Insuportável";
+        document.getElementById('eva' + tipo.toUpperCase() + 'Result').innerText = "Classificação: " + c;
     }
 
     function ir(n) { document.querySelectorAll('.etapa').forEach(e => e.classList.remove('ativa')); document.getElementById('e' + n).classList.add('ativa'); window.scrollTo(0,0); }
 
     function gerarResumoIA() {
+        const lingua = Array.from(document.querySelectorAll('input[name="lingua"]:checked')).map(cb => cb.value).join(", ");
         const resumo = `
-RELATÓRIO CLÍNICO - MÉTODO 360 PRO
+RELATÓRIO CLÍNICO MÉTODO 360 PRO
 Paciente: ${document.getElementById('nome').value} | Idade: ${document.getElementById('idade').value}
 Queixa: ${document.getElementById('qp').value}
 
-DADOS VALIDADOS:
-- GAD-7 (Ansiedade): ${document.getElementById('gadResult').innerText}
-- IGI (Insónia): ${document.getElementById('igiResult').innerText}
-- EVA: Inicial ${document.getElementById('eva_a').value} -> Final ${document.getElementById('eva_d').value}
+INSTRUMENTOS VALIDADOS:
+- ${document.getElementById('gadResult').innerText}
+- ${document.getElementById('igiResult').innerText}
+- EVA: ${document.getElementById('eva_a').value} (${document.getElementById('evaAResult').innerText}) -> ${document.getElementById('eva_d').value} (${document.getElementById('evaDResult').innerText})
 
-DIAGNÓSTICO MTC:
-- Língua: ${document.getElementById('lingua').value}
-- Pulso Direito: Cun(${document.getElementById('pd_cun').value}), Guan(${document.getElementById('pd_guan').value}), Chi(${document.getElementById('pd_chi').value})
-- Pulso Esquerdo: Cun(${document.getElementById('pe_cun').value}), Guan(${document.getElementById('pe_guan').value}), Chi(${document.getElementById('pe_chi').value})
+MTC (INSPECÇÃO E PALPAÇÃO):
+- Língua: ${lingua || "Normal"}
+- Pulsos Dir: Cun(${document.querySelector('input[name="pd0"]:checked').value}), Guan(${document.querySelector('input[name="pd1"]:checked').value}), Chi(${document.querySelector('input[name="pd2"]:checked').value})
+- Pulsos Esq: Cun(${document.querySelector('input[name="pe0"]:checked').value}), Guan(${document.querySelector('input[name="pe1"]:checked').value}), Chi(${document.querySelector('input[name="pe2"]:checked').value})
 
-Conduta/Diagnóstico Registado: ${document.getElementById('diag').value}
-
-SOLICITAÇÃO: Analise este caso com base na bibliografia integrada e sugira pontos e racionalidade clínica.
+DIAGNÓSTICO REGISTRADO: ${document.getElementById('diag').value}
         `;
-        navigator.clipboard.writeText(resumo).then(() => {
-            alert("✨ Resumo copiado! Agora vá à sua Gem e cole (Ctrl+V).");
-        });
+        navigator.clipboard.writeText(resumo).then(() => alert("✨ Resumo copiado para IA!"));
     }
 
     function salvarTudo() {
-        const btn = document.getElementById('btnSalvar'); btn.disabled = true;
+        const btn = document.getElementById('btnSalvar'); btn.disabled = true; btn.innerText = "Salvando...";
+        const lingua = Array.from(document.querySelectorAll('input[name="lingua"]:checked')).map(cb => cb.value);
+        
         const doc = {
             paciente: document.getElementById('nome').value,
             data: new Date().toLocaleString(),
+            lingua: lingua,
+            scores: { gad7: document.getElementById('gadResult').innerText, igi: document.getElementById('igiResult').innerText },
+            eva: { antes: document.getElementById('eva_a').value, depois: document.getElementById('eva_d').value },
             diagnostico: document.getElementById('diag').value
         };
-        db.collection("atendimentos").add(doc).then(() => { alert("Arquivado!"); location.reload(); });
+        db.collection("atendimentos").add(doc).then(() => { alert("Prontuário salvo!"); location.reload(); });
     }
 </script>
 </body>
