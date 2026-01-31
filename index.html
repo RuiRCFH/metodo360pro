@@ -3,46 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MÉTODO 360 PRO | V. 2.8 Platinum</title>
+    <title>MÉTODO 360 PRO | V. 2.9 Final</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <style>
         :root { --dark: #000d1a; --primary: #002d58; --accent: #c5a059; --bg: #f8f9fa; --success: #198754; --danger: #dc3545; }
         body { background: var(--bg); font-family: 'Inter', sans-serif; margin: 0; }
-        
-        /* LOGIN PREMIUM */
-        #loginScreen { 
-            background: linear-gradient(135deg, var(--dark) 0%, var(--primary) 100%); 
-            height: 100vh; display: flex; align-items: center; justify-content: center; 
-            position: fixed; width: 100%; z-index: 9999; 
-        }
-        .login-card { 
-            background: rgba(255, 255, 255, 0.98); padding: 50px; border-radius: 30px; 
-            box-shadow: 0 30px 70px rgba(0,0,0,0.6); text-align: center; width: 420px; border-bottom: 8px solid var(--accent);
-        }
-
-        /* CONTEÚDO */
+        #loginScreen { background: linear-gradient(135deg, var(--dark) 0%, var(--primary) 100%); height: 100vh; display: flex; align-items: center; justify-content: center; position: fixed; width: 100%; z-index: 9999; }
+        .login-card { background: rgba(255, 255, 255, 0.98); padding: 50px; border-radius: 30px; box-shadow: 0 30px 70px rgba(0,0,0,0.6); text-align: center; width: 420px; border-bottom: 8px solid var(--accent); }
         #mainContent { display: none; padding: 40px 15px; }
-        .card-pro { 
-            background: white; border-radius: 20px; padding: 40px; 
-            box-shadow: 0 15px 40px rgba(0,0,0,0.05); max-width: 1000px; 
-            margin: auto; border-top: 15px solid var(--primary); 
-        }
+        .card-pro { background: white; border-radius: 20px; padding: 40px; box-shadow: 0 15px 40px rgba(0,0,0,0.05); max-width: 1000px; margin: auto; border-top: 15px solid var(--primary); }
         .etapa { display: none; }
         .ativa { display: block; animation: fadeInUp 0.4s ease; }
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-
         .titulo-secao { color: var(--accent); font-weight: 800; border-bottom: 2px solid #eee; padding-bottom: 10px; margin: 30px 0 15px 0; text-transform: uppercase; font-size: 0.9rem; letter-spacing: 1.2px; }
         .badge-total { background: var(--primary); color: white; padding: 6px 18px; border-radius: 30px; float: right; font-weight: bold; font-size: 0.85rem; }
         .score-info { background: #eef6ff; border-left: 5px solid var(--primary); padding: 12px; border-radius: 8px; margin-top: 10px; font-size: 0.85rem; color: var(--primary); font-weight: bold; }
-        .grid-check { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+        .mu-item { background: #fdfdfd; border: 1px solid #ddd; padding: 8px; border-radius: 10px; font-size: 0.8rem; font-weight: bold; text-align: center; }
         .btn-pro { background: var(--primary); color: white; padding: 15px; border-radius: 12px; border: none; font-weight: bold; width: 100%; transition: 0.3s; }
-        
-        /* FOTO */
-        .foto-container { position: relative; display: inline-block; }
-        #prevL { max-width: 250px; border-radius: 15px; margin-top: 10px; display: none; border: 3px solid var(--accent); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
-        .btn-del-foto { position: absolute; top: 15px; right: -15px; background: var(--danger); color: white; border: none; border-radius: 50%; width: 30px; height: 30px; display: none; font-weight: bold; }
+        #prevL { max-width: 250px; border-radius: 15px; margin-top: 10px; display: none; border: 3px solid var(--accent); }
+        .btn-del-foto { position: absolute; top: 15px; right: -15px; background: var(--danger); color: white; border: none; border-radius: 50%; width: 30px; height: 30px; display: none; }
     </style>
 </head>
 <body>
@@ -60,68 +41,64 @@
     <div class="card-pro">
         
         <div id="e1" class="etapa ativa">
-            <h5 class="titulo-secao">1. Identificação e Anamnese</h5>
+            <h5 class="titulo-secao">1. Identificação e História</h5>
             <div class="row g-3">
-                <div class="col-md-6"><label class="small fw-bold">NOME / ID (Uso Interno):</label><input type="text" id="nome" class="form-control"></div>
-                <div class="col-md-3"><label class="small fw-bold">D.NASC.:</label><input type="date" id="nasc" class="form-control" onchange="calcIdade()"></div>
+                <div class="col-md-6"><label class="small fw-bold">NOME / ID:</label><input type="text" id="nome" class="form-control"></div>
+                <div class="col-md-3"><label class="small fw-bold">DATA NASC.:</label><input type="date" id="nasc" class="form-control" onchange="calcIdade()"></div>
                 <div class="col-md-3"><label class="small fw-bold">IDADE:</label><input type="text" id="idade" class="form-control" readonly></div>
                 <div class="col-12"><label class="small fw-bold">QUEIXA PRINCIPAL (QP):</label><textarea id="qp" class="form-control" rows="2"></textarea></div>
-                <div class="col-12"><label class="small fw-bold">HISTÓRIA PREGRESSA (HMA):</label><textarea id="hma" class="form-control" rows="3" placeholder="Contexto, evolução e histórico..."></textarea></div>
-                <div class="col-12"><div class="p-2 bg-light rounded small border"><input type="checkbox" id="lgpd" class="form-check-input me-2"> Autorizo tratamento de dados (LGPD).</div></div>
+                <div class="col-12"><label class="small fw-bold">HISTÓRIA PREGRESSA (HMA):</label><textarea id="hma" class="form-control" rows="3"></textarea></div>
+                <div class="col-12"><div class="p-2 bg-light rounded small border"><input type="checkbox" id="lgpd" class="form-check-input me-2"> Autorizo tratamento conforme LGPD.</div></div>
             </div>
-            <button class="btn-pro mt-5" onclick="proximo(2)">AVANÇAR PARA ESCALAS</button>
+            <button class="btn-pro mt-5" onclick="proximo(2)">PRÓXIMO: ESCALAS</button>
         </div>
 
         <div id="e2" class="etapa">
-            <h5 class="titulo-secao">2. GAD-7 (Ansiedade) <span class="badge-total" id="gVal">0</span></h5>
+            <h5 class="titulo-secao">2. GAD-7 & IGI <span class="badge-total" id="gVal">0</span> | <span class="badge-total" id="iVal">0</span></h5>
             <div id="gadBox"></div>
-            <div id="gadDesc" class="score-info">Nível: Mínimo</div>
-            
-            <h5 class="titulo-secao">3. IGI (Insônia) <span class="badge-total" id="iVal">0</span></h5>
-            <div id="igiBox"></div>
-            <div id="igiDesc" class="score-info">Nível: Ausente</div>
-            
+            <div id="gadDesc" class="score-info">Nível GAD: Mínimo</div>
+            <div id="igiBox" class="mt-4"></div>
+            <div id="igiDesc" class="score-info">Nível IGI: Ausente</div>
             <div class="d-flex gap-2 mt-5">
-                <button class="btn btn-secondary w-50" style="border-radius:12px" onclick="ir(1)">VOLTAR</button>
-                <button class="btn-pro w-50" onclick="ir(3)">AVANÇAR PARA MTC</button>
+                <button class="btn btn-secondary w-50" onclick="ir(1)">VOLTAR</button>
+                <button class="btn-pro w-50" onclick="ir(3)">PRÓXIMO: MTC</button>
             </div>
         </div>
 
         <div id="e3" class="etapa">
-            <h5 class="titulo-secao">4. Língua (Foto e Semiologia)</h5>
-            <div class="p-4 border rounded bg-light mb-4 text-center">
-                <label class="small fw-bold d-block mb-3">📷 REGISTRO DA LÍNGUA:</label>
-                <input type="file" id="inputFoto" accept="image/*" class="form-control mb-2" onchange="preview(this)">
-                <div class="foto-container">
+            <h5 class="titulo-secao">4. Língua e Pulsos (7 Níveis)</h5>
+            <div class="p-3 border rounded bg-light mb-4 text-center position-relative">
+                <input type="file" accept="image/*" class="form-control mb-2" onchange="preview(this)">
+                <div style="position:relative; display:inline-block;">
                     <img id="prevL" src="">
                     <button type="button" class="btn-del-foto" id="btnDel" onclick="removerFoto()">×</button>
                 </div>
             </div>
             <div class="row g-3">
-                <div class="col-md-6"><h6>Coloração:</h6><div id="lCorBox" class="grid-check"></div></div>
-                <div class="col-md-6"><h6>Forma/Saburra:</h6><div id="lFormBox" class="grid-check"></div></div>
+                <div class="col-6"><h6>Cor:</h6><div id="lCorBox"></div></div>
+                <div class="col-6"><h6>Forma:</h6><div id="lFormBox"></div></div>
             </div>
-            <h5 class="titulo-secao">5. Pontos Mu e Pulsologia (7 Níveis)</h5>
-            <div id="muBox" class="grid-check mb-4"></div>
+            <h5 class="titulo-secao">5. Pontos Mu</h5>
+            <div id="muBox" class="row g-2 mb-4"></div>
+            <h5 class="titulo-secao">6. Pulsologia (+++ a ---)</h5>
             <div class="row"><div class="col-md-6 border-end" id="pDir"></div><div class="col-md-6" id="pEsq"></div></div>
-            
             <div class="d-flex gap-2 mt-5">
-                <button class="btn btn-secondary w-50" style="border-radius:12px" onclick="ir(2)">VOLTAR</button>
-                <button class="btn-pro w-50" onclick="ir(4)">AVANÇAR FINALIZAÇÃO</button>
+                <button class="btn btn-secondary w-50" onclick="ir(2)">VOLTAR</button>
+                <button class="btn-pro w-50" onclick="ir(4)">FINALIZAR</button>
             </div>
         </div>
 
         <div id="e4" class="etapa">
-            <h5 class="titulo-secao">7. Conduta e Sincronização</h5>
+            <h5 class="titulo-secao">7. Diagnóstico e Sincronização</h5>
             <div class="row g-3 mb-4">
-                <div class="col-6"><label class="small fw-bold">EVA INICIAL:</label><input type="number" id="eva_a" class="form-control"></div>
-                <div class="col-6"><label class="small fw-bold">EVA FINAL:</label><input type="number" id="eva_d" class="form-control"></div>
-                <div class="col-12"><label class="small fw-bold">DIAGNÓSTICO INTEGRATIVO:</label><textarea id="diag" class="form-control" rows="5"></textarea></div>
+                <div class="col-6"><label class="small fw-bold">EVA ANTES:</label><input type="number" id="eva_a" class="form-control"></div>
+                <div class="col-6"><label class="small fw-bold">EVA DEPOIS:</label><input type="number" id="eva_d" class="form-control"></div>
+                <div class="col-12"><textarea id="diag" class="form-control" rows="5" placeholder="Sua conduta..."></textarea></div>
             </div>
             <div class="d-flex gap-2">
-                <button class="btn btn-secondary w-25" style="border-radius:12px" onclick="ir(3)">VOLTAR</button>
-                <button class="btn btn-dark w-25" style="border-radius:12px" onclick="copiarResumo()">COPIAR IA</button>
-                <button id="btnSalvar" class="btn-pro w-50" style="background:var(--success)" onclick="salvarTudo()">SALVAR NO FIREBASE</button>
+                <button class="btn btn-secondary w-25" onclick="ir(3)">VOLTAR</button>
+                <button class="btn btn-dark w-25" onclick="copiarResumo()">COPIAR IA</button>
+                <button id="btnSalvar" class="btn-pro w-50" style="background:var(--success)" onclick="salvarTudo()">SALVAR FIREBASE</button>
             </div>
         </div>
     </div>
@@ -133,48 +110,28 @@
     const db = firebase.firestore();
 
     function autenticar() { if(document.getElementById('pinInput').value === "1234") { document.getElementById('loginScreen').style.display='none'; document.getElementById('mainContent').style.display='block'; } else { alert("PIN INVÁLIDO"); } }
-    
-    function preview(input) { 
-        if (input.files && input.files[0]) {
-            const reader = new FileReader(); 
-            reader.onload = (e) => { 
-                const img = document.getElementById('prevL'); 
-                img.src = e.target.result; 
-                img.style.display = 'block'; 
-                document.getElementById('btnDel').style.display = 'block';
-            }; 
-            reader.readAsDataURL(input.files[0]); 
-        }
-    }
-
-    function removerFoto() {
-        document.getElementById('inputFoto').value = "";
-        document.getElementById('prevL').src = "";
-        document.getElementById('prevL').style.display = 'none';
-        document.getElementById('btnDel').style.display = 'none';
-    }
+    function preview(i) { if(i.files && i.files[0]){ const r = new FileReader(); r.onload = (e) => { const m = document.getElementById('prevL'); m.src = e.target.result; m.style.display='block'; document.getElementById('btnDel').style.display='block'; }; r.readAsDataURL(i.files[0]); } }
+    function removerFoto() { document.getElementById('prevL').src=''; document.getElementById('prevL').style.display='none'; document.getElementById('btnDel').style.display='none'; }
 
     function init() {
         const muP = ["P1", "VC17", "VC14", "VC12", "F13", "F14", "VB24", "VB25", "E25", "VC4", "VC3"];
-        muP.forEach(m => document.getElementById('muBox').innerHTML += `<div class="p-2 border rounded small"><input type="checkbox" name="mu" value="${m}"> ${m}</div>`);
-        ["Pálida Úmida", "Pálida Seca", "Vermelha", "Púrpura", "Azul"].forEach(c => document.getElementById('lCorBox').innerHTML += `<div class="form-check small"><input type="checkbox" name="lc" value="${c}">${c}</div>`);
-        ["Inchada", "Magra", "Denteada", "Fissurada", "Desviada"].forEach(f => document.getElementById('lFormBox').innerHTML += `<div class="form-check small"><input type="checkbox" name="lf" value="${f}">${f}</div>`);
-        
-        const gQ = ["Nervoso/Tenso", "Controle Preocupação", "Preocupação Excessiva", "Dificuldade Relaxar", "Inquietude", "Irritabilidade", "Medo"];
-        const iQ = ["Início", "Manutenção", "Acordar Cedo", "Satisfação", "Interferência", "Percepção", "Preocupação"];
-        gQ.forEach((q, i) => document.getElementById('gadBox').innerHTML += `<div class="p-2 border-bottom small">${q} <div class="btn-group w-100">${[0,1,2,3].map(v => `<input type="radio" class="btn-check" name="g${i}" id="g${i}${v}" value="${v}" onchange="calc()"><label class="btn btn-outline-primary btn-sm" for="g${i}${v}">${v}</label>`).join('')}</div></div>`);
-        iQ.forEach((q, i) => document.getElementById('igiBox').innerHTML += `<div class="p-2 border-bottom small">${q} <div class="btn-group w-100">${[0,1,2,3,4].map(v => `<input type="radio" class="btn-check" name="i${i}" id="i${i}${v}" value="${v}" onchange="calc()"><label class="btn btn-outline-primary btn-sm" for="i${i}${v}">${v}</label>`).join('')}</div></div>`);
-        
+        muP.forEach(m => document.getElementById('muBox').innerHTML += `<div class="col-4 col-md-3"><div class="mu-item"><input type="checkbox" name="mu" value="${m}"> ${m}</div></div>`);
+        ["Pálida Úmida", "Pálida Seca", "Vermelha", "Azul"].forEach(c => document.getElementById('lCorBox').innerHTML += `<div class="small"><input type="checkbox" name="lc" value="${c}"> ${c}</div>`);
+        ["Inchada", "Magra", "Denteada", "Fissurada"].forEach(f => document.getElementById('lFormBox').innerHTML += `<div class="small"><input type="checkbox" name="lf" value="${f}"> ${f}</div>`);
+        const esc = ["+++", "++", "+", "ok", "-", "--", "---"];
         const mP = (id, list, pref) => list.forEach((p, i) => {
-            document.getElementById(id).innerHTML += `<div class="mb-2 small fw-bold text-primary">${p} <div class="btn-group w-100">${["+++", "++", "+", "ok", "-", "--", "---"].map(v => `<input type="radio" class="btn-check" name="${pref}${i}" id="${pref}${i}${v}" value="${v}" ${v=='ok'?'checked':''}><label class="btn btn-outline-primary btn-sm py-0" style="font-size:0.55rem" for="${pref}${i}${v}">${v}</label>`).join('')}</div></div>`;
+            document.getElementById(id).innerHTML += `<div class="mb-2 small fw-bold text-primary">${p} <div class="btn-group w-100">${esc.map(v => `<input type="radio" class="btn-check" name="${pref}${i}" id="${pref}${i}${v}" value="${v}" ${v=='ok'?'checked':''}><label class="btn btn-outline-primary btn-sm py-0" style="font-size:0.5rem" for="${pref}${i}${v}">${v}</label>`).join('')}</div></div>`;
         });
         mP('pDir', ["P", "IG", "BP", "E", "CS", "TA"], 'pd'); mP('pEsq', ["C", "ID", "F", "VB", "R", "B"], 'pe');
+        const gQ = ["Nervoso/Tenso", "Controle", "Preocupação", "Relaxar", "Inquietude", "Irritabilidade", "Medo"];
+        const iQ = ["Início", "Manutenção", "Acordar", "Satisfação", "Interferência", "Percepção", "Preocupação"];
+        gQ.forEach((q, i) => document.getElementById('gadBox').innerHTML += `<div class="p-2 border-bottom small">${q} <div class="btn-group w-100">${[0,1,2,3].map(v => `<input type="radio" class="btn-check" name="g${i}" id="g${i}${v}" value="${v}" onchange="calc()"><label class="btn btn-outline-primary btn-sm" for="g${i}${v}">${v}</label>`).join('')}</div></div>`);
+        iQ.forEach((q, i) => document.getElementById('igiBox').innerHTML += `<div class="p-2 border-bottom small">${q} <div class="btn-group w-100">${[0,1,2,3,4].map(v => `<input type="radio" class="btn-check" name="i${i}" id="i${i}${v}" value="${v}" onchange="calc()"><label class="btn btn-outline-primary btn-sm" for="i${i}${v}">${v}</label>`).join('')}</div></div>`);
     }
     init();
 
     function calc() {
-        let g=0; document.querySelectorAll('input[name^="g"]:checked').forEach(e => g += parseInt(e.value));
-        let i=0; document.querySelectorAll('input[name^="i"]:checked').forEach(e => i += parseInt(e.value));
+        let g=0, i=0; document.querySelectorAll('input[name^="g"]:checked').forEach(e => g += parseInt(e.value)); document.querySelectorAll('input[name^="i"]:checked').forEach(e => i += parseInt(e.value));
         document.getElementById('gVal').innerText = g; document.getElementById('iVal').innerText = i;
         document.getElementById('gadDesc').innerText = "Nível: " + (g<=4?"Mínimo":g<=9?"Leve":g<=14?"Moderado":"Grave");
         document.getElementById('igiDesc').innerText = "Nível: " + (i<=7?"Ausente":i<=14?"Sub-clínico":i<=21?"Moderado":"Grave");
@@ -182,23 +139,36 @@
 
     function ir(n) { document.querySelectorAll('.etapa').forEach(e => e.classList.remove('ativa')); document.getElementById('e'+n).classList.add('ativa'); window.scrollTo(0,0); }
     function proximo(n) { if(!document.getElementById('lgpd').checked) { alert("Aceite a LGPD."); return; } ir(n); }
-    function calcIdade() { const n = new Date(document.getElementById('nasc').value); const h = new Date(); let i = h.getFullYear() - n.getFullYear(); document.getElementById('idade').value = i + " anos"; }
+    function calcIdade() { const n = new Date(document.getElementById('nasc').value), h = new Date(); let i = h.getFullYear() - n.getFullYear(); document.getElementById('idade').value = i + " anos"; }
 
-    function copiarResumo() {
-        const qp = document.getElementById('qp').value;
-        const hma = document.getElementById('hma').value;
-        const g = document.getElementById('gVal').innerText + " (" + document.getElementById('gadDesc').innerText + ")";
-        const i = document.getElementById('iVal').innerText + " (" + document.getElementById('igiDesc').innerText + ")";
-        const lingua = Array.from(document.querySelectorAll('input[name="lc"]:checked, input[name="lf"]:checked')).map(el => el.value).join(', ');
-        const mu = Array.from(document.querySelectorAll('input[name="mu"]:checked')).map(el => el.value).join(', ');
-        const res = `MÉTODO 360 PRO\nPACIENTE: ANÔNIMO\nQP: ${qp}\nHMA: ${hma}\nGAD-7: ${g}\nIGI: ${i}\nLÍNGUA: ${lingua}\nMU: ${mu}\nCONDUTA: ${document.getElementById('diag').value}`;
-        navigator.clipboard.writeText(res).then(() => alert("Resumo anônimo copiado!"));
+    function coletar() {
+        const getRadio = (n) => { const el = document.querySelector(`input[name="${n}"]:checked`); return el ? el.value : "ok"; };
+        return {
+            p: btoa(document.getElementById('nome').value),
+            data: new Date().toLocaleString(),
+            qp: document.getElementById('qp').value,
+            hma: document.getElementById('hma').value,
+            scores: { g: document.getElementById('gVal').innerText + " (" + document.getElementById('gadDesc').innerText + ")", i: document.getElementById('iVal').innerText + " (" + document.getElementById('igiDesc').innerText + ")", eva: document.getElementById('eva_a').value + "->" + document.getElementById('eva_d').value },
+            mtc: { 
+                lingua: Array.from(document.querySelectorAll('input[name="lc"]:checked, input[name="lf"]:checked')).map(el => el.value),
+                mu: Array.from(document.querySelectorAll('input[name="mu"]:checked')).map(el => el.value),
+                pd: [0,1,2,3,4,5].map(i => getRadio('pd'+i)),
+                pe: [0,1,2,3,4,5].map(i => getRadio('pe'+i))
+            },
+            diag: document.getElementById('diag').value,
+            img: document.getElementById('prevL').src
+        };
     }
 
-    function salvarTudo() { 
+    function copiarResumo() {
+        const d = coletar();
+        const res = `MÉTODO 360 PRO\nPACIENTE: ANÔNIMO\nQP: ${d.qp}\nHMA: ${d.hma}\nGAD: ${d.scores.g}\nIGI: ${d.scores.i}\nLÍNGUA: ${d.mtc.lingua}\nMU: ${d.mtc.mu}\nPULSOS DIR: P:${d.mtc.pd[0]}, IG:${d.mtc.pd[1]}, BP:${d.mtc.pd[2]}, E:${d.mtc.pd[3]}, CS:${d.mtc.pd[4]}, TA:${d.mtc.pd[5]}\nPULSOS ESQ: C:${d.mtc.pe[0]}, ID:${d.mtc.pe[1]}, F:${d.mtc.pe[2]}, VB:${d.mtc.pe[3]}, R:${d.mtc.pe[4]}, B:${d.mtc.pe[5]}\nEVA: ${d.scores.eva}\nCONDUTA: ${d.diag}`;
+        navigator.clipboard.writeText(res).then(() => alert("Resumo anônimo completo copiado!"));
+    }
+
+    function salvarTudo() {
         const btn = document.getElementById('btnSalvar'); btn.disabled = true; btn.innerText = "Sincronizando...";
-        const dados = { p: btoa(document.getElementById('nome').value), data: new Date().toLocaleString(), img: document.getElementById('prevL').src };
-        db.collection("atendimentos_full").add(dados).then(() => { alert("✅ SALVO NO FIREBASE!"); location.reload(); });
+        db.collection("atendimentos_full").add(coletar()).then(() => { alert("✅ SALVO COM SUCESSO!"); location.reload(); });
     }
 </script>
 </body>
