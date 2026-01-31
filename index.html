@@ -3,193 +3,159 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MÉTODO 360 PRO | Diagnóstico de Precisão</title>
+    <title>MÉTODO 360 PRO | Portal de Diagnóstico</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <style>
-        :root { --dark: #001529; --primary: #002d58; --accent: #c5a059; --bg: #f0f2f5; --success: #198754; }
-        body { background: var(--bg); font-family: 'Inter', 'Segoe UI', sans-serif; margin: 0; }
-        
-        /* Login Screen */
-        #loginScreen { background: linear-gradient(135deg, var(--dark) 0%, var(--primary) 100%); height: 100vh; display: flex; align-items: center; justify-content: center; position: fixed; width: 100%; z-index: 9999; transition: 0.5s; }
-        .login-card { background: white; padding: 45px; border-radius: 25px; box-shadow: 0 20px 50px rgba(0,0,0,0.4); text-align: center; width: 380px; border-bottom: 5px solid var(--accent); }
-        
-        /* App Structure */
-        #mainContent { display: none; padding: 30px 15px; }
-        .card-pro { background: white; border-radius: 20px; padding: 35px; box-shadow: 0 10px 40px rgba(0,0,0,0.06); max-width: 1000px; margin: auto; border-top: 12px solid var(--primary); }
+        :root { --dark: #001529; --primary: #002d58; --accent: #c5a059; --bg: #f4f7f6; --success: #198754; }
+        body { background: var(--bg); font-family: 'Segoe UI', sans-serif; margin: 0; }
+        #loginScreen { background: linear-gradient(135deg, var(--dark) 0%, var(--primary) 100%); height: 100vh; display: flex; align-items: center; justify-content: center; position: fixed; width: 100%; z-index: 9999; }
+        .login-card { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.3); text-align: center; width: 350px; }
+        #mainContent { display: none; padding: 25px; }
+        .card-pro { background: white; border-radius: 15px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); max-width: 1000px; margin: auto; border-top: 10px solid var(--primary); }
         .etapa { display: none; }
-        .ativa { display: block; animation: fadeIn 0.5s ease; }
+        .ativa { display: block; animation: fadeIn 0.4s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        /* Titles & UI */
-        .titulo-secao { color: var(--accent); font-weight: 800; border-bottom: 2px solid #f0f0f0; padding-bottom: 12px; margin: 25px 0 20px 0; text-transform: uppercase; font-size: 0.95rem; letter-spacing: 1.2px; }
-        .pergunta-full { background: #fdfdfd; padding: 15px; border-radius: 12px; border-left: 4px solid #dee2e6; margin-bottom: 12px; font-size: 0.9rem; color: #333; }
-        .grid-check { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; margin-bottom: 20px; }
-        .check-item { background: #f8f9fa; padding: 10px; border-radius: 10px; border: 1px solid #e9ecef; font-size: 0.85rem; transition: 0.2s; cursor: pointer; }
-        .check-item:hover { background: #eef2f7; border-color: var(--primary); }
-        .btn-pro { background: var(--primary); color: white; padding: 15px; border-radius: 12px; border: none; font-weight: bold; width: 100%; transition: 0.3s; }
-        .btn-pro:hover { background: var(--dark); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,45,88,0.2); }
-        .suggestion-box { background: #eff6ff; border: 2px dashed var(--primary); border-radius: 15px; padding: 25px; margin-top: 30px; }
+        .titulo-secao { color: var(--accent); font-weight: 800; border-bottom: 2px solid #eee; padding-bottom: 10px; margin: 20px 0 15px 0; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px; }
+        .score-badge { background: var(--primary); color: white; padding: 5px 15px; border-radius: 30px; font-weight: bold; float: right; font-size: 0.8rem; }
+        .pergunta-full { background: #fdfdfd; padding: 12px; border-radius: 10px; border-left: 4px solid #dee2e6; margin-bottom: 10px; font-size: 0.9rem; }
+        .grid-mu { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 8px; }
+        .mu-item { background: #f8f9fa; border: 1px solid #e9ecef; padding: 8px; border-radius: 8px; text-align: center; font-size: 0.75rem; }
+        .btn-pro { background: var(--primary); color: white; padding: 14px; border-radius: 10px; border: none; font-weight: bold; width: 100%; }
     </style>
 </head>
 <body>
 
 <div id="loginScreen">
     <div class="login-card">
-        <h2 class="fw-bold mb-1" style="color:var(--primary)">MÉTODO 360</h2>
+        <h2 class="fw-bold" style="color:var(--primary)">MÉTODO 360</h2>
         <p class="text-muted small mb-4">PLATAFORMA INTEGRATIVA PRO</p>
-        <input type="password" id="pinInput" class="form-control mb-3 text-center" style="letter-spacing: 5px;" placeholder="PIN">
-        <button class="btn-pro" onclick="autenticar()">DESBLOQUEAR ACESSO</button>
+        <input type="password" id="pinInput" class="form-control mb-3 text-center" placeholder="PIN">
+        <button class="btn-pro" onclick="autenticar()">ACESSAR</button>
     </div>
 </div>
 
-<div id="mainContent" class="container">
+<div id="mainContent">
     <div class="card-pro">
         
         <div id="e1" class="etapa ativa">
-            <h5 class="titulo-secao">1. Identificação e Consentimento</h5>
-            <div class="row g-3">
-                <div class="col-md-6"><label class="small fw-bold">PACIENTE:</label><input type="text" id="nome" class="form-control"></div>
-                <div class="col-md-3"><label class="small fw-bold">NASCIMENTO:</label><input type="date" id="nasc" class="form-control" onchange="calcIdade()"></div>
-                <div class="col-md-3"><label class="small fw-bold">IDADE:</label><input type="text" id="idade" class="form-control" readonly></div>
-                <div class="col-12"><textarea id="qp" class="form-control" rows="2" placeholder="Queixa Principal (O que o paciente relata?)"></textarea></div>
-                <div class="col-12">
-                    <div class="p-3 border rounded bg-light">
-                        <input type="checkbox" id="lgpd" class="form-check-input me-2">
-                        <label class="small fw-bold mb-0" for="lgpd">TERMO LGPD: O paciente autoriza o registro, armazenamento e processamento dos dados clínicos para fins terapêuticos conforme a Lei Geral de Proteção de Dados.</label>
-                    </div>
-                </div>
+            <h5 class="titulo-secao">1. Identificação</h5>
+            <div class="row g-2 mb-3">
+                <div class="col-md-6"><input type="text" id="nome" class="form-control" placeholder="ID / Paciente"></div>
+                <div class="col-md-3"><input type="date" id="nasc" class="form-control" onchange="calcIdade()"></div>
+                <div class="col-md-3"><input type="text" id="idade" class="form-control" placeholder="Idade" readonly></div>
+                <div class="col-12"><textarea id="qp" class="form-control" rows="2" placeholder="Queixa Principal"></textarea></div>
+                <div class="col-12"><div class="p-2 bg-light rounded small"><input type="checkbox" id="lgpd" class="form-check-input me-2"> Autorizo tratamento de dados conforme LGPD.</div></div>
             </div>
-            <button class="btn-pro mt-4" onclick="proximo(2)">PRÓXIMO: ESCALAS COMPLETAS</button>
+            <button class="btn-pro mt-3" onclick="proximo(2)">PRÓXIMO: ESCALAS</button>
         </div>
 
         <div id="e2" class="etapa">
-            <h5 class="titulo-secao">2. GAD-7 (Ansiedade - Últimas 2 semanas)</h5>
+            <h5 class="titulo-secao">2. GAD-7 (Ansiedade) <span class="score-badge" id="gTotal">Total: 0</span></h5>
             <div id="gadBox"></div>
             
-            <h5 class="titulo-secao">3. IGI (Índice de Gravidade de Insônia)</h5>
+            <h5 class="titulo-secao">3. IGI (Insônia) <span class="score-badge" id="iTotal">Total: 0</span></h5>
             <div id="igiBox"></div>
+            <div id="igiDesc" class="p-2 mb-3 bg-light rounded small text-primary fw-bold">Nível: Ausência de insônia</div>
             
-            <div class="d-flex gap-2 mt-4">
+            <div class="d-flex gap-2">
                 <button class="btn btn-secondary w-50" onclick="ir(1)">VOLTAR</button>
                 <button class="btn-pro w-50" onclick="ir(3)">PRÓXIMO: EXAME FÍSICO</button>
             </div>
         </div>
 
         <div id="e3" class="etapa">
-            <h5 class="titulo-secao">4. Semiologia da Língua (Documento Coloração)</h5>
-            <label class="small fw-bold text-muted mb-2">COLORAÇÃO:</label>
-            <div class="grid-check" id="lCorBox"></div>
+            <h5 class="titulo-secao">4. Semiologia da Língua</h5>
+            <div class="row"><div class="col-md-6" id="lCorBox"></div><div class="col-md-6" id="lFormBox"></div></div>
             
-            <label class="small fw-bold text-muted mb-2">FORMA E REVESTIMENTO:</label>
-            <div class="grid-check" id="lFormBox"></div>
-
-            <h5 class="titulo-secao">5. Palpação Abdominal (Exame Físico)</h5>
-            <div class="grid-check">
-                <div class="check-item"><input type="checkbox" name="ab" value="Pele Úmida" class="form-check-input me-2">Pele Úmida</div>
-                <div class="check-item"><input type="checkbox" name="ab" value="Pele Seca" class="form-check-input me-2">Pele Seca</div>
-                <div class="check-item"><input type="checkbox" name="ab" value="Dores à palpação" class="form-check-input me-2">Dores à Palpação</div>
-                <div class="check-item"><input type="checkbox" name="ab" value="Abdome Firme" class="form-check-input me-2">Firmeza</div>
-                <div class="check-item"><input type="checkbox" name="ab" value="Massas detectadas" class="form-check-input me-2">Massas</div>
-                <div class="check-item"><input type="checkbox" name="ab" value="Edemas detectados" class="form-check-input me-2">Edemas</div>
+            <h5 class="titulo-secao">5. Avaliação Abdominal & Pontos Mu</h5>
+            <div class="row g-2 mb-3">
+                <div class="col-md-6"><div class="p-2 border rounded small"><label class="fw-bold">Achados:</label><br>
+                    <input type="checkbox" name="ab" value="Pele Úmida"> Úmida | <input type="checkbox" name="ab" value="Seca"> Seca | <input type="checkbox" name="ab" value="Massas"> Massas
+                </div></div>
             </div>
+            <label class="small fw-bold text-muted mb-2">SENSIBILIDADE PONTOS MU (ALARME):</label>
+            <div class="grid-mu" id="muBox"></div>
 
             <h5 class="titulo-secao">6. Pulsologia 12 Zang-Fu</h5>
             <div class="row"><div class="col-md-6 border-end" id="pDir"></div><div class="col-md-6" id="pEsq"></div></div>
             
             <div class="d-flex gap-2 mt-4">
                 <button class="btn btn-secondary w-50" onclick="ir(2)">VOLTAR</button>
-                <button class="btn-pro w-50" onclick="gerarSugestao()">ANALISAR CASO</button>
+                <button class="btn-pro w-50" onclick="ir(4)">ANÁLISE FINAL</button>
             </div>
         </div>
 
         <div id="e4" class="etapa">
-            <h5 class="titulo-secao">7. Diagnóstico e Conduta</h5>
-            <div class="row g-3 mb-4">
-                <div class="col-md-6"><label class="small fw-bold">EVA INICIAL:</label><input type="number" id="eva_a" class="form-control"></div>
-                <div class="col-md-6"><label class="small fw-bold">EVA FINAL (PÓS):</label><input type="number" id="eva_d" class="form-control"></div>
-                <div class="col-12"><label class="small fw-bold">DIAGNÓSTICO E TRATAMENTO (DEFINIDO POR VOCÊ):</label><textarea id="diag" class="form-control" rows="4"></textarea></div>
+            <h5 class="titulo-secao">7. Conclusão e Conduta</h5>
+            <div class="row g-2 mb-4">
+                <div class="col-6"><label class="small fw-bold">EVA INICIAL:</label><input type="number" id="eva_a" class="form-control"></div>
+                <div class="col-6"><label class="small fw-bold">EVA FINAL:</label><input type="number" id="eva_d" class="form-control"></div>
             </div>
-
-            <div class="suggestion-box">
-                <h6 class="fw-bold" style="color:var(--primary)">🧠 VALIDADOR DE COERÊNCIA CLÍNICA (V.C.C.)</h6>
-                <div id="quadroSugestao" class="small">Aguardando processamento...</div>
-            </div>
-
-            <div class="d-flex gap-2 mt-4">
-                <button class="btn btn-dark w-50" onclick="copiarResumo()">COPIAR RESUMO PARA GEM</button>
-                <button id="btnSalvar" class="btn-pro w-50" style="background:var(--success)" onclick="salvarTudo()">SALVAR NO DATABASE</button>
+            <textarea id="diag" class="form-control mb-4" rows="4" placeholder="Diagnóstico Energético e Pontos Sugeridos"></textarea>
+            
+            <div class="d-flex gap-2">
+                <button class="btn btn-dark w-50" onclick="copiar()">COPIAR PARA GEM</button>
+                <button id="btnSalvar" class="btn-pro w-50" style="background:var(--success)" onclick="salvarTudo()">SALVAR TUDO</button>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    // FIREBASE
     const firebaseConfig = { apiKey: "AIzaSyAI5X-Cb0Xf0G_cRoBX9YWqW1bn0nv-RA", authDomain: "metodo360pro-db0aa.firebaseapp.com", projectId: "metodo360pro-db0aa", storageBucket: "metodo360pro-db0aa.firebasestorage.app", messagingSenderId: "1088396585788", appId: "1:1088396585788:web:57853a7b0ff17c8306ec39", measurementId: "G-589QFHBJC4" };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    function autenticar() { if(document.getElementById('pinInput').value === "1234") { document.getElementById('loginScreen').style.opacity = '0'; setTimeout(() => { document.getElementById('loginScreen').style.display='none'; document.getElementById('mainContent').style.display='block'; }, 500); } else { alert("PIN Incorreto"); } }
+    function autenticar() { if(document.getElementById('pinInput').value === "1234") { document.getElementById('loginScreen').style.display='none'; document.getElementById('mainContent').style.display='block'; } else { alert("PIN Incorreto"); } }
 
-    const gadQ = ["Sentir-se nervoso(a), ansioso(a) ou muito tenso(a).", "Não ser capaz de impedir ou de controlar as preocupações.", "Preocupar-se demais com diversas coisas diferentes.", "Dificuldade para relaxar.", "Ficar tão inquieto(a) que é difícil permanecer sentado(a).", "Tornar-se facilmente aborrecido(a) ou irritado(a).", "Sentir medo, como se algo horrível fosse acontecer."];
-    const igiQ = ["Dificuldade em iniciar o sono.", "Dificuldade em manter o sono.", "Problema de despertar muito precocemente.", "Satisfação com seu padrão de sono atual.", "Interferência no funcionamento diário.", "Percepção alheia da perda de qualidade de vida.", "Preocupação com os problemas de sono atuais."];
+    const gadQ = ["Sentir-se nervoso(a) ou tenso(a)", "Não conseguir controlar preocupações", "Preocupar-se demais com várias coisas", "Dificuldade para relaxar", "Inquietude (difícil ficar parado)", "Facilmente aborrecido ou irritado", "Medo como se algo horrível fosse acontecer"];
+    const igiQ = ["Dificuldade em iniciar o sono", "Dificuldade em manter o sono", "Problema de despertar muito precoce", "Satisfação com seu padrão de sono", "Interferência no funcionamento diário", "Percepção alheia da perda de qualidade", "Preocupação com os problemas de sono"];
+    const muPoints = ["P1 (Pulmão)", "VC17 (CS)", "VC14 (Coração)", "VC12 (Estômago)", "F13 (Baço)", "F14 (Fígado)", "VB24 (VB)", "VB25 (Rim)", "E25 (Int.Grosso)", "VC4 (Int.Delgado)", "VC3 (Bexiga)"];
     
-    // Baseado no arquivo Coloração.docx
-    const lCores = ["Pálida Úmida (Def. Yang)", "Pálida Seca (Def. Xue)", "Vermelha c/ Saburra (Calor Excesso)", "Vermelha s/ Saburra (Calor Defic.)", "Vermelho-escura (Grave)", "Púrpura Avermelhada (Estase Xue)", "Púrpura Azulada (Frio/Estase)", "Azul (Frio Interno)"];
-    const lFormas = ["Magra Pálida", "Magra Vermelha", "Inchada Parcial", "Rígida", "Flácida", "Longa", "Curta", "Fissura Horizontal", "Fissura Longit. Ponta", "Fissura Superficial", "Trêmula", "Desviada", "Marcas de dentes"];
-
     function init() {
-        gadQ.forEach((q, i) => document.getElementById('gadBox').innerHTML += `<div class="pergunta-full">${i+1}. ${q} <div class="btn-group w-100 mt-2">${[0,1,2,3].map(v => `<input type="radio" class="btn-check" name="g${i}" id="g${i}${v}" value="${v}"><label class="btn btn-outline-primary btn-sm" for="g${i}${v}">${v}</label>`).join('')}</div></div>`);
-        igiQ.forEach((q, i) => document.getElementById('igiBox').innerHTML += `<div class="pergunta-full">${i+1}. ${q} <div class="btn-group w-100 mt-2">${[0,1,2,3,4].map(v => `<input type="radio" class="btn-check" name="i${i}" id="i${i}${v}" value="${v}"><label class="btn btn-outline-primary btn-sm" for="i${i}${v}">${v}</label>`).join('')}</div></div>`);
-        lCores.forEach(c => document.getElementById('lCorBox').innerHTML += `<div class="check-item"><input type="checkbox" name="lc" value="${c}" class="form-check-input me-2">${c}</div>`);
-        lFormas.forEach(f => document.getElementById('lFormBox').innerHTML += `<div class="check-item"><input type="checkbox" name="lf" value="${f}" class="form-check-input me-2">${f}</div>`);
+        gadQ.forEach((q, i) => document.getElementById('gadBox').innerHTML += `<div class="pergunta-full">${q} <div class="btn-group w-100 mt-2">${[0,1,2,3].map(v => `<input type="radio" class="btn-check" name="g${i}" id="g${i}${v}" value="${v}" onchange="calcScores()"><label class="btn btn-outline-primary btn-sm" for="g${i}${v}">${v}</label>`).join('')}</div></div>`);
+        igiQ.forEach((q, i) => document.getElementById('igiBox').innerHTML += `<div class="pergunta-full">${q} <div class="btn-group w-100 mt-2">${[0,1,2,3,4].map(v => `<input type="radio" class="btn-check" name="i${i}" id="i${i}${v}" value="${v}" onchange="calcScores()"><label class="btn btn-outline-primary btn-sm" for="i${i}${v}">${v}</label>`).join('')}</div></div>`);
+        muPoints.forEach(m => document.getElementById('muBox').innerHTML += `<div class="mu-item"><input type="checkbox" name="mu" value="${m}" class="form-check-input me-1"> ${m}</div>`);
         
         const esc = ["+++", "++", "+", "ok", "-", "--", "---"];
         const d_l = ["P", "IG", "BP", "E", "CS", "TA"];
         const e_l = ["C", "ID", "F", "VB", "R", "B"];
         const mP = (id, list, pref) => list.forEach((p, i) => {
-            document.getElementById(id).innerHTML += `<div class="mb-2 small fw-bold text-primary">${p} <div class="btn-group w-100">${esc.map(v => `<input type="radio" class="btn-check" name="${pref}${i}" id="${pref}${i}${v}" value="${v}" ${v=='ok'?'checked':''}><label class="btn btn-outline-primary btn-sm" style="font-size:0.55rem" for="${pref}${i}${v}">${v}</label>`).join('')}</div></div>`;
+            document.getElementById(id).innerHTML += `<div class="mb-2 small fw-bold">${p} <div class="btn-group w-100">${esc.map(v => `<input type="radio" class="btn-check" name="${pref}${i}" id="${pref}${i}${v}" value="${v}" ${v=='ok'?'checked':''}><label class="btn btn-outline-primary btn-sm py-0" style="font-size:0.5rem" for="${pref}${i}${v}">${v}</label>`).join('')}</div></div>`;
         });
         mP('pDir', d_l, 'pd'); mP('pEsq', e_l, 'pe');
+        
+        const lC = ["Pálida", "Vermelha", "Púrpura", "Azul"];
+        const lF = ["Inchada", "Magra", "Denteada", "Fissurada", "Desviada"];
+        lC.forEach(c => document.getElementById('lCorBox').innerHTML += `<div class="form-check"><input type="checkbox" name="lc" value="${c}" class="form-check-input">${c}</div>`);
+        lF.forEach(f => document.getElementById('lFormBox').innerHTML += `<div class="form-check"><input type="checkbox" name="lf" value="${f}" class="form-check-input">${f}</div>`);
     }
     init();
 
+    function calcScores() {
+        let g=0; document.querySelectorAll('input[name^="g"]:checked').forEach(e => g += parseInt(e.value));
+        let i=0; document.querySelectorAll('input[name^="i"]:checked').forEach(e => i += parseInt(e.value));
+        document.getElementById('gTotal').innerText = "Total: " + g;
+        document.getElementById('iTotal').innerText = "Total: " + i;
+        
+        let desc = "Nível: ";
+        if(i <= 7) desc += "Ausência de insônia";
+        else if(i <= 14) desc += "Insônia sub-clínica";
+        else if(i <= 21) desc += "Insônia moderada";
+        else desc += "Insônia grave";
+        document.getElementById('igiDesc').innerText = desc;
+    }
+
     function ir(n) { document.querySelectorAll('.etapa').forEach(e => e.classList.remove('ativa')); document.getElementById('e'+n).classList.add('ativa'); window.scrollTo(0,0); }
-    function proximo(n) { if(!document.getElementById('lgpd').checked) { alert("Aceite a LGPD para prosseguir."); return; } ir(n); }
+    function proximo(n) { if(!document.getElementById('lgpd').checked) { alert("Aceite a LGPD."); return; } ir(n); }
     function calcIdade() { const n = new Date(document.getElementById('nasc').value); const h = new Date(); let i = h.getFullYear() - n.getFullYear(); document.getElementById('idade').value = i + " anos"; }
 
-    function gerarSugestao() {
-        let gSum = 0; document.querySelectorAll('input[name^="g"]:checked').forEach(e => gSum += parseInt(e.value));
-        const lingua = Array.from(document.querySelectorAll('input[name="lc"]:checked, input[name="lf"]:checked')).map(c => c.value);
-        let s = "<strong>Análise:</strong> ";
-        if(gSum > 10) s += "Ansiedade Moderada/Grave detectada. ";
-        if(lingua.includes("Fissura Longit. Ponta")) s += "Sinal de comprometimento do Xin (Coração). ";
-        if(lingua.includes("Marcas de dentes")) s += "Deficiência de Qi do Baço/Umidade. ";
-        
-        s += "<br><br><strong>Sugestões Baseadas em Auteroche:</strong> Harmonizar Shenmen (C7), Nutrir R3, Estabilizar BP6.";
-        document.getElementById('quadroSugestao').innerHTML = s;
-        ir(4);
-    }
-
     function salvarTudo() {
-        const btn = document.getElementById('btnSalvar'); btn.disabled = true; btn.innerText = "Sincronizando...";
-        const d = { 
-            paciente: btoa(document.getElementById('nome').value), 
-            data: new Date().toLocaleString(), 
-            scores: { g: document.querySelectorAll('input[name^="g"]:checked').length, i: document.querySelectorAll('input[name^="i"]:checked').length },
-            diagnostico: document.getElementById('diag').value 
-        };
-        db.collection("atendimentos_full").add(d).then(() => { alert("ATENDIMENTO SALVO COM SUCESSO!"); location.reload(); });
-    }
-
-    function copiarResumo() {
-        const res = `MÉTODO 360 PROMAX\nID: ${btoa(document.getElementById('nome').value)}\nQP: ${document.getElementById('qp').value}\n` +
-                    `LINGUA: ${Array.from(document.querySelectorAll('input[name="lc"]:checked, input[name="lf"]:checked')).map(c => c.value).join(', ')}\n` +
-                    `ABDOME: ${Array.from(document.querySelectorAll('input[name="ab"]:checked')).map(c => c.value).join(', ')}\n` +
-                    `EVA: ${document.getElementById('eva_a').value} -> ${document.getElementById('eva_d').value}`;
-        navigator.clipboard.writeText(res).then(() => alert("Resumo técnico copiado!"));
+        const btn = document.getElementById('btnSalvar'); btn.disabled = true;
+        const dados = { paciente: btoa(document.getElementById('nome').value), data: new Date().toLocaleString(), conduta: document.getElementById('diag').value };
+        db.collection("atendimentos_pro").add(dados).then(() => { alert("SALVO!"); location.reload(); });
     }
 </script>
 </body>
