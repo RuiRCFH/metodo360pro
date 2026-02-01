@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MÉTODO 360 PRO | V. 5.1 DataSync</title>
+    <title>MÉTODO 360 PRO | V. 5.2 DataSync</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
@@ -19,17 +19,12 @@
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .titulo-secao { color: var(--accent); font-weight: 800; border-bottom: 2px solid #eee; padding-bottom: 8px; margin-bottom: 12px; text-transform: uppercase; font-size: 0.85rem; }
         .compass-box { background: #fffde7; border-left: 10px solid var(--accent); padding: 15px; border-radius: 12px; font-size: 0.85rem; margin-top: 15px; }
-        
-        /* EVA INTERATIVA */
         .eva-container { display: flex; justify-content: space-between; padding: 10px 0; }
         .eva-btn { flex: 1; text-align: center; border: 1px solid #ddd; padding: 8px; cursor: pointer; background: #fff; font-size: 0.9rem; transition: 0.2s; }
-        .eva-active { background: var(--danger) !important; color: white !important; font-weight: bold; border-color: var(--danger); }
-        
-        /* TABELAS */
-        .tongue-matrix { width: 100%; border-collapse: separate; border-spacing: 2px; }
-        .tongue-matrix th { background: var(--primary); color: white; font-size: 0.65rem; padding: 6px; text-align: center; }
+        .eva-active { background: var(--danger) !important; color: white !important; font-weight: bold; }
+        .tongue-matrix { width: 100%; border-collapse: separate; border-spacing: 2px; table-layout: fixed; }
+        .tongue-matrix th { background: var(--primary); color: white; font-size: 0.6rem; padding: 6px; text-align: center; }
         .tongue-matrix td { background: #fff; border: 1px solid #eee; padding: 4px; text-align: center; }
-        
         .btn-pro { background: var(--primary); color: white; padding: 15px; border-radius: 12px; border: none; font-weight: bold; width: 100%; transition: 0.3s; }
         #prevL { max-width: 180px; border-radius: 10px; border: 2px solid var(--accent); display: none; margin: 10px auto; }
     </style>
@@ -39,9 +34,9 @@
 <div id="loginScreen">
     <div class="login-card">
         <h2 class="fw-bold" style="color:var(--primary)">MÉTODO 360</h2>
-        <p class="small text-muted">DATA MIGRATION PROMAX</p>
+        <p class="small text-muted">DATA SYNC + IA BRIDGE</p>
         <input type="password" id="pinInput" class="form-control form-control-lg text-center mb-4" placeholder="PIN (1234)">
-        <button class="btn-pro" onclick="autenticar()">DESBLOQUEAR ACESSO</button>
+        <button class="btn-pro" onclick="autenticar()">DESBLOQUEAR</button>
     </div>
 </div>
 
@@ -49,22 +44,18 @@
     <div class="card-pro">
         
         <div id="e1" class="etapa ativa">
-            <h5 class="titulo-secao">1. Identificação e Investigação de Queixa</h5>
+            <h5 class="titulo-secao">1. Identificação e Investigação</h5>
             <div class="row g-2">
                 <div class="col-md-5"><label class="small fw-bold">NOME:</label><input type="text" id="nome" class="form-control"></div>
                 <div class="col-md-3"><label class="small fw-bold">NASC.:</label><input type="date" id="nasc" class="form-control" onchange="calcIdade()"></div>
                 <div class="col-md-2"><label class="small fw-bold">IDADE:</label><input type="text" id="idade" class="form-control" readonly></div>
-                
                 <div class="col-12 mt-2">
-                    <label class="small fw-bold">EVA INICIAL (0-10):</label>
+                    <label class="small fw-bold">EVA INICIAL:</label>
                     <div class="eva-container" id="evaInicial"></div>
                 </div>
-                
                 <div class="col-12"><label class="small fw-bold">QUEIXA PRINCIPAL (QP):</label><textarea id="qp" class="form-control" rows="2" onkeyup="compass()"></textarea></div>
-                <div class="col-12"><label class="small fw-bold">HISTÓRIA PREGRESSA (HDP):</label><textarea id="hma" class="form-control" rows="2"></textarea></div>
-
+                <div class="col-12"><label class="small fw-bold">HISTÓRIA PREGRESSA (HMA):</label><textarea id="hma" class="form-control" rows="2"></textarea></div>
                 <div class="col-12">
-                    <label class="small fw-bold">DOENÇAS CONFIRMADAS:</label>
                     <div class="p-2 border rounded bg-light d-flex flex-wrap gap-2">
                         <label><input type="checkbox" name="ant" value="Diabetes" onchange="compass()"> Diabetes</label>
                         <label><input type="checkbox" name="ant" value="Hipertensão" onchange="compass()"> Hipertensão</label>
@@ -72,20 +63,20 @@
                     </div>
                 </div>
             </div>
-            <div id="compassE1" class="compass-box"><strong>🧭 Bússola Metafísica:</strong> Aguardando dados...</div>
+            <div id="compassE1" class="compass-box"><strong>🧭 Bússola Metafísica:</strong> Aguardando...</div>
             <div class="mt-3"><input type="checkbox" id="lgpd" onchange="toggleBtn()"> <label for="lgpd" class="small">Autorizo LGPD</label></div>
-            <button id="btnE1" class="btn-pro mt-4" onclick="ir(2)" disabled>AVANÇAR PARA ESCALAS</button>
+            <button id="btnE1" class="btn-pro mt-4" onclick="ir(2)" disabled>AVANÇAR</button>
         </div>
 
         <div id="e2" class="etapa">
-            <h5 class="titulo-secao">2. Escalas GAD-7 / IGI</h5>
+            <h5 class="titulo-secao">2. Escalas Psíquicas</h5>
             <div id="gadBox"></div><div id="gadRes" class="p-2 rounded mt-1 fw-bold text-center text-white" style="background:#ddd">GAD: 0</div>
             <div id="igiBox" class="mt-3"></div><div id="igiRes" class="p-2 rounded mt-1 fw-bold text-center text-white" style="background:#ddd">IGI: 0</div>
-            <div class="d-flex gap-2 mt-4"><button class="btn btn-secondary w-50" onclick="ir(1)">VOLTAR</button><button class="btn-pro w-50" onclick="ir(3)">MTC INTEGRADA</button></div>
+            <div class="d-flex gap-2 mt-4"><button class="btn btn-secondary w-50" onclick="ir(1)">VOLTAR</button><button class="btn-pro w-50" onclick="ir(3)">MTC AVANÇADA</button></div>
         </div>
 
         <div id="e3" class="etapa">
-            <h5 class="titulo-secao">4. Semiologia: Língua e Pulsos</h5>
+            <h5 class="titulo-secao">4. Semiologia Integrada</h5>
             <div class="p-2 border rounded bg-light text-center">
                 <input type="file" id="inputFoto" accept="image/*" class="form-control form-control-sm mb-2" onchange="preview(this)">
                 <img id="prevL" src="">
@@ -98,21 +89,22 @@
             <div class="row"><div class="col-md-6 border-end" id="pDir"></div><div class="col-md-6" id="pEsq"></div></div>
             <h5 class="titulo-secao">6. Pontos Mu</h5>
             <div id="muBox" class="row g-2"></div>
-            <div id="compassMTC" class="compass-box mt-3"><strong>🧭 Bússola Integrada:</strong> Analisando...</div>
+            <div id="compassMTC" class="compass-box mt-3"><strong>🧭 Bússola MTC:</strong> Analisando...</div>
             <div class="d-flex gap-2 mt-4"><button class="btn btn-secondary w-50" onclick="ir(2)">VOLTAR</button><button class="btn-pro w-50" onclick="ir(4)">FINALIZAR</button></div>
         </div>
 
         <div id="e4" class="etapa">
-            <h5 class="titulo-secao">7. Síntese e Salvar Atendimento</h5>
+            <h5 class="titulo-secao">7. Síntese e Soberania Terapêutica</h5>
             <div class="col-12 mb-3">
-                <label class="small fw-bold">EVA FINAL (0-10):</label>
+                <label class="small fw-bold">EVA FINAL:</label>
                 <div class="eva-container" id="evaFinal"></div>
             </div>
             <div id="sugestaoFinalMTC" class="p-3 bg-light border rounded mb-3 small fw-bold text-primary"></div>
-            <textarea id="diag" class="form-control" rows="5" placeholder="Sua conduta definitiva..."></textarea>
-            <div class="d-flex gap-2 mt-3">
-                <button class="btn btn-secondary w-25" onclick="ir(3)">VOLTAR</button>
-                <button id="btnSalvar" class="btn-pro w-75" style="background:var(--success)" onclick="salvarTudo()">SALVAR NO FIREBASE PROMAX</button>
+            <textarea id="diag" class="form-control" rows="5" placeholder="Conduta Final..."></textarea>
+            <div class="d-flex flex-wrap gap-2 mt-3">
+                <button class="btn btn-secondary flex-grow-1" onclick="ir(3)">VOLTAR</button>
+                <button class="btn btn-dark flex-grow-1" onclick="copiarParaIA()">COPIAR PARA IA BRIDGE</button>
+                <button id="btnSalvar" class="btn btn-success flex-grow-1" onclick="salvarTudo()">SALVAR FIREBASE</button>
             </div>
         </div>
     </div>
@@ -172,12 +164,10 @@
         const tg = Array.from(document.querySelectorAll('input[name="tg"]:checked')).map(el => ({s: el.dataset.signal, l: el.dataset.loc}));
         const f = document.querySelector('input[name="pe2"]:checked')?.value || "ok";
         const bp = document.querySelector('input[name="pd2"]:checked')?.value || "ok";
-        
         let h1 = "<strong>🧭 Bússola:</strong> ";
         if(qp.includes("joelho")) h1 += "• Rigidez/Orgulho. ";
         if(qp.includes("estômago")) h1 += "• Não aceitação. ";
         document.getElementById('compassE1').innerHTML = h1;
-
         let sf = "Síndrome Sugerida: ";
         if(f.includes("+++") && bp.includes("---")) sf += "Invasão da Madeira na Terra. ";
         if(tg.some(c => c.s === "Marca de Dentes")) sf += "Def. Qi do Baço. ";
@@ -191,59 +181,24 @@
     }
 
     function ir(n) { document.querySelectorAll('.etapa').forEach(e => e.classList.remove('ativa')); document.getElementById('e'+n).classList.add('ativa'); window.scrollTo(0,0); }
-    function preview(i) { if(i.files && i.files[0]){ const r = new FileReader(); r.onload = (e) => { const m = document.getElementById('prevL'); m.src = e.target.result; m.style.display='block'; }; r.readAsDataURL(i.files[0]); } }
+    function preview(i) { if(i.files && i.files[0]){ const r = new FileReader(); r.onload = (e) => { document.getElementById('prevL').src = e.target.result; document.getElementById('prevL').style.display='block'; }; r.readAsDataURL(i.files[0]); } }
 
-    function coletarDadosTotais() {
-        const getCheck = (n) => Array.from(document.querySelectorAll(`input[name="${n}"]:checked`)).map(el => el.value);
-        const getRadio = (n) => { const el = document.querySelector(`input[name="${n}"]:checked`); return el ? el.value : "ok"; };
-        const getLingua = () => Array.from(document.querySelectorAll('input[name="tg"]:checked')).map(el => `${el.dataset.signal} em ${el.dataset.loc}`);
-
-        return {
-            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-            identificacao: {
-                nome: btoa(document.getElementById('nome').value),
-                idade: document.getElementById('idade').value,
-                eva_inicial: valEvaA,
-                queixa: document.getElementById('qp').value,
-                hma: document.getElementById('hma').value,
-                antecedentes: getCheck('ant')
-            },
-            psiquico: {
-                gad_score: document.getElementById('gadRes').innerText,
-                igi_score: document.getElementById('igiRes').innerText
-            },
-            mtc: {
-                lingua_mapa: getLingua(),
-                pulso_dir: [0,1,2,3,4,5].map(i => getRadio('pd'+i)),
-                pulso_esq: [0,1,2,3,4,5].map(i => getRadio('pe'+i)),
-                pontos_mu: getCheck('mu'),
-                foto_lingua: document.getElementById('prevL').src
-            },
-            conclusao: {
-                eva_final: valEvaD,
-                sindrome: document.getElementById('sugestaoFinalMTC').innerText,
-                conduta: document.getElementById('diag').value
-            }
-        };
+    function copiarParaIA() {
+        const tg = Array.from(document.querySelectorAll('input[name="tg"]:checked')).map(el => `${el.dataset.signal} (${el.dataset.loc})`);
+        const res = `MÉTODO 360 PROMAX - SÍNTESE CLÍNICA\nEVA: ${valEvaA} -> ${valEvaD}\nQP: ${document.getElementById('qp').value}\nLÍNGUA: ${tg.join(', ')}\nBÚSSOLA: ${document.getElementById('sugestaoFinalMTC').innerText}\nCONDUTA: ${document.getElementById('diag').value}`;
+        navigator.clipboard.writeText(res).then(() => alert("Síntese copiada para a IA Bridge!"));
     }
 
     function salvarTudo() {
-        const btn = document.getElementById('btnSalvar');
-        btn.disabled = true;
-        btn.innerText = "SINCRONIZANDO...";
-
-        const dados = coletarDadosTotais();
-
-        db.collection("atendimentos_360").add(dados)
-            .then(() => {
-                alert("✅ ATENDIMENTO SINCRONIZADO COM SUCESSO NO FIREBASE!");
-                location.reload();
-            })
-            .catch((error) => {
-                alert("❌ ERRO AO SALVAR: " + error);
-                btn.disabled = false;
-                btn.innerText = "TENTAR NOVAMENTE";
-            });
+        const getCheck = (n) => Array.from(document.querySelectorAll(`input[name="${n}"]:checked`)).map(el => el.value);
+        const getRadio = (n) => { const el = document.querySelector(`input[name="${n}"]:checked`); return el ? el.value : "ok"; };
+        const dados = {
+            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+            paciente: { nome: btoa(document.getElementById('nome').value), eva_i: valEvaA, qp: document.getElementById('qp').value, hma: document.getElementById('hma').value },
+            mtc: { lingua: Array.from(document.querySelectorAll('input[name="tg"]:checked')).map(el => `${el.dataset.signal} em ${el.dataset.loc}`), pulso_dir: [0,1,2,3,4,5].map(i => getRadio('pd'+i)), pulso_esq: [0,1,2,3,4,5].map(i => getRadio('pe'+i)), foto: document.getElementById('prevL').src },
+            conclusao: { eva_f: valEvaD, conduta: document.getElementById('diag').value }
+        };
+        db.collection("atendimentos_360").add(dados).then(() => { alert("SINCRONIZADO NO FIREBASE!"); location.reload(); });
     }
 </script>
 </body>
