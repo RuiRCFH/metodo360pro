@@ -3,27 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MÉTODO 360 PRO | V. 3.6 Platinum</title>
+    <title>MÉTODO 360 PRO | V. 3.7 Platinum</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <style>
-        :root { --dark: #000d1a; --primary: #002d58; --accent: #c5a059; --bg: #f8f9fa; --success: #198754; --info: #0d6efd; --warning: #ffc107; --danger: #dc3545; }
+        :root { --dark: #000d1a; --primary: #002d58; --accent: #c5a059; --bg: #f8f9fa; --success: #198754; --warning: #ffc107; --danger: #dc3545; }
         body { background: var(--bg); font-family: 'Inter', sans-serif; margin: 0; }
         #loginScreen { background: linear-gradient(135deg, var(--dark) 0%, var(--primary) 100%); height: 100vh; display: flex; align-items: center; justify-content: center; position: fixed; width: 100%; z-index: 9999; }
-        .login-card { background: rgba(255, 255, 255, 0.98); padding: 50px; border-radius: 30px; box-shadow: 0 30px 70px rgba(0,0,0,0.6); text-align: center; width: 420px; border-bottom: 8px solid var(--accent); }
+        .login-card { background: white; padding: 40px; border-radius: 30px; box-shadow: 0 30px 60px rgba(0,0,0,0.5); text-align: center; width: 400px; border-bottom: 8px solid var(--accent); }
         #mainContent { display: none; padding: 20px 15px; }
         .card-pro { background: white; border-radius: 20px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); max-width: 1000px; margin: auto; border-top: 15px solid var(--primary); }
         .etapa { display: none; }
-        .ativa { display: block; animation: fadeInUp 0.4s ease; }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-        .titulo-secao { color: var(--accent); font-weight: 800; border-bottom: 2px solid #eee; padding-bottom: 8px; margin: 20px 0 12px 0; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1.2px; }
-        .score-panel { padding: 10px; border-radius: 10px; font-weight: bold; color: white; margin-bottom: 10px; text-align: center; font-size: 0.85rem; }
-        .brain-box { background: #fffdf2; border: 2px solid var(--accent); padding: 15px; border-radius: 12px; font-size: 0.85rem; color: #856404; margin-top: 15px; border-left: 10px solid var(--accent); }
+        .ativa { display: block; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .titulo-secao { color: var(--accent); font-weight: 800; border-bottom: 2px solid #eee; padding-bottom: 8px; margin-bottom: 12px; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1.2px; }
+        .brain-box { background: #fffdf2; border-left: 10px solid var(--accent); padding: 15px; border-radius: 12px; font-size: 0.85rem; color: #856404; margin-top: 15px; }
+        .map-card { background: #fdfdfd; border: 1px solid #eef2f7; padding: 15px; border-radius: 15px; height: 100%; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+        .tag-local { font-size: 0.65rem; font-weight: bold; color: var(--primary); text-transform: uppercase; display: block; margin-bottom: 5px; background: #eef6ff; padding: 2px 8px; border-radius: 4px; }
         .btn-pro { background: var(--primary); color: white; padding: 15px; border-radius: 12px; border: none; font-weight: bold; width: 100%; transition: 0.3s; }
         #prevL { max-width: 200px; border-radius: 15px; border: 3px solid var(--accent); display: none; margin: 10px auto; }
-        .map-section { background: #fdfdfd; border: 1px solid #e9ecef; padding: 12px; border-radius: 10px; height: 100%; }
-        .local-group { background: #f0f4f8; padding: 8px; border-radius: 8px; margin-top: 5px; }
         .btn-del-foto { position: absolute; top: 15px; right: 5px; background: var(--danger); color: white; border: none; border-radius: 50%; width: 30px; height: 30px; display: none; z-index: 10; }
     </style>
 </head>
@@ -32,8 +31,8 @@
 <div id="loginScreen">
     <div class="login-card">
         <h2 class="fw-bold mb-1" style="color:var(--primary)">MÉTODO 360</h2>
-        <p class="text-muted small mb-4">PLATAFORMA INTEGRATIVA PRO</p>
-        <input type="password" id="pinInput" class="form-control form-control-lg text-center mb-4" placeholder="PIN" onkeypress="if(event.key==='Enter') autenticar()">
+        <p class="text-muted small mb-4">PORTAL DO ESPECIALISTA</p>
+        <input type="password" id="pinInput" class="form-control form-control-lg text-center mb-4" placeholder="****" onkeypress="if(event.key==='Enter') autenticar()">
         <button class="btn-pro" onclick="autenticar()">DESBLOQUEAR ACESSO</button>
     </div>
 </div>
@@ -42,13 +41,13 @@
     <div class="card-pro">
         
         <div id="e1" class="etapa ativa">
-            <h5 class="titulo-secao">1. Identificação Blindada <span id="idConsulta" class="float-end text-muted small">...</span></h5>
+            <h5 class="titulo-secao">1. Identificação Blindada</h5>
             <div class="row g-2">
-                <div class="col-md-6"><label class="small fw-bold">NOME:</label><input type="text" id="nome" class="form-control"></div>
+                <div class="col-md-6"><label class="small fw-bold">NOME COMPLETO:</label><input type="text" id="nome" class="form-control"></div>
                 <div class="col-md-3"><label class="small fw-bold">NASCIMENTO:</label><input type="date" id="nasc" class="form-control" onchange="calcIdade()"></div>
-                <div class="col-md-3"><label class="small fw-bold">IDADE:</label><input type="text" id="idade" class="form-control" readonly placeholder="Calculado"></div>
+                <div class="col-md-3"><label class="small fw-bold">IDADE:</label><input type="text" id="idade" class="form-control" readonly placeholder="..."></div>
                 <div class="col-12"><label class="small fw-bold">QUEIXA PRINCIPAL (QP):</label><textarea id="qp" class="form-control" rows="2"></textarea></div>
-                <div class="col-12"><label class="small fw-bold">HISTÓRIA PREGRESSA (HMA):</label><textarea id="hma" class="form-control" rows="2"></textarea></div>
+                <div class="col-12"><label class="small fw-bold">HISTÓRIA (HMA):</label><textarea id="hma" class="form-control" rows="2"></textarea></div>
                 <div class="col-12"><div class="p-2 bg-light rounded small border"><input type="checkbox" id="lgpd" class="form-check-input me-2"> Autorizo tratamento conforme LGPD.</div></div>
             </div>
             <button class="btn-pro mt-4" onclick="proximo(2)">AVANÇAR PARA ESCALAS</button>
@@ -56,13 +55,13 @@
 
         <div id="e2" class="etapa">
             <h5 class="titulo-secao">2. Escalas Psíquicas (Semáforo)</h5>
-            <div id="gadBox"></div><div id="gadRes" class="score-panel bg-success mt-2">Score GAD: 0</div>
-            <div id="igiBox" class="mt-3"></div><div id="igiRes" class="score-panel bg-success mt-2">Score IGI: 0</div>
+            <div id="gadBox"></div><div id="gadRes" class="score-panel mt-2 text-center p-2 rounded fw-bold" style="background:#ddd">Score GAD: 0</div>
+            <div id="igiBox" class="mt-3"></div><div id="igiRes" class="score-panel mt-2 text-center p-2 rounded fw-bold" style="background:#ddd">Score IGI: 0</div>
             <div class="d-flex gap-2 mt-4"><button class="btn btn-secondary w-50" onclick="ir(1)">VOLTAR</button><button class="btn-pro w-50" onclick="ir(3)">MTC PROMAX</button></div>
         </div>
 
         <div id="e3" class="etapa">
-            <h5 class="titulo-secao">4. Semiologia Lingua ProMax (Mapeamento Dinâmico)</h5>
+            <h5 class="titulo-secao">4. Semiologia Lingua ProMax (Mapeamento)</h5>
             <div class="p-2 border rounded bg-light mb-3 text-center position-relative">
                 <input type="file" accept="image/*" class="form-control mb-1 form-control-sm" onchange="preview(this)">
                 <div style="position:relative; display:inline-block;">
@@ -70,44 +69,38 @@
                 </div>
             </div>
             
-            <div class="row g-2">
+            <div class="row g-3">
                 <div class="col-md-4">
-                    <div class="map-section">
-                        <h6 class="small fw-bold text-primary">A. O CORPO (O QUE?)</h6>
-                        <div id="lCorBox" class="mb-2"></div>
-                        <div class="local-group">
-                            <h6 class="small fw-bold" style="font-size:0.65rem">LOCAL DO SINAL:</h6>
-                            <div id="ltCorBox"></div>
-                        </div>
+                    <div class="map-card">
+                        <span class="tag-local">O Corpo (O quê?)</span>
+                        <div id="lCorBox" class="mb-3"></div>
+                        <span class="tag-local">Topografia (Onde?)</span>
+                        <div id="ltCorBox"></div>
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <div class="map-section">
-                        <h6 class="small fw-bold text-primary">B. A SABURRA (O QUE?)</h6>
-                        <div id="lSabBox" class="mb-2"></div>
-                        <div class="local-group">
-                            <h6 class="small fw-bold" style="font-size:0.65rem">LOCAL DA SABURRA:</h6>
-                            <div id="ltSabBox"></div>
-                        </div>
+                    <div class="map-card">
+                        <span class="tag-local">A Saburra (O quê?)</span>
+                        <div id="lSabBox" class="mb-3"></div>
+                        <span class="tag-local">Topografia (Onde?)</span>
+                        <div id="ltSabBox"></div>
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <div class="map-section">
-                        <h6 class="small fw-bold text-primary">C. ALERTAS (RED FLAGS)</h6>
-                        <div id="lRedBox"></div>
-                        <div class="local-group">
-                            <h6 class="small fw-bold" style="font-size:0.65rem">LOCAL DO ALERTA:</h6>
-                            <div id="ltRedBox"></div>
-                        </div>
+                    <div class="map-card">
+                        <span class="tag-local">Sinais de Alerta</span>
+                        <div id="lRedBox" class="mb-3"></div>
+                        <span class="tag-local">Topografia</span>
+                        <div id="ltRedBox"></div>
                     </div>
                 </div>
             </div>
 
             <div id="brainBox" class="brain-box">
-                <strong>🧠 Cérebro ProMax:</strong> Associe sinal + local para sugestão diagnóstica...
+                <strong>🧠 Cérebro ProMax:</strong> Vincule o sinal ao local para análise simbiótica...
             </div>
 
-            <textarea id="obsLingua" class="form-control mt-3" rows="2" placeholder="Notas livres sobre saburra ausente ou sinais específicos..."></textarea>
+            <textarea id="obsLingua" class="form-control mt-3" rows="2" placeholder="Notas minuciosas (ex: saburra ausente nas laterais)..."></textarea>
 
             <h5 class="titulo-secao">5. Pulsologia Blindada (7 Níveis)</h5>
             <div class="row mb-2"><div class="col-md-6 border-end" id="pDir"></div><div class="col-md-6" id="pEsq"></div></div>
@@ -121,7 +114,7 @@
             <div class="row g-2 mb-3">
                 <div class="col-6"><label class="small fw-bold">EVA INICIAL:</label><input type="number" id="eva_a" class="form-control"></div>
                 <div class="col-6"><label class="small fw-bold">EVA FINAL:</label><input type="number" id="eva_d" class="form-control"></div>
-                <div class="col-12"><textarea id="diag" class="form-control" rows="4" placeholder="Conduta Integrativa Final..."></textarea></div>
+                <div class="col-12"><textarea id="diag" class="form-control" rows="4" placeholder="Conduta Final..."></textarea></div>
             </div>
             <div class="d-flex gap-2">
                 <button class="btn btn-secondary w-25" onclick="ir(3)">VOLTAR</button>
@@ -148,20 +141,19 @@
     function removerFoto() { document.getElementById('prevL').src=''; document.getElementById('prevL').style.display='none'; document.getElementById('btnDel').style.display='none'; }
 
     function init() {
-        document.getElementById('idConsulta').innerText = "ID: AT-" + new Date().getTime().toString().slice(-6);
         const gQ = ["Nervoso/Tenso", "Controle", "Preocupação", "Relaxar", "Inquietude", "Irritabilidade", "Medo"];
         const iQ = ["Início", "Manutenção", "Acordar", "Satisfação", "Interferência", "Percepção", "Preocupação"];
         gQ.forEach((q, i) => document.getElementById('gadBox').innerHTML += `<div class="p-1 border-bottom small">${q} <div class="btn-group w-100">${[0,1,2,3].map(v => `<input type="radio" class="btn-check" name="g${i}" id="g${i}${v}" value="${v}" onchange="calc()"><label class="btn btn-outline-primary btn-sm py-0" style="font-size:0.7rem" for="g${i}${v}">${v}</label>`).join('')}</div></div>`);
         iQ.forEach((q, i) => document.getElementById('igiBox').innerHTML += `<div class="p-1 border-bottom small">${q} <div class="btn-group w-100">${[0,1,2,3,4].map(v => `<input type="radio" class="btn-check" name="i${i}" id="i${i}${v}" value="${v}" onchange="calc()"><label class="btn btn-outline-primary btn-sm py-0" style="font-size:0.7rem" for="i${i}${v}">${v}</label>`).join('')}</div></div>`);
 
         ["Pálida", "Vermelha", "Roxa", "Azul"].forEach(c => document.getElementById('lCorBox').innerHTML += `<div class="small"><input type="checkbox" name="lc" value="${c}" onchange="brain()"> ${c}</div>`);
-        ["Ponta", "Laterais", "Centro", "Raiz"].forEach(t => document.getElementById('ltCorBox').innerHTML += `<div class="form-check-inline small"><input type="checkbox" name="ltc" value="${t}" onchange="brain()"> <label class="me-2">${t}</label></div>`);
+        ["Ponta", "Laterais", "Centro", "Raiz"].forEach(t => document.getElementById('ltCorBox').innerHTML += `<div class="small form-check-inline"><input type="checkbox" name="ltc" value="${t}" onchange="brain()"> ${t}</div>`);
         
-        ["Branca", "Amarela", "Gordurosa", "Seca/Áspera", "Ausente"].forEach(s => document.getElementById('lSabBox').innerHTML += `<div class="small"><input type="checkbox" name="ls" value="${s}" onchange="brain()"> ${s}</div>`);
-        ["Ponta ", "Laterais ", "Centro ", "Raiz "].forEach(t => document.getElementById('ltSabBox').innerHTML += `<div class="form-check-inline small"><input type="checkbox" name="lts" value="${t}" onchange="brain()"> <label class="me-2">${t}</label></div>`);
+        ["Branca", "Amarela", "Gordurosa", "Seca", "Ausente"].forEach(s => document.getElementById('lSabBox').innerHTML += `<div class="small"><input type="checkbox" name="ls" value="${s}" onchange="brain()"> ${s}</div>`);
+        ["Ponta ", "Laterais ", "Centro ", "Raiz "].forEach(t => document.getElementById('ltSabBox').innerHTML += `<div class="small form-check-inline"><input type="checkbox" name="lts" value="${t}" onchange="brain()"> ${t}</div>`);
         
         ["Denteada", "Desviada", "Rachada", "Magra"].forEach(r => document.getElementById('lRedBox').innerHTML += `<div class="small"><input type="checkbox" name="lr" value="${r}" onchange="brain()"> ${r}</div>`);
-        ["Ponta  ", "Laterais  ", "Centro  ", "Raiz  "].forEach(t => document.getElementById('ltRedBox').innerHTML += `<div class="form-check-inline small"><input type="checkbox" name="ltr" value="${t}" onchange="brain()"> <label class="me-2">${t}</label></div>`);
+        ["Ponta  ", "Laterais  ", "Centro  ", "Raiz  "].forEach(t => document.getElementById('ltRedBox').innerHTML += `<div class="small form-check-inline"><input type="checkbox" name="ltr" value="${t}" onchange="brain()"> ${t}</div>`);
 
         const mP = (id, list, pref) => list.forEach((p, i) => {
             document.getElementById(id).innerHTML += `<div class="mb-1 small fw-bold text-primary">${p} <div class="btn-group w-100">${["+++", "++", "+", "ok", "-", "--", "---"].map(v => `<input type="radio" class="btn-check" name="${pref}${i}" id="${pref}${i}${v}" value="${v}" ${v=='ok'?'checked':''}><label class="btn btn-outline-primary btn-sm py-0" style="font-size:0.5rem" for="${pref}${i}${v}">${v}</label>`).join('')}</div></div>`;
@@ -172,26 +164,22 @@
     init();
 
     function brain() {
-        const gV = (n) => Array.from(document.querySelectorAll(`input[name="${n}"]:checked`)).map(e => e.value);
-        const lc = gV("lc"), ltc = gV("ltc"), ls = gV("ls"), lts = getV("lts"), lr = gV("lr"), ltr = gV("ltr");
+        const getV = (n) => Array.from(document.querySelectorAll(`input[name="${n}"]:checked`)).map(e => e.value);
+        const lc = getV("lc"), ltc = getV("ltc"), ls = getV("ls"), lts = getV("lts"), lr = getV("lr");
         let t = "<strong>🧠 Sugestão ProMax:</strong> ", m = "<br><strong>Miasma:</strong> ";
-        
         if(lc.includes("Vermelha") && ltc.includes("Ponta")) t += "🔥 Calor no Coração (Shen). ";
-        if(ls.includes("Amarela") && lts.includes("Raiz ")) t += "💧 Umidade-Calor no Aquecedor Inferior (Bexiga/Intestinos). ";
-        if(ls.includes("Ausente") && lts.includes("Laterais ")) t += "🌵 Vazio de Yin do Fígado (Laterais limpas). ";
-        if(lr.includes("Denteada")) { t += "🌾 Qi do Baço Deficiente. "; m += "Psora. "; }
+        if(ls.includes("Amarela") && lts.includes("Raiz ")) t += "💧 Umidade-Calor no Aquecedor Inferior. ";
+        if(ls.includes("Ausente") && lts.includes("Laterais ")) t += "🌵 Vazio de Yin do Fígado. ";
+        if(lr.includes("Denteada")) { t += "🌾 Deficiência de Qi do Baço. "; m += "Psora. "; }
         if(lc.includes("Roxa") || ls.includes("Gordurosa")) m += "Sicose (Excesso). ";
         if(lr.includes("Desviada")) { t += "🌪️ Vento Interno. "; m += "Sifilismo/Luese. "; }
-        
         document.getElementById('brainBox').innerHTML = t + m;
     }
 
-    function getV(n) { return Array.from(document.querySelectorAll(`input[name="${n}"]:checked`)).map(e => e.value); }
-
     function calc() {
         let g=0, i=0; document.querySelectorAll('input[name^="g"]:checked').forEach(e => g += parseInt(e.value)); document.querySelectorAll('input[name^="i"]:checked').forEach(e => i += parseInt(e.value));
-        const gR = document.getElementById('gadRes'); gR.className = `score-panel bg-${g<=4?"success":g<=9?"info":g<=14?"warning":"danger"} mt-2`; gR.innerText = `Score GAD: ${g} | ${g<=4?"Mínimo":g<=9?"Leve":g<=14?"Moderado":"Grave"}`;
-        const iR = document.getElementById('igiRes'); iR.className = `score-panel bg-${i<=7?"success":i<=14?"info":i<=21?"warning":"danger"} mt-2`; iR.innerText = `Score IGI: ${i} | ${i<=7?"Ausente":i<=14?"Sub-clínico":i<=21?"Moderado":"Grave"}`;
+        const gR = document.getElementById('gadRes'); gR.className = `score-panel bg-${g<=4?"success":g<=9?"info":g<=14?"warning":"danger"} mt-2 text-white`; gR.innerText = `Score GAD: ${g} | ${g<=4?"Mínimo":g<=9?"Leve":g<=14?"Moderado":"Grave"}`;
+        const iR = document.getElementById('igiRes'); iR.className = `score-panel bg-${i<=7?"success":i<=14?"info":i<=21?"warning":"danger"} mt-2 text-white`; iR.innerText = `Score IGI: ${i} | ${i<=7?"Ausente":i<=14?"Sub-clínico":i<=21?"Moderado":"Grave"}`;
     }
 
     function ir(n) { document.querySelectorAll('.etapa').forEach(e => e.classList.remove('ativa')); document.getElementById('e'+n).classList.add('ativa'); window.scrollTo(0,0); }
@@ -201,17 +189,17 @@
         const getC = (n) => Array.from(document.querySelectorAll(`input[name="${n}"]:checked`)).map(el => el.value);
         const getR = (n) => { const el = document.querySelector(`input[name="${n}"]:checked`); return el ? el.value : "ok"; };
         return {
-            id: document.getElementById('idConsulta').innerText, p: btoa(document.getElementById('nome').value), data: new Date().toLocaleString(), qp: document.getElementById('qp').value, hma: document.getElementById('hma').value,
+            p: btoa(document.getElementById('nome').value), data: new Date().toLocaleString(), qp: document.getElementById('qp').value, hma: document.getElementById('hma').value,
             sc: { g: document.getElementById('gadRes').innerText, i: document.getElementById('igiRes').innerText },
-            mtc: { lc: getC('lc'), ltc: getC('ltc'), ls: getC('ls'), lts: getC('lts'), lr: getC('lr'), ltr: getC('ltr'), obs: document.getElementById('obsLingua').value, mu: getC('mu'), pd: [0,1,2,3,4,5].map(i => getR('pd'+i)), pe: [0,1,2,3,4,5].map(i => getR('pe'+i)) },
+            mtc: { lc: getC('lc'), ltc: getC('ltc'), ls: getC('ls'), lts: getC('lts'), lr: getC('lr'), obs: document.getElementById('obsLingua').value, mu: getC('mu'), pd: [0,1,2,3,4,5].map(i => getR('pd'+i)), pe: [0,1,2,3,4,5].map(i => getR('pe'+i)) },
             diag: document.getElementById('diag').value, img: document.getElementById('prevL').src
         };
     }
 
     function copiarResumo() {
         const d = coletar();
-        const res = `MÉTODO 360 PROMAX\nID: ${d.id}\nQP: ${d.qp}\nHMA: ${d.hma}\nESCALAS: ${d.sc.g} | ${d.sc.i}\nLÍNGUA CORPO: ${d.mtc.lc} em ${d.mtc.ltc}\nLÍNGUA SABURRA: ${d.mtc.ls} em ${d.mtc.lts}\nRED FLAGS: ${d.mtc.lr} em ${d.mtc.ltr}\nOBS: ${d.mtc.obs}\nPULSOS: D:[${d.mtc.pd}] E:[${d.mtc.pe}]\nCONDUTA: ${d.diag}`;
-        navigator.clipboard.writeText(res).then(() => alert("Resumo Georeferenciado copiado!"));
+        const res = `MÉTODO 360 PROMAX\nPACIENTE: ANÔNIMO\nQP: ${d.qp}\nHMA: ${d.hma}\nESCALAS: ${d.sc.g} | ${d.sc.i}\nLÍNGUA CORPO: ${d.mtc.lc} em ${d.mtc.ltc}\nLÍNGUA SABURRA: ${d.mtc.ls} em ${d.mtc.lts}\nRED FLAGS: ${d.mtc.lr}\nOBS: ${d.mtc.obs}\nPULSOS: D:[${d.mtc.pd}] E:[${d.mtc.pe}]\nCONDUTA: ${d.diag}`;
+        navigator.clipboard.writeText(res).then(() => alert("Resumo Simbiótico copiado!"));
     }
 
     function salvarTudo() { document.getElementById('btnSalvar').disabled = true; db.collection("atendimentos_full").add(coletar()).then(() => { alert("✅ SALVO!"); location.reload(); }); }
