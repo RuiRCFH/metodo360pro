@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MÉTODO 360 PRO | V. 3.5 Platinum</title>
+    <title>MÉTODO 360 PRO | V. 3.6 Platinum</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
@@ -21,8 +21,9 @@
         .score-panel { padding: 10px; border-radius: 10px; font-weight: bold; color: white; margin-bottom: 10px; text-align: center; font-size: 0.85rem; }
         .brain-box { background: #fffdf2; border: 2px solid var(--accent); padding: 15px; border-radius: 12px; font-size: 0.85rem; color: #856404; margin-top: 15px; border-left: 10px solid var(--accent); }
         .btn-pro { background: var(--primary); color: white; padding: 15px; border-radius: 12px; border: none; font-weight: bold; width: 100%; transition: 0.3s; }
-        #prevL { max-width: 220px; border-radius: 15px; border: 3px solid var(--accent); display: none; margin: 10px auto; }
-        .section-mtc { background: #fdfdfd; border: 1px solid #eee; padding: 15px; border-radius: 12px; height: 100%; }
+        #prevL { max-width: 200px; border-radius: 15px; border: 3px solid var(--accent); display: none; margin: 10px auto; }
+        .map-section { background: #fdfdfd; border: 1px solid #e9ecef; padding: 12px; border-radius: 10px; height: 100%; }
+        .local-group { background: #f0f4f8; padding: 8px; border-radius: 8px; margin-top: 5px; }
         .btn-del-foto { position: absolute; top: 15px; right: 5px; background: var(--danger); color: white; border: none; border-radius: 50%; width: 30px; height: 30px; display: none; z-index: 10; }
     </style>
 </head>
@@ -61,7 +62,7 @@
         </div>
 
         <div id="e3" class="etapa">
-            <h5 class="titulo-secao">4. Semiologia Lingua ProMax (Georeferenciada)</h5>
+            <h5 class="titulo-secao">4. Semiologia Lingua ProMax (Mapeamento Dinâmico)</h5>
             <div class="p-2 border rounded bg-light mb-3 text-center position-relative">
                 <input type="file" accept="image/*" class="form-control mb-1 form-control-sm" onchange="preview(this)">
                 <div style="position:relative; display:inline-block;">
@@ -71,34 +72,42 @@
             
             <div class="row g-2">
                 <div class="col-md-4">
-                    <div class="section-mtc">
-                        <h6 class="small fw-bold">A. COR DO CORPO:</h6>
+                    <div class="map-section">
+                        <h6 class="small fw-bold text-primary">A. O CORPO (O QUE?)</h6>
                         <div id="lCorBox" class="mb-2"></div>
-                        <h6 class="small fw-bold border-top pt-2">LOCAL DO SINAL:</h6>
-                        <div id="lLocCorBox"></div>
+                        <div class="local-group">
+                            <h6 class="small fw-bold" style="font-size:0.65rem">LOCAL DO SINAL:</h6>
+                            <div id="ltCorBox"></div>
+                        </div>
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <div class="section-mtc">
-                        <h6 class="small fw-bold">B. SABURRA (NATUREZA):</h6>
+                    <div class="map-section">
+                        <h6 class="small fw-bold text-primary">B. A SABURRA (O QUE?)</h6>
                         <div id="lSabBox" class="mb-2"></div>
-                        <h6 class="small fw-bold border-top pt-2">LOCAL DA SABURRA:</h6>
-                        <div id="lLocSabBox"></div>
+                        <div class="local-group">
+                            <h6 class="small fw-bold" style="font-size:0.65rem">LOCAL DA SABURRA:</h6>
+                            <div id="ltSabBox"></div>
+                        </div>
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <div class="section-mtc">
-                        <h6 class="small fw-bold">C. SINAIS DE ALERTA:</h6>
+                    <div class="map-section">
+                        <h6 class="small fw-bold text-primary">C. ALERTAS (RED FLAGS)</h6>
                         <div id="lRedBox"></div>
+                        <div class="local-group">
+                            <h6 class="small fw-bold" style="font-size:0.65rem">LOCAL DO ALERTA:</h6>
+                            <div id="ltRedBox"></div>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <div id="brainBox" class="brain-box">
-                <strong>🧠 Cérebro ProMax:</strong> Associe os sinais aos locais para análise...
+                <strong>🧠 Cérebro ProMax:</strong> Associe sinal + local para sugestão diagnóstica...
             </div>
 
-            <textarea id="obsLingua" class="form-control mt-3" rows="2" placeholder="Observações adicionais da língua..."></textarea>
+            <textarea id="obsLingua" class="form-control mt-3" rows="2" placeholder="Notas livres sobre saburra ausente ou sinais específicos..."></textarea>
 
             <h5 class="titulo-secao">5. Pulsologia Blindada (7 Níveis)</h5>
             <div class="row mb-2"><div class="col-md-6 border-end" id="pDir"></div><div class="col-md-6" id="pEsq"></div></div>
@@ -146,12 +155,13 @@
         iQ.forEach((q, i) => document.getElementById('igiBox').innerHTML += `<div class="p-1 border-bottom small">${q} <div class="btn-group w-100">${[0,1,2,3,4].map(v => `<input type="radio" class="btn-check" name="i${i}" id="i${i}${v}" value="${v}" onchange="calc()"><label class="btn btn-outline-primary btn-sm py-0" style="font-size:0.7rem" for="i${i}${v}">${v}</label>`).join('')}</div></div>`);
 
         ["Pálida", "Vermelha", "Roxa", "Azul"].forEach(c => document.getElementById('lCorBox').innerHTML += `<div class="small"><input type="checkbox" name="lc" value="${c}" onchange="brain()"> ${c}</div>`);
-        ["Ponta", "Laterais", "Centro", "Raiz"].forEach(t => document.getElementById('lLocCorBox').innerHTML += `<div class="small"><input type="checkbox" name="ltc" value="${t}" onchange="brain()"> ${t}</div>`);
+        ["Ponta", "Laterais", "Centro", "Raiz"].forEach(t => document.getElementById('ltCorBox').innerHTML += `<div class="form-check-inline small"><input type="checkbox" name="ltc" value="${t}" onchange="brain()"> <label class="me-2">${t}</label></div>`);
         
-        ["Branca", "Amarela", "Gordurosa", "Seca"].forEach(s => document.getElementById('lSabBox').innerHTML += `<div class="small"><input type="checkbox" name="ls" value="${s}" onchange="brain()"> ${s}</div>`);
-        ["Ponta ", "Laterais ", "Centro ", "Raiz "].forEach(t => document.getElementById('lLocSabBox').innerHTML += `<div class="small"><input type="checkbox" name="lts" value="${t}" onchange="brain()"> ${t}</div>`);
+        ["Branca", "Amarela", "Gordurosa", "Seca/Áspera", "Ausente"].forEach(s => document.getElementById('lSabBox').innerHTML += `<div class="small"><input type="checkbox" name="ls" value="${s}" onchange="brain()"> ${s}</div>`);
+        ["Ponta ", "Laterais ", "Centro ", "Raiz "].forEach(t => document.getElementById('ltSabBox').innerHTML += `<div class="form-check-inline small"><input type="checkbox" name="lts" value="${t}" onchange="brain()"> <label class="me-2">${t}</label></div>`);
         
-        ["Denteada (Baço)", "Desviada (Vento)", "Rachada (Shen)", "Magra (Xue)"].forEach(r => document.getElementById('lRedBox').innerHTML += `<div class="small"><input type="checkbox" name="lr" value="${r}" onchange="brain()"> ${r}</div>`);
+        ["Denteada", "Desviada", "Rachada", "Magra"].forEach(r => document.getElementById('lRedBox').innerHTML += `<div class="small"><input type="checkbox" name="lr" value="${r}" onchange="brain()"> ${r}</div>`);
+        ["Ponta  ", "Laterais  ", "Centro  ", "Raiz  "].forEach(t => document.getElementById('ltRedBox').innerHTML += `<div class="form-check-inline small"><input type="checkbox" name="ltr" value="${t}" onchange="brain()"> <label class="me-2">${t}</label></div>`);
 
         const mP = (id, list, pref) => list.forEach((p, i) => {
             document.getElementById(id).innerHTML += `<div class="mb-1 small fw-bold text-primary">${p} <div class="btn-group w-100">${["+++", "++", "+", "ok", "-", "--", "---"].map(v => `<input type="radio" class="btn-check" name="${pref}${i}" id="${pref}${i}${v}" value="${v}" ${v=='ok'?'checked':''}><label class="btn btn-outline-primary btn-sm py-0" style="font-size:0.5rem" for="${pref}${i}${v}">${v}</label>`).join('')}</div></div>`;
@@ -162,19 +172,21 @@
     init();
 
     function brain() {
-        const getV = (n) => Array.from(document.querySelectorAll(`input[name="${n}"]:checked`)).map(e => e.value);
-        const lc = getV("lc"), ltc = getV("ltc"), ls = getV("ls"), lts = getV("lts"), lr = getV("lr");
+        const gV = (n) => Array.from(document.querySelectorAll(`input[name="${n}"]:checked`)).map(e => e.value);
+        const lc = gV("lc"), ltc = gV("ltc"), ls = gV("ls"), lts = getV("lts"), lr = gV("lr"), ltr = gV("ltr");
         let t = "<strong>🧠 Sugestão ProMax:</strong> ", m = "<br><strong>Miasma:</strong> ";
         
         if(lc.includes("Vermelha") && ltc.includes("Ponta")) t += "🔥 Calor no Coração (Shen). ";
-        if(lc.includes("Vermelha") && ltc.includes("Laterais")) t += "😡 Fogo no Fígado (Gan Huo). ";
-        if(ls.includes("Amarela") && lts.includes("Raiz")) t += "💧 Umidade-Calor no Aquecedor Inferior. ";
-        if(lr.includes("Denteada")) { t += "🌾 Deficiência de Qi do Baço. "; m += "Psora (Deficiência). "; }
-        if(ls.includes("Gordurosa")) m += "Sicose (Excesso/Acúmulo). ";
-        if(lr.includes("Rachada") || lr.includes("Desviada")) m += "Sifilismo/Luese (Destrutivo). ";
+        if(ls.includes("Amarela") && lts.includes("Raiz ")) t += "💧 Umidade-Calor no Aquecedor Inferior (Bexiga/Intestinos). ";
+        if(ls.includes("Ausente") && lts.includes("Laterais ")) t += "🌵 Vazio de Yin do Fígado (Laterais limpas). ";
+        if(lr.includes("Denteada")) { t += "🌾 Qi do Baço Deficiente. "; m += "Psora. "; }
+        if(lc.includes("Roxa") || ls.includes("Gordurosa")) m += "Sicose (Excesso). ";
+        if(lr.includes("Desviada")) { t += "🌪️ Vento Interno. "; m += "Sifilismo/Luese. "; }
         
         document.getElementById('brainBox').innerHTML = t + m;
     }
+
+    function getV(n) { return Array.from(document.querySelectorAll(`input[name="${n}"]:checked`)).map(e => e.value); }
 
     function calc() {
         let g=0, i=0; document.querySelectorAll('input[name^="g"]:checked').forEach(e => g += parseInt(e.value)); document.querySelectorAll('input[name^="i"]:checked').forEach(e => i += parseInt(e.value));
@@ -191,14 +203,14 @@
         return {
             id: document.getElementById('idConsulta').innerText, p: btoa(document.getElementById('nome').value), data: new Date().toLocaleString(), qp: document.getElementById('qp').value, hma: document.getElementById('hma').value,
             sc: { g: document.getElementById('gadRes').innerText, i: document.getElementById('igiRes').innerText },
-            mtc: { lc: getC('lc'), ltc: getC('ltc'), ls: getC('ls'), lts: getC('lts'), lr: getC('lr'), obs: document.getElementById('obsLingua').value, mu: getC('mu'), pd: [0,1,2,3,4,5].map(i => getR('pd'+i)), pe: [0,1,2,3,4,5].map(i => getR('pe'+i)) },
+            mtc: { lc: getC('lc'), ltc: getC('ltc'), ls: getC('ls'), lts: getC('lts'), lr: getC('lr'), ltr: getC('ltr'), obs: document.getElementById('obsLingua').value, mu: getC('mu'), pd: [0,1,2,3,4,5].map(i => getR('pd'+i)), pe: [0,1,2,3,4,5].map(i => getR('pe'+i)) },
             diag: document.getElementById('diag').value, img: document.getElementById('prevL').src
         };
     }
 
     function copiarResumo() {
         const d = coletar();
-        const res = `MÉTODO 360 PROMAX\nID: ${d.id}\nQP: ${d.qp}\nHMA: ${d.hma}\nESCALAS: ${d.sc.g} | ${d.sc.i}\nLÍNGUA CORPO: ${d.mtc.lc} em ${d.mtc.ltc}\nLÍNGUA SABURRA: ${d.mtc.ls} em ${d.mtc.lts}\nRED FLAGS: ${d.mtc.lr}\nOBS: ${d.mtc.obs}\nPULSOS: D:[${d.mtc.pd}] E:[${d.mtc.pe}]\nCONDUTA: ${d.diag}`;
+        const res = `MÉTODO 360 PROMAX\nID: ${d.id}\nQP: ${d.qp}\nHMA: ${d.hma}\nESCALAS: ${d.sc.g} | ${d.sc.i}\nLÍNGUA CORPO: ${d.mtc.lc} em ${d.mtc.ltc}\nLÍNGUA SABURRA: ${d.mtc.ls} em ${d.mtc.lts}\nRED FLAGS: ${d.mtc.lr} em ${d.mtc.ltr}\nOBS: ${d.mtc.obs}\nPULSOS: D:[${d.mtc.pd}] E:[${d.mtc.pe}]\nCONDUTA: ${d.diag}`;
         navigator.clipboard.writeText(res).then(() => alert("Resumo Georeferenciado copiado!"));
     }
 
