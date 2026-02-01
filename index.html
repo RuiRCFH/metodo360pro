@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MÉTODO 360 PRO | V. 4.7 Platinum</title>
+    <title>MÉTODO 360 PRO | V. 4.8 Platinum</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
@@ -22,9 +22,10 @@
         .tongue-matrix { width: 100%; border-collapse: separate; border-spacing: 2px; }
         .tongue-matrix th { background: var(--primary); color: white; font-size: 0.6rem; padding: 6px; text-align: center; }
         .tongue-matrix td { background: #fff; border: 1px solid #eee; padding: 4px; text-align: center; }
-        .btn-pro { background: var(--primary); color: white; padding: 15px; border-radius: 12px; border: none; font-weight: bold; width: 100%; }
+        .btn-pro { background: var(--primary); color: white; padding: 15px; border-radius: 12px; border: none; font-weight: bold; width: 100%; transition: 0.3s; }
         #prevL { max-width: 180px; border-radius: 10px; border: 2px solid var(--accent); display: none; margin: 10px auto; }
         .sugestao-final { background: #eef6ff; border-left: 10px solid #0d6efd; padding: 15px; border-radius: 12px; font-size: 0.85rem; margin-top: 20px; }
+        .eva-badge { background: var(--danger); color: white; padding: 5px 12px; border-radius: 20px; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -42,45 +43,45 @@
     <div class="card-pro">
         
         <div id="e1" class="etapa ativa">
-            <h5 class="titulo-secao">1. Identificação e História Pregressa</h5>
+            <h5 class="titulo-secao">1. Identificação e Investigação Inicial</h5>
             <div class="row g-2">
-                <div class="col-md-6"><label class="small fw-bold">NOME:</label><input type="text" id="nome" class="form-control"></div>
+                <div class="col-md-5"><label class="small fw-bold">NOME:</label><input type="text" id="nome" class="form-control"></div>
                 <div class="col-md-3"><label class="small fw-bold">NASC.:</label><input type="date" id="nasc" class="form-control" onchange="calcIdade()"></div>
-                <div class="col-md-3"><label class="small fw-bold">IDADE:</label><input type="text" id="idade" class="form-control" readonly></div>
+                <div class="col-md-2"><label class="small fw-bold">IDADE:</label><input type="text" id="idade" class="form-control" readonly></div>
+                <div class="col-md-2"><label class="small fw-bold">EVA INICIAL:</label><input type="number" id="eva_a" min="0" max="10" class="form-control" placeholder="0-10"></div>
                 
-                <div class="col-12"><label class="small fw-bold">QUEIXA PRINCIPAL (QP):</label><textarea id="qp" class="form-control" rows="2" onkeyup="compass()" placeholder="Ex: Joelho, Estômago, Enxaqueca, Coluna..."></textarea></div>
+                <div class="col-12"><label class="small fw-bold">QUEIXA PRINCIPAL (QP):</label><textarea id="qp" class="form-control" rows="2" onkeyup="compass()" placeholder="Ex: Joelho, Estômago, Cabeça..."></textarea></div>
                 
-                <div class="col-12"><label class="small fw-bold">HISTÓRIA DA DOENÇA PREGRESSA/ATUAL (HMA):</label><textarea id="hma" class="form-control" rows="2" placeholder="Descreva a evolução e histórico dos sintomas..."></textarea></div>
+                <div class="col-12"><label class="small fw-bold">HISTÓRIA PREGRESSA (HMA):</label><textarea id="hma" class="form-control" rows="2" placeholder="Histórico da doença e antecedentes..."></textarea></div>
 
-                <div class="col-12"><label class="small fw-bold">DOENÇAS CONFIRMADAS / ANTECEDENTES:</label>
+                <div class="col-12"><label class="small fw-bold">DOENÇAS CONFIRMADAS:</label>
                     <div class="p-2 border rounded bg-light d-flex flex-wrap gap-2">
                         <label><input type="checkbox" name="ant" value="Diabetes" onchange="compass()"> Diabetes</label>
                         <label><input type="checkbox" name="ant" value="Hipertensão" onchange="compass()"> Hipertensão</label>
-                        <label><input type="checkbox" name="ant" value="Hipotireoidismo" onchange="compass()"> Tireoide</label>
-                        <input type="text" id="antOutros" class="form-control form-control-sm w-50" placeholder="Outras doenças confirmadas..." onkeyup="compass()">
+                        <input type="text" id="antOutros" class="form-control form-control-sm w-50" placeholder="Outras doenças..." onkeyup="compass()">
                     </div>
                 </div>
             </div>
-            <div id="compassE1" class="compass-box"><strong>🧭 Percepção Inicial:</strong> Aguardando queixa...</div>
+            <div id="compassE1" class="compass-box"><strong>🧭 Percepção Metafísica:</strong> Aguardando queixa...</div>
             <div class="mt-3"><input type="checkbox" id="lgpd" onchange="toggleBtn()"> <label for="lgpd" class="small">Autorizo LGPD</label></div>
             <button id="btnE1" class="btn-pro mt-4" onclick="ir(2)" disabled>AVANÇAR PARA ESCALAS</button>
         </div>
 
         <div id="e2" class="etapa">
-            <h5 class="titulo-secao">2. Escalas Psíquicas (GAD-7 / IGI)</h5>
-            <div id="gadBox"></div><div id="gadRes" class="score-panel mt-2" style="background:#ddd">GAD: 0</div>
-            <div id="igiBox" class="mt-3"></div><div id="igiRes" class="score-panel mt-2" style="background:#ddd">IGI: 0</div>
+            <h5 class="titulo-secao">2. GAD-7 / IGI (Simbiose Psíquica)</h5>
+            <div id="gadBox"></div><div id="gadRes" class="p-2 rounded mt-1 fw-bold text-center text-white" style="background:#ddd">GAD: 0</div>
+            <div id="igiBox" class="mt-3"></div><div id="igiRes" class="p-2 rounded mt-1 fw-bold text-center text-white" style="background:#ddd">IGI: 0</div>
             <div class="d-flex gap-2 mt-4"><button class="btn btn-secondary w-50" onclick="ir(1)">VOLTAR</button><button class="btn-pro w-50" onclick="ir(3)">MTC INTEGRADA</button></div>
         </div>
 
         <div id="e3" class="etapa">
-            <h5 class="titulo-secao">4. Semiologia: Língua e Fotos</h5>
+            <h5 class="titulo-secao">4. Semiologia: Língua (Foto e Matriz)</h5>
             <div class="p-2 border rounded bg-light text-center">
                 <input type="file" id="inputFoto" accept="image/*" class="form-control form-control-sm mb-2" onchange="preview(this)">
                 <img id="prevL" src="">
             </div>
             <table class="tongue-matrix mt-3">
-                <thead><tr><th style="text-align:left">SINAL</th><th>PONTA</th><th>LAT</th><th>CENTRO</th><th>RAIZ</th></tr></thead>
+                <thead><tr><th style="text-align:left; width:30%">SINAL</th><th>PONTA</th><th>LAT</th><th>CENTRO</th><th>RAIZ</th></tr></thead>
                 <tbody id="tongueBody"></tbody>
             </table>
 
@@ -90,19 +91,25 @@
             <h5 class="titulo-secao">6. Pontos Mu / Álgicos</h5>
             <div id="muBox" class="row g-2"></div>
 
-            <div id="compassMTC" class="compass-box mt-3"><strong>🧭 Bússola MTC Integrada:</strong> Analisando simbiose...</div>
+            <div id="compassMTC" class="compass-box mt-3"><strong>🧭 Bússola MTC:</strong> Analisando simbiose...</div>
 
             <div class="d-flex gap-2 mt-4"><button class="btn btn-secondary w-50" onclick="ir(2)">VOLTAR</button><button class="btn-pro w-50" onclick="ir(4)">FINALIZAR</button></div>
         </div>
 
         <div id="e4" class="etapa">
-            <h5 class="titulo-secao">7. Síntese e Conduta MTC</h5>
-            <div id="sugestaoFinalMTC" class="sugestao-final">Aguardando dados...</div>
+            <h5 class="titulo-secao">7. Síntese e Soberania Terapêutica</h5>
+            <div class="row mb-3 align-items-center">
+                <div class="col-md-4 text-center">
+                    <span class="small fw-bold">EVA INICIAL:</span> <span id="vEvaA" class="eva-badge">0</span>
+                </div>
+                <div class="col-md-4"><label class="small fw-bold">EVA FINAL:</label><input type="number" id="eva_d" min="0" max="10" class="form-control" placeholder="0-10"></div>
+            </div>
+            <div id="sugestaoFinalMTC" class="sugestao-final">Aguardando dados para síntese diagnóstica...</div>
             <textarea id="diag" class="form-control mt-3" rows="5" placeholder="Sua conduta magistral definitiva..."></textarea>
             <div class="d-flex gap-2 mt-3">
                 <button class="btn btn-secondary w-25" onclick="ir(3)">VOLTAR</button>
                 <button class="btn-dark btn w-25" onclick="copiarResumo()">COPIAR IA</button>
-                <button id="btnSalvar" class="btn-pro w-50" style="background:var(--success)" onclick="salvarTudo()">SALVAR</button>
+                <button id="btnSalvar" class="btn-pro w-50" style="background:var(--success)" onclick="salvarTudo()">SALVAR NO FIREBASE</button>
             </div>
         </div>
     </div>
@@ -145,48 +152,11 @@
 
     function compass() {
         const qp = document.getElementById('qp').value.toLowerCase();
-        const ant = Array.from(document.querySelectorAll('input[name="ant"]:checked')).map(el => el.value);
-        const checks = Array.from(document.querySelectorAll('input[name="tg"]:checked')).map(el => ({s: el.dataset.signal, l: el.dataset.loc}));
+        const tg = Array.from(document.querySelectorAll('input[name="tg"]:checked')).map(el => ({s: el.dataset.signal, l: el.dataset.loc}));
         const f = document.querySelector('input[name="pe2"]:checked')?.value || "ok";
         const bp = document.querySelector('input[name="pd2"]:checked')?.value || "ok";
         const mu = Array.from(document.querySelectorAll('input[name="mu"]:checked')).map(el => el.value);
+        document.getElementById('vEvaA').innerText = document.getElementById('eva_a').value || "0";
 
         let h1 = "<strong>🧭 Percepção Metafísica:</strong><br>";
-        if(qp.includes("joelho")) h1 += "• Joelhos: Rigidez, orgulho ou medo de ceder/mudar.<br>";
-        if(qp.includes("ombro")) h1 += "• Ombros: Excesso de carga, responsabilidade pesada.<br>";
-        if(qp.includes("estômago") || qp.includes("gastrite")) h1 += "• Estômago: Dificuldade em aceitar ideias ou situações novas.<br>";
-        if(qp.includes("coluna")) h1 += "• Coluna: Falta de suporte emocional ou sobrecarga vital.<br>";
-        if(qp.includes("garganta")) h1 += "• Garganta: Sapos engolidos, criatividade bloqueada.<br>";
-        if(ant.includes("Diabetes")) h1 += "• Diabetes: Falta de doçura na vida ou tristeza profunda.<br>";
-        document.getElementById('compassE1').innerHTML = h1;
-
-        let h2 = "<strong>🧭 Bússola MTC (Integração):</strong><br>";
-        if(f.includes("+++") && bp.includes("---")) h2 += "• Fígado agredindo Baço (Ciclo Ke).<br>";
-        if(checks.some(c => c.s === "Marca de Dentes")) h2 += "• Língua Denteada: Confirma Deficiência de Qi do Baço.<br>";
-        if(mu.includes("VC12")) h2 += "• Ponto Mu VC12: Reforça patologia de Estômago.<br>";
-        if(checks.some(c => c.s === "Cor Vermelha") && checks.some(c => c.l === "Ponta")) h2 += "• Calor no Coração (Shen agitado).<br>";
-        document.getElementById('compassMTC').innerHTML = h2;
-
-        let sf = "<strong>Esboço Diagnóstico MTC:</strong><br>";
-        if(f.includes("+++")) sf += "Ascensão do Yang do Fígado. ";
-        if(checks.some(c => c.s === "Marca de Dentes")) sf += "Deficiência de Qi do Baço. ";
-        sf += "<br><strong>Pontos Sugeridos:</strong> F3 (sedar), BP6 (harmonizar), VC12 (Mu do E), B20 (Shu do BP).";
-        document.getElementById('sugestaoFinalMTC').innerHTML = sf;
-    }
-
-    function calc() {
-        let g=0, i=0; document.querySelectorAll('input[name^="g"]:checked').forEach(e => g += parseInt(e.value)); document.querySelectorAll('input[name^="i"]:checked').forEach(e => i += parseInt(e.value));
-        const gR = document.getElementById('gadRes'); gR.className = `score-panel mt-2 bg-${g<=4?"success":g<=9?"info":g<=14?"warning":"danger"}`; gR.innerText = `GAD: ${g}`;
-        const iR = document.getElementById('igiRes'); iR.className = `score-panel mt-2 bg-${i<=7?"success":i<=14?"info":i<=21?"warning":"danger"}`; iR.innerText = `IGI: ${i}`;
-        compass();
-    }
-
-    function ir(n) { document.querySelectorAll('.etapa').forEach(e => e.classList.remove('ativa')); document.getElementById('e'+n).classList.add('ativa'); window.scrollTo(0,0); }
-    function copiarResumo() {
-        const res = `MÉTODO 360 PROMAX\nQP: ${document.getElementById('qp').value}\nHMA: ${document.getElementById('hma').value}\n${document.getElementById('sugestaoFinalMTC').innerText}\nCONDUTA: ${document.getElementById('diag').value}`;
-        navigator.clipboard.writeText(res).then(() => alert("Copiado!"));
-    }
-    function salvarTudo() { db.collection("atendimentos_full").add({ data: new Date().toLocaleString(), img: document.getElementById('prevL').src }).then(() => { alert("SALVO!"); location.reload(); }); }
-</script>
-</body>
-</html>
+        if(qp.includes("joelho")) h1 +=
