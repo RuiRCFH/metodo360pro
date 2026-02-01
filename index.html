@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MÉTODO 360 PRO | V. 4.3 Platinum</title>
+    <title>MÉTODO 360 PRO | V. 4.4 Platinum</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <style>
-        :root { --dark: #000d1a; --primary: #002d58; --accent: #c5a059; --bg: #f8f9fa; --success: #198754; --info: #0d6efd; --warning: #ffc107; --danger: #dc3545; }
+        :root { --dark: #000d1a; --primary: #002d58; --accent: #c5a059; --bg: #f8f9fa; --success: #198754; --warning: #ffc107; --danger: #dc3545; }
         body { background: var(--bg); font-family: 'Inter', sans-serif; margin: 0; padding-bottom: 80px; }
         #loginScreen { background: linear-gradient(135deg, var(--dark) 0%, var(--primary) 100%); height: 100vh; display: flex; align-items: center; justify-content: center; position: fixed; width: 100%; z-index: 9999; }
         .login-card { background: white; padding: 40px; border-radius: 30px; box-shadow: 0 30px 60px rgba(0,0,0,0.5); text-align: center; width: 400px; border-bottom: 8px solid var(--accent); }
@@ -19,16 +19,16 @@
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .titulo-secao { color: var(--accent); font-weight: 800; border-bottom: 2px solid #eee; padding-bottom: 8px; margin-bottom: 12px; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1.2px; }
         
-        /* BÚSSOLA PROMAX ATUALIZADA */
-        .compass-box { background: #fffde7; border-left: 10px solid var(--accent); padding: 15px; border-radius: 12px; font-size: 0.85rem; color: #444; margin-top: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-        .sugestao-item { border-bottom: 1px solid #eee; padding: 5px 0; margin-bottom: 5px; }
-        .tag-simbiose { font-size: 0.65rem; font-weight: 800; padding: 2px 6px; border-radius: 4px; color: white; margin-right: 5px; }
+        /* BÚSSOLA PROMAX INTEGRADA */
+        .compass-box { background: #fffde7; border-left: 10px solid var(--accent); padding: 15px; border-radius: 12px; font-size: 0.85rem; color: #444; margin-top: 15px; }
+        .tag-simbiose { font-size: 0.65rem; font-weight: 800; padding: 2px 6px; border-radius: 4px; color: white; margin-right: 5px; text-transform: uppercase; }
         
         .tongue-matrix { width: 100%; border-collapse: separate; border-spacing: 2px; margin-bottom: 15px; table-layout: fixed; }
         .tongue-matrix th { background: var(--primary); color: white; font-size: 0.6rem; padding: 6px; text-align: center; border-radius: 4px; }
         .tongue-matrix td { background: #fff; border: 1px solid #eee; padding: 4px; text-align: center; }
         .btn-pro { background: var(--primary); color: white; padding: 15px; border-radius: 12px; border: none; font-weight: bold; width: 100%; transition: 0.3s; }
-        .btn-pro:disabled { background: #ccc; }
+        #prevL { max-width: 200px; border-radius: 15px; border: 3px solid var(--accent); display: none; margin: 10px auto; }
+        .btn-del-foto { position: absolute; top: 15px; right: 5px; background: var(--danger); color: white; border: none; border-radius: 50%; width: 30px; height: 30px; display: none; z-index: 10; }
     </style>
 </head>
 <body>
@@ -36,7 +36,7 @@
 <div id="loginScreen">
     <div class="login-card">
         <h2 class="fw-bold mb-1" style="color:var(--primary)">MÉTODO 360</h2>
-        <p class="text-muted small mb-4">PULSOLOGIA PROMAX INTEGRADA</p>
+        <p class="text-muted small mb-4">VERSÃO 4.4 PLATINUM</p>
         <input type="password" id="pinInput" class="form-control form-control-lg text-center mb-4" placeholder="****" onkeypress="if(event.key==='Enter') autenticar()">
         <button class="btn-pro" onclick="autenticar()">DESBLOQUEAR ACESSO</button>
     </div>
@@ -46,26 +46,46 @@
     <div class="card-pro">
         
         <div id="e1" class="etapa ativa">
-            <h5 class="titulo-secao">1. Identificação Blindada <span id="idConsulta" class="float-end text-muted small">...</span></h5>
+            <h5 class="titulo-secao">1. Identificação e História Pregressa</h5>
             <div class="row g-2">
                 <div class="col-md-6"><label class="small fw-bold">NOME:</label><input type="text" id="nome" class="form-control"></div>
                 <div class="col-md-3"><label class="small fw-bold">NASCIMENTO:</label><input type="date" id="nasc" class="form-control" onchange="calcIdade()"></div>
-                <div class="col-md-3"><label class="small fw-bold">IDADE:</label><input type="text" id="idade" class="form-control" readonly placeholder="Calculado"></div>
+                <div class="col-md-3"><label class="small fw-bold">IDADE:</label><input type="text" id="idade" class="form-control" readonly></div>
+                
                 <div class="col-12"><label class="small fw-bold">QUEIXA PRINCIPAL (QP):</label><textarea id="qp" class="form-control" rows="2" onkeyup="compass()"></textarea></div>
-                <div class="col-12"><div class="p-2 bg-light rounded border"><input type="checkbox" id="lgpd" class="form-check-input me-2" onchange="toggleBtn()"> <label for="lgpd" class="small fw-bold">Autorizo LGPD.</label></div></div>
+                <div class="col-12"><label class="small fw-bold">HISTÓRIA DA DOENÇA ATUAL (HMA):</label><textarea id="hma" class="form-control" rows="2" placeholder="Evolução dos sintomas..."></textarea></div>
+                
+                <div class="col-12"><label class="small fw-bold">DOENÇAS CONFIRMADAS / ANTECEDENTES:</label>
+                    <div class="p-2 border rounded bg-light d-flex flex-wrap gap-2">
+                        <div class="form-check"><input type="checkbox" class="form-check-input" name="ant" value="Diabetes" onchange="compass()"> Diabetes</div>
+                        <div class="form-check"><input type="checkbox" class="form-check-input" name="ant" value="Hipertensão" onchange="compass()"> Hipertensão</div>
+                        <div class="form-check"><input type="checkbox" class="form-check-input" name="ant" value="Gastrite" onchange="compass()"> Gastrite</div>
+                        <div class="form-check"><input type="checkbox" class="form-check-input" name="ant" value="Ansiedade" onchange="compass()"> Ansiedade</div>
+                        <input type="text" id="antOutros" class="form-control form-control-sm w-25" placeholder="Outros..." onkeyup="compass()">
+                    </div>
+                </div>
+                
+                <div class="col-12"><div class="p-2 bg-light rounded small border"><input type="checkbox" id="lgpd" class="form-check-input me-2" onchange="toggleBtn()"> <label for="lgpd" class="small fw-bold">Autorizo LGPD.</label></div></div>
             </div>
             <button id="btnEtapa1" class="btn-pro mt-4" onclick="ir(2)" disabled>AVANÇAR PARA ESCALAS</button>
         </div>
 
         <div id="e2" class="etapa">
             <h5 class="titulo-secao">2. Escalas Psíquicas (Semáforo)</h5>
-            <div id="gadBox"></div><div id="gadRes" class="p-2 rounded mt-1 fw-bold text-center text-white" style="background:#ddd">GAD: 0</div>
-            <div id="igiBox" class="mt-3"></div><div id="igiRes" class="p-2 rounded mt-1 fw-bold text-center text-white" style="background:#ddd">IGI: 0</div>
+            <div id="gadBox"></div><div id="gadRes" class="score-panel mt-2 text-center p-2 rounded fw-bold text-white" style="background:#ddd">GAD: 0</div>
+            <div id="igiBox" class="mt-3"></div><div id="igiRes" class="score-panel mt-2 text-center p-2 rounded fw-bold text-white" style="background:#ddd">IGI: 0</div>
             <div class="d-flex gap-2 mt-4"><button class="btn btn-secondary w-50" onclick="ir(1)">VOLTAR</button><button class="btn-pro w-50" onclick="ir(3)">MTC PROMAX</button></div>
         </div>
 
         <div id="e3" class="etapa">
-            <h5 class="titulo-secao">4. Semiologia Integrada (Língua e Pulsos)</h5>
+            <h5 class="titulo-secao">4. Semiologia da Língua (Foto e Matriz)</h5>
+            <div class="p-2 border rounded bg-light mb-3 text-center position-relative">
+                <input type="file" id="inputFoto" accept="image/*" class="form-control mb-1 form-control-sm" onchange="preview(this)">
+                <div style="position:relative; display:inline-block;">
+                    <img id="prevL" src="">
+                    <button type="button" class="btn-del-foto" id="btnDel" onclick="removerFoto()">×</button>
+                </div>
+            </div>
             
             <table class="tongue-matrix">
                 <thead><tr><th style="text-align:left">SINAL</th><th>PONTA</th><th>LAT</th><th>CENTRO</th><th>RAIZ</th></tr></thead>
@@ -73,32 +93,23 @@
             </table>
 
             <h5 class="titulo-secao">5. Pulsologia Blindada (Intensidade +++ a ---)</h5>
-            <div class="row mb-2">
-                <div class="col-md-6 border-end" id="pDir"></div>
-                <div class="col-md-6" id="pEsq"></div>
-            </div>
+            <div class="row mb-2"><div class="col-md-6 border-end" id="pDir"></div><div class="col-md-6" id="pEsq"></div></div>
 
-            <div id="compassBox" class="compass-box"><strong>🧭 Bússola ProMax:</strong> Vincule os sinais para análise sistêmica...</div>
+            <div id="compassBox" class="compass-box"><strong>🧭 Bússola ProMax:</strong> Vincule sinais e queixas para análise...</div>
 
-            <h5 class="titulo-secao">6. Pontos Mu</h5>
-            <div id="muBox" class="row g-2 mb-3"></div>
             <div class="d-flex gap-2 mt-4"><button class="btn btn-secondary w-50" onclick="ir(2)">VOLTAR</button><button class="btn-pro w-50" onclick="ir(4)">FINALIZAR</button></div>
         </div>
 
         <div id="e4" class="etapa">
-            <h5 class="titulo-secao">7. Diagnóstico e Sincronização</h5>
-            <textarea id="diag" class="form-control" rows="6" placeholder="Conduta Final..."></textarea>
+            <h5 class="titulo-secao">7. Diagnóstico Final</h5>
+            <textarea id="diag" class="form-control" rows="6" placeholder="Conduta Integrativa..."></textarea>
             <div class="d-flex gap-2 mt-3">
                 <button class="btn btn-secondary w-25" onclick="ir(3)">VOLTAR</button>
-                <button class="btn-dark btn w-25" onclick="copiarResumo()">COPIAR IA</button>
+                <button class="btn btn-dark w-25" onclick="copiarResumo()">COPIAR IA</button>
                 <button id="btnSalvar" class="btn-pro w-50" style="background:var(--success)" onclick="salvarTudo()">SALVAR</button>
             </div>
         </div>
     </div>
-</div>
-
-<div class="disclaimer-bar" style="position:fixed; bottom:0; width:100%; background:#eee; font-size:0.7rem; text-align:center; padding:5px; border-top:1px solid #ccc;">
-    ⚠️ Pulsologia ProMax: Sistema de auxílio ao diagnóstico. A soberania clínica é do terapeuta.
 </div>
 
 <script>
@@ -114,6 +125,8 @@
         document.getElementById('idade').value = idade + " anos";
     }
     function toggleBtn() { document.getElementById('btnEtapa1').disabled = !document.getElementById('lgpd').checked; }
+    function preview(i) { if(i.files && i.files[0]){ const r = new FileReader(); r.onload = (e) => { const m = document.getElementById('prevL'); m.src = e.target.result; m.style.display='block'; document.getElementById('btnDel').style.display='block'; }; r.readAsDataURL(i.files[0]); } }
+    function removerFoto() { document.getElementById('inputFoto').value=""; document.getElementById('prevL').src=''; document.getElementById('prevL').style.display='none'; document.getElementById('btnDel').style.display='none'; }
 
     function init() {
         document.getElementById('idConsulta').innerText = "ID: AT-" + new Date().getTime().toString().slice(-6);
@@ -132,56 +145,42 @@
             document.getElementById(id).innerHTML += `<div class="mb-1 small fw-bold text-primary">${p} <div class="btn-group w-100">${["+++", "++", "+", "ok", "-", "--", "---"].map(v => `<input type="radio" class="btn-check" name="${pref}${i}" id="${pref}${i}${v}" value="${v}" ${v=='ok'?'checked':''} onchange="compass()"><label class="btn btn-outline-primary btn-sm py-0" style="font-size:0.5rem" for="${pref}${i}${v}">${v}</label>`).join('')}</div></div>`;
         });
         mP('pDir', ["P (1DP)", "IG", "BP (2DP)", "E", "CS (3DP)", "TA"], 'pd'); mP('pEsq', ["C (1EP)", "ID", "F (2EP)", "VB", "R (3EP)", "B"], 'pe');
-        ["P1", "VC17", "VC14", "VC12", "F13", "F14", "VB24", "VB25", "E25", "VC4", "VC3"].forEach(m => document.getElementById('muBox').innerHTML += `<div class="col-4 col-md-3"><div class="p-1 border rounded small text-center"><input type="checkbox" name="mu" value="${m}"> ${m}</div></div>`);
     }
     init();
 
     function compass() {
-        const getTG = () => Array.from(document.querySelectorAll('input[name="tg"]:checked')).map(el => ({s: el.dataset.signal, l: el.dataset.loc}));
-        const getPulso = (pref, idx) => { const el = document.querySelector(`input[name="${pref}${idx}"]:checked`); return el ? el.value : "ok"; };
         const qp = document.getElementById('qp').value.toLowerCase();
+        const ant = Array.from(document.querySelectorAll('input[name="ant"]:checked')).map(el => el.value);
+        const checks = Array.from(document.querySelectorAll('input[name="tg"]:checked')).map(el => ({s: el.dataset.signal, l: el.dataset.loc}));
+        const f = document.querySelector('input[name="pe2"]:checked')?.value || "ok";
+        const bp = document.querySelector('input[name="pd2"]:checked')?.value || "ok";
         
-        let h = "<strong>🧭 Bússola ProMax (Simbiose):</strong><br>";
+        let h = "<strong>🧭 Bússola ProMax:</strong><br>";
         
-        // Lógica de Pulsologia ProMax (Base: Pulsologia ProMax.docx)
-        const f = getPulso('pe', 2); // Fígado (2EP)
-        const bp = getPulso('pd', 2); // Baço (2DP)
-        const c = getPulso('pe', 0); // Coração (1EP)
-        const rYin = getPulso('pe', 4); // Rim Yin (3EP)
-        const rYang = getPulso('pd', 4); // Rim Yang (3DP)
-
-        if(f.includes("+++") && bp.includes("---")) h += `<div class="sugestao-item"><span class="tag-simbiose bg-danger">PULSO</span> Ciclo Ke: Fígado agredindo o Baço. Obsessão alimentada por frustração.</div>`;
-        if(c.includes("+++")) h += `<div class="sugestao-item"><span class="tag-simbiose bg-danger">PULSO</span> Shen (Mente) sob pressão. Calor provável.</div>`;
-        if(rYang.includes("---") && qp.includes("energia")) h += `<div class="sugestao-item"><span class="tag-simbiose bg-warning">ALERTA</span> Falso Yang: Relato de energia alta com base vital vazia. Risco de esgotamento.</div>`;
-        if(rYin.includes("---")) h += `<div class="sugestao-item"><span class="tag-simbiose bg-danger">PULSO</span> Deficiência de Raiz (Yin do Rim). Medo ou insegurança profunda.</div>`;
-
-        // Lógica de Língua
-        const tg = getTG();
-        if(tg.some(x => x.s === "Cor Vermelha" && x.l === "Ponta")) h += `<div class="sugestao-item"><span class="tag-simbiose bg-danger">LÍNGUA</span> Fogo no Coração: Corrobora pulso 1EP +++.</div>`;
-        if(tg.some(x => x.s === "Marca de Dentes")) h += `<div class="sugestao-item"><span class="tag-simbiose bg-success">MIASMA</span> Psora: Deficiência de Qi. Corrobora Baço ---.</div>`;
-
+        if(ant.includes("Diabetes")) h += "🔹 Antecedente: Diabetes sugere deficiência de Yin do Rim (MTC).<br>";
+        if(qp.includes("estômago")) h += "🔹 Metafísica: Resistência ao novo/Dificuldade em digerir fatos.<br>";
+        if(f.includes("+++") && bp.includes("---")) h += "🔸 Pulso: Ciclo Ke - Fígado agredindo Baço.<br>";
+        if(checks.some(c => c.s === "Marca de Dentes")) h += "💊 Homeo: Miasma Psora - Reação de Carência.<br>";
+        
         document.getElementById('compassBox').innerHTML = h;
     }
 
     function calc() {
         let g=0, i=0; document.querySelectorAll('input[name^="g"]:checked').forEach(e => g += parseInt(e.value)); document.querySelectorAll('input[name^="i"]:checked').forEach(e => i += parseInt(e.value));
-        const gR = document.getElementById('gadRes'); gR.className = `p-2 rounded mt-1 fw-bold text-center text-white bg-${g<=4?"success":g<=9?"info":g<=14?"warning":"danger"}`; gR.innerText = `GAD-7: ${g} | ${g<=4?"Mínimo":g<=9?"Leve":g<=14?"Moderado":"Grave"}`;
-        const iR = document.getElementById('igiRes'); iR.className = `p-2 rounded mt-1 fw-bold text-center text-white bg-${i<=7?"success":i<=14?"info":i<=21?"warning":"danger"}`; iR.innerText = `IGI: ${i} | ${i<=7?"Ausente":i<=14?"Sub-clínico":i<=21?"Moderado":"Grave"}`;
+        const gR = document.getElementById('gadRes'); gR.className = `p-2 rounded mt-1 fw-bold text-center text-white bg-${g<=4?"success":g<=9?"info":g<=14?"warning":"danger"}`; gR.innerText = `GAD: ${g}`;
+        const iR = document.getElementById('igiRes'); iR.className = `p-2 rounded mt-1 fw-bold text-center text-white bg-${i<=7?"success":i<=14?"info":i<=21?"warning":"danger"}`; iR.innerText = `IGI: ${i}`;
         compass();
     }
 
     function ir(n) { document.querySelectorAll('.etapa').forEach(e => e.classList.remove('ativa')); document.getElementById('e'+n).classList.add('ativa'); window.scrollTo(0,0); }
+    
     function copiarResumo() {
-        const d = { 
-            qp: document.getElementById('qp').value, 
-            tg: Array.from(document.querySelectorAll('input[name="tg"]:checked')).map(el => `${el.dataset.signal} em ${el.dataset.loc}`),
-            pE: [0,2,4].map(i => document.querySelector(`input[name="pe${i}"]:checked`).value),
-            pD: [0,2,4].map(i => document.querySelector(`input[name="pd${i}"]:checked`).value)
-        };
-        const res = `MÉTODO 360 PROMAX\nQP: ${d.qp}\nLÍNGUA: ${d.tg}\nPULSOS ESQ (C/F/R): ${d.pE}\nPULSOS DIR (P/BP/MM): ${d.pD}\nCONDUTA: ${document.getElementById('diag').value}`;
-        navigator.clipboard.writeText(res).then(() => alert("Simbiose copiada!"));
+        const d = { qp: document.getElementById('qp').value, hma: document.getElementById('hma').value, tg: Array.from(document.querySelectorAll('input[name="tg"]:checked')).map(el => `${el.dataset.signal} em ${el.dataset.loc}`) };
+        const res = `MÉTODO 360 PROMAX\nQP: ${d.qp}\nHMA: ${d.hma}\nLÍNGUA: ${d.tg}\nCONDUTA: ${document.getElementById('diag').value}`;
+        navigator.clipboard.writeText(res).then(() => alert("Copiado!"));
     }
-    function salvarTudo() { db.collection("atendimentos_full").add({ data: new Date().toLocaleString() }).then(() => { alert("SALVO!"); location.reload(); }); }
+
+    function salvarTudo() { db.collection("atendimentos_full").add({ data: new Date().toLocaleString(), img: document.getElementById('prevL').src }).then(() => { alert("SALVO!"); location.reload(); }); }
 </script>
 </body>
 </html>
