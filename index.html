@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MÉTODO 360 PRO | V. 4.2 Platinum</title>
+    <title>MÉTODO 360 PRO | V. 4.3 Platinum</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
@@ -18,13 +18,17 @@
         .ativa { display: block; animation: fadeIn 0.3s ease-in; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .titulo-secao { color: var(--accent); font-weight: 800; border-bottom: 2px solid #eee; padding-bottom: 8px; margin-bottom: 12px; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1.2px; }
-        .compass-box { background: #fffde7; border-left: 10px solid var(--accent); padding: 15px; border-radius: 12px; font-size: 0.85rem; color: #444; margin-top: 15px; }
+        
+        /* BÚSSOLA PROMAX ATUALIZADA */
+        .compass-box { background: #fffde7; border-left: 10px solid var(--accent); padding: 15px; border-radius: 12px; font-size: 0.85rem; color: #444; margin-top: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .sugestao-item { border-bottom: 1px solid #eee; padding: 5px 0; margin-bottom: 5px; }
+        .tag-simbiose { font-size: 0.65rem; font-weight: 800; padding: 2px 6px; border-radius: 4px; color: white; margin-right: 5px; }
+        
         .tongue-matrix { width: 100%; border-collapse: separate; border-spacing: 2px; margin-bottom: 15px; table-layout: fixed; }
         .tongue-matrix th { background: var(--primary); color: white; font-size: 0.6rem; padding: 6px; text-align: center; border-radius: 4px; }
         .tongue-matrix td { background: #fff; border: 1px solid #eee; padding: 4px; text-align: center; }
-        .score-panel { padding: 10px; border-radius: 10px; font-weight: bold; color: white; margin-bottom: 10px; text-align: center; font-size: 0.85rem; }
         .btn-pro { background: var(--primary); color: white; padding: 15px; border-radius: 12px; border: none; font-weight: bold; width: 100%; transition: 0.3s; }
-        .btn-pro:disabled { background: #ccc; cursor: not-allowed; }
+        .btn-pro:disabled { background: #ccc; }
     </style>
 </head>
 <body>
@@ -32,9 +36,9 @@
 <div id="loginScreen">
     <div class="login-card">
         <h2 class="fw-bold mb-1" style="color:var(--primary)">MÉTODO 360</h2>
-        <p class="text-muted small mb-4">SOBERANIA CLÍNICA PROMAX</p>
+        <p class="text-muted small mb-4">PULSOLOGIA PROMAX INTEGRADA</p>
         <input type="password" id="pinInput" class="form-control form-control-lg text-center mb-4" placeholder="****" onkeypress="if(event.key==='Enter') autenticar()">
-        <button class="btn-pro" onclick="autenticar()">DESBLOQUEAR SISTEMA</button>
+        <button class="btn-pro" onclick="autenticar()">DESBLOQUEAR ACESSO</button>
     </div>
 </div>
 
@@ -47,55 +51,54 @@
                 <div class="col-md-6"><label class="small fw-bold">NOME:</label><input type="text" id="nome" class="form-control"></div>
                 <div class="col-md-3"><label class="small fw-bold">NASCIMENTO:</label><input type="date" id="nasc" class="form-control" onchange="calcIdade()"></div>
                 <div class="col-md-3"><label class="small fw-bold">IDADE:</label><input type="text" id="idade" class="form-control" readonly placeholder="Calculado"></div>
-                <div class="col-12"><label class="small fw-bold">QUEIXA PRINCIPAL (QP):</label><textarea id="qp" class="form-control" rows="2" onkeyup="compass()" placeholder="Ex: Estômago, Joelho, Cabeça..."></textarea></div>
-                <div class="col-12"><label class="small fw-bold">HMA (EMOCIONAL):</label><textarea id="hma" class="form-control" rows="2" onkeyup="compass()"></textarea></div>
-                <div class="col-12">
-                    <div class="p-3 bg-light rounded border">
-                        <input type="checkbox" id="lgpd" class="form-check-input me-2" onchange="toggleBtn()"> 
-                        <label for="lgpd" class="small fw-bold" style="cursor:pointer">Autorizo o tratamento de dados e uso da ferramenta conforme LGPD.</label>
-                    </div>
-                </div>
+                <div class="col-12"><label class="small fw-bold">QUEIXA PRINCIPAL (QP):</label><textarea id="qp" class="form-control" rows="2" onkeyup="compass()"></textarea></div>
+                <div class="col-12"><div class="p-2 bg-light rounded border"><input type="checkbox" id="lgpd" class="form-check-input me-2" onchange="toggleBtn()"> <label for="lgpd" class="small fw-bold">Autorizo LGPD.</label></div></div>
             </div>
             <button id="btnEtapa1" class="btn-pro mt-4" onclick="ir(2)" disabled>AVANÇAR PARA ESCALAS</button>
         </div>
 
         <div id="e2" class="etapa">
-            <h5 class="titulo-secao">2. Escalas Psíquicas</h5>
-            <div id="gadBox"></div><div id="gadRes" class="score-panel mt-2 fw-bold" style="background:#ddd">GAD-7: 0</div>
-            <div id="igiBox" class="mt-3"></div><div id="igiRes" class="score-panel mt-2 fw-bold" style="background:#ddd">IGI: 0</div>
+            <h5 class="titulo-secao">2. Escalas Psíquicas (Semáforo)</h5>
+            <div id="gadBox"></div><div id="gadRes" class="p-2 rounded mt-1 fw-bold text-center text-white" style="background:#ddd">GAD: 0</div>
+            <div id="igiBox" class="mt-3"></div><div id="igiRes" class="p-2 rounded mt-1 fw-bold text-center text-white" style="background:#ddd">IGI: 0</div>
             <div class="d-flex gap-2 mt-4"><button class="btn btn-secondary w-50" onclick="ir(1)">VOLTAR</button><button class="btn-pro w-50" onclick="ir(3)">MTC PROMAX</button></div>
         </div>
 
         <div id="e3" class="etapa">
-            <h5 class="titulo-secao">4. Semiologia da Língua (Matriz Simbiótica)</h5>
-            <div class="p-2 border rounded bg-light mb-3 text-center position-relative">
-                <input type="file" accept="image/*" class="form-control mb-1 form-control-sm" onchange="preview(this)">
-                <img id="prevL" src="" style="max-width:180px; border:2px solid var(--accent); border-radius:10px; display:none; margin: 0 auto;">
-            </div>
+            <h5 class="titulo-secao">4. Semiologia Integrada (Língua e Pulsos)</h5>
             
             <table class="tongue-matrix">
-                <thead><tr><th style="text-align:left; width:35%">SINAL</th><th>PONTA</th><th>LAT</th><th>CENTRO</th><th>RAIZ</th></tr></thead>
+                <thead><tr><th style="text-align:left">SINAL</th><th>PONTA</th><th>LAT</th><th>CENTRO</th><th>RAIZ</th></tr></thead>
                 <tbody id="tongueBody"></tbody>
             </table>
 
-            <div id="compassBox" class="compass-box"><strong>🧭 Bússola ProMax:</strong> Aguardando sinais...</div>
+            <h5 class="titulo-secao">5. Pulsologia Blindada (Intensidade +++ a ---)</h5>
+            <div class="row mb-2">
+                <div class="col-md-6 border-end" id="pDir"></div>
+                <div class="col-md-6" id="pEsq"></div>
+            </div>
 
-            <h5 class="titulo-secao">5. Pulsologia Blindada (7 Níveis)</h5>
-            <div class="row mb-2"><div class="col-md-6 border-end" id="pDir"></div><div class="col-md-6" id="pEsq"></div></div>
+            <div id="compassBox" class="compass-box"><strong>🧭 Bússola ProMax:</strong> Vincule os sinais para análise sistêmica...</div>
+
+            <h5 class="titulo-secao">6. Pontos Mu</h5>
             <div id="muBox" class="row g-2 mb-3"></div>
             <div class="d-flex gap-2 mt-4"><button class="btn btn-secondary w-50" onclick="ir(2)">VOLTAR</button><button class="btn-pro w-50" onclick="ir(4)">FINALIZAR</button></div>
         </div>
 
         <div id="e4" class="etapa">
             <h5 class="titulo-secao">7. Diagnóstico e Sincronização</h5>
-            <textarea id="diag" class="form-control" rows="6" placeholder="Conduta Final Integrada..."></textarea>
+            <textarea id="diag" class="form-control" rows="6" placeholder="Conduta Final..."></textarea>
             <div class="d-flex gap-2 mt-3">
                 <button class="btn btn-secondary w-25" onclick="ir(3)">VOLTAR</button>
-                <button class="btn btn-dark w-25" onclick="copiarResumo()">COPIAR IA</button>
+                <button class="btn-dark btn w-25" onclick="copiarResumo()">COPIAR IA</button>
                 <button id="btnSalvar" class="btn-pro w-50" style="background:var(--success)" onclick="salvarTudo()">SALVAR</button>
             </div>
         </div>
     </div>
+</div>
+
+<div class="disclaimer-bar" style="position:fixed; bottom:0; width:100%; background:#eee; font-size:0.7rem; text-align:center; padding:5px; border-top:1px solid #ccc;">
+    ⚠️ Pulsologia ProMax: Sistema de auxílio ao diagnóstico. A soberania clínica é do terapeuta.
 </div>
 
 <script>
@@ -114,11 +117,11 @@
 
     function init() {
         document.getElementById('idConsulta').innerText = "ID: AT-" + new Date().getTime().toString().slice(-6);
-        const signals = ["Cor Vermelha", "Cor Pálida", "Cor Roxa", "Saburra Amarela", "Saburra Branca", "Saburra Gordurosa", "Saburra Ausente", "Marca de Dentes", "Língua Desviada", "Rachadura"];
+        const signals = ["Cor Vermelha", "Cor Pálida", "Saburra Amarela", "Saburra Gordurosa", "Saburra Ausente", "Marca de Dentes", "Língua Desviada", "Rachadura"];
         const locs = ["Ponta", "Lat", "Centro", "Raiz"];
         signals.forEach(s => {
             let row = `<tr><td class="small fw-bold text-start">${s}</td>`;
-            locs.forEach(l => { row += `<td><input type="checkbox" class="cell-check" name="tg" data-signal="${s}" data-loc="${l}" onchange="compass()" style="transform:scale(1.2)"></td>`; });
+            locs.forEach(l => { row += `<td><input type="checkbox" class="form-check" name="tg" data-signal="${s}" data-loc="${l}" onchange="compass()"></td>`; });
             document.getElementById('tongueBody').innerHTML += row + `</tr>`;
         });
         const gQ = ["Nervoso", "Controle", "Preocupação", "Relaxar", "Inquietude", "Irritável", "Medo"];
@@ -126,39 +129,59 @@
         gQ.forEach((q, i) => document.getElementById('gadBox').innerHTML += `<div class="p-1 border-bottom small">${q} <div class="btn-group w-100">${[0,1,2,3].map(v => `<input type="radio" class="btn-check" name="g${i}" id="g${i}${v}" value="${v}" onchange="calc()"><label class="btn btn-outline-primary btn-sm py-0" style="font-size:0.7rem" for="g${i}${v}">${v}</label>`).join('')}</div></div>`);
         iQ.forEach((q, i) => document.getElementById('igiBox').innerHTML += `<div class="p-1 border-bottom small">${q} <div class="btn-group w-100">${[0,1,2,3,4].map(v => `<input type="radio" class="btn-check" name="i${i}" id="i${i}${v}" value="${v}" onchange="calc()"><label class="btn btn-outline-primary btn-sm py-0" style="font-size:0.7rem" for="i${i}${v}">${v}</label>`).join('')}</div></div>`);
         const mP = (id, list, pref) => list.forEach((p, i) => {
-            document.getElementById(id).innerHTML += `<div class="mb-1 small fw-bold text-primary">${p} <div class="btn-group w-100">${["+++", "++", "+", "ok", "-", "--", "---"].map(v => `<input type="radio" class="btn-check" name="${pref}${i}" id="${pref}${i}${v}" value="${v}" ${v=='ok'?'checked':''}><label class="btn btn-outline-primary btn-sm py-0" style="font-size:0.55rem" for="${pref}${i}${v}">${v}</label>`).join('')}</div></div>`;
+            document.getElementById(id).innerHTML += `<div class="mb-1 small fw-bold text-primary">${p} <div class="btn-group w-100">${["+++", "++", "+", "ok", "-", "--", "---"].map(v => `<input type="radio" class="btn-check" name="${pref}${i}" id="${pref}${i}${v}" value="${v}" ${v=='ok'?'checked':''} onchange="compass()"><label class="btn btn-outline-primary btn-sm py-0" style="font-size:0.5rem" for="${pref}${i}${v}">${v}</label>`).join('')}</div></div>`;
         });
-        mP('pDir', ["P", "IG", "BP", "E", "CS", "TA"], 'pd'); mP('pEsq', ["C", "ID", "F", "VB", "R", "B"], 'pe');
+        mP('pDir', ["P (1DP)", "IG", "BP (2DP)", "E", "CS (3DP)", "TA"], 'pd'); mP('pEsq', ["C (1EP)", "ID", "F (2EP)", "VB", "R (3EP)", "B"], 'pe');
         ["P1", "VC17", "VC14", "VC12", "F13", "F14", "VB24", "VB25", "E25", "VC4", "VC3"].forEach(m => document.getElementById('muBox').innerHTML += `<div class="col-4 col-md-3"><div class="p-1 border rounded small text-center"><input type="checkbox" name="mu" value="${m}"> ${m}</div></div>`);
     }
     init();
 
     function compass() {
-        const checks = Array.from(document.querySelectorAll('input[name="tg"]:checked')).map(el => ({s: el.dataset.signal, l: el.dataset.loc}));
+        const getTG = () => Array.from(document.querySelectorAll('input[name="tg"]:checked')).map(el => ({s: el.dataset.signal, l: el.dataset.loc}));
+        const getPulso = (pref, idx) => { const el = document.querySelector(`input[name="${pref}${idx}"]:checked`); return el ? el.value : "ok"; };
         const qp = document.getElementById('qp').value.toLowerCase();
-        let h = "<strong>🧭 Bússola Ativa:</strong><br>";
-        if(qp.includes("estômago")) h += "🔹 Metafísica: Dificuldade em aceitar o novo.<br>";
-        if(qp.includes("cabeça")) h += "🔹 Metafísica: Autocrítica severa.<br>";
-        if(checks.some(c => c.s === "Cor Vermelha" && c.l === "Ponta")) h += "🔸 MTC: Fogo no Coração.<br>";
-        if(checks.some(c => c.s === "Marca de Dentes")) h += "🔸 MTC: Deficiência Qi do Baço.<br>";
-        if(checks.some(c => c.s === "Marca de Dentes")) h += "💊 Homeo: Psora - Lycopodium.<br>";
+        
+        let h = "<strong>🧭 Bússola ProMax (Simbiose):</strong><br>";
+        
+        // Lógica de Pulsologia ProMax (Base: Pulsologia ProMax.docx)
+        const f = getPulso('pe', 2); // Fígado (2EP)
+        const bp = getPulso('pd', 2); // Baço (2DP)
+        const c = getPulso('pe', 0); // Coração (1EP)
+        const rYin = getPulso('pe', 4); // Rim Yin (3EP)
+        const rYang = getPulso('pd', 4); // Rim Yang (3DP)
+
+        if(f.includes("+++") && bp.includes("---")) h += `<div class="sugestao-item"><span class="tag-simbiose bg-danger">PULSO</span> Ciclo Ke: Fígado agredindo o Baço. Obsessão alimentada por frustração.</div>`;
+        if(c.includes("+++")) h += `<div class="sugestao-item"><span class="tag-simbiose bg-danger">PULSO</span> Shen (Mente) sob pressão. Calor provável.</div>`;
+        if(rYang.includes("---") && qp.includes("energia")) h += `<div class="sugestao-item"><span class="tag-simbiose bg-warning">ALERTA</span> Falso Yang: Relato de energia alta com base vital vazia. Risco de esgotamento.</div>`;
+        if(rYin.includes("---")) h += `<div class="sugestao-item"><span class="tag-simbiose bg-danger">PULSO</span> Deficiência de Raiz (Yin do Rim). Medo ou insegurança profunda.</div>`;
+
+        // Lógica de Língua
+        const tg = getTG();
+        if(tg.some(x => x.s === "Cor Vermelha" && x.l === "Ponta")) h += `<div class="sugestao-item"><span class="tag-simbiose bg-danger">LÍNGUA</span> Fogo no Coração: Corrobora pulso 1EP +++.</div>`;
+        if(tg.some(x => x.s === "Marca de Dentes")) h += `<div class="sugestao-item"><span class="tag-simbiose bg-success">MIASMA</span> Psora: Deficiência de Qi. Corrobora Baço ---.</div>`;
+
         document.getElementById('compassBox').innerHTML = h;
     }
 
     function calc() {
         let g=0, i=0; document.querySelectorAll('input[name^="g"]:checked').forEach(e => g += parseInt(e.value)); document.querySelectorAll('input[name^="i"]:checked').forEach(e => i += parseInt(e.value));
-        const gR = document.getElementById('gadRes'); gR.className = `score-panel bg-${g<=4?"success":g<=9?"info":g<=14?"warning":"danger"} mt-2 text-white`; gR.innerText = `GAD-7: ${g} | ${g<=4?"Mínimo":g<=9?"Leve":g<=14?"Moderado":"Grave"}`;
-        const iR = document.getElementById('igiRes'); iR.className = `score-panel bg-${i<=7?"success":i<=14?"info":i<=21?"warning":"danger"} mt-2 text-white`; iR.innerText = `IGI: ${i} | ${i<=7?"Ausente":i<=14?"Sub-clínico":i<=21?"Moderado":"Grave"}`;
+        const gR = document.getElementById('gadRes'); gR.className = `p-2 rounded mt-1 fw-bold text-center text-white bg-${g<=4?"success":g<=9?"info":g<=14?"warning":"danger"}`; gR.innerText = `GAD-7: ${g} | ${g<=4?"Mínimo":g<=9?"Leve":g<=14?"Moderado":"Grave"}`;
+        const iR = document.getElementById('igiRes'); iR.className = `p-2 rounded mt-1 fw-bold text-center text-white bg-${i<=7?"success":i<=14?"info":i<=21?"warning":"danger"}`; iR.innerText = `IGI: ${i} | ${i<=7?"Ausente":i<=14?"Sub-clínico":i<=21?"Moderado":"Grave"}`;
+        compass();
     }
 
     function ir(n) { document.querySelectorAll('.etapa').forEach(e => e.classList.remove('ativa')); document.getElementById('e'+n).classList.add('ativa'); window.scrollTo(0,0); }
-    function preview(i) { if(i.files && i.files[0]){ const r = new FileReader(); r.onload = (e) => { const m = document.getElementById('prevL'); m.src = e.target.result; m.style.display='block'; }; r.readAsDataURL(i.files[0]); } }
     function copiarResumo() {
-        const d = { qp: document.getElementById('qp').value, hma: document.getElementById('hma').value, tg: Array.from(document.querySelectorAll('input[name="tg"]:checked')).map(el => `${el.dataset.signal} em ${el.dataset.loc}`) };
-        const res = `MÉTODO 360 PROMAX\nQP: ${d.qp}\nHMA: ${d.hma}\nLÍNGUA: ${d.tg}\nCONDUTA: ${document.getElementById('diag').value}`;
-        navigator.clipboard.writeText(res).then(() => alert("Copiado para a Gem ProMax!"));
+        const d = { 
+            qp: document.getElementById('qp').value, 
+            tg: Array.from(document.querySelectorAll('input[name="tg"]:checked')).map(el => `${el.dataset.signal} em ${el.dataset.loc}`),
+            pE: [0,2,4].map(i => document.querySelector(`input[name="pe${i}"]:checked`).value),
+            pD: [0,2,4].map(i => document.querySelector(`input[name="pd${i}"]:checked`).value)
+        };
+        const res = `MÉTODO 360 PROMAX\nQP: ${d.qp}\nLÍNGUA: ${d.tg}\nPULSOS ESQ (C/F/R): ${d.pE}\nPULSOS DIR (P/BP/MM): ${d.pD}\nCONDUTA: ${document.getElementById('diag').value}`;
+        navigator.clipboard.writeText(res).then(() => alert("Simbiose copiada!"));
     }
-    function salvarTudo() { db.collection("atendimentos_full").add({ p: btoa(document.getElementById('nome').value), data: new Date().toLocaleString() }).then(() => { alert("SALVO!"); location.reload(); }); }
+    function salvarTudo() { db.collection("atendimentos_full").add({ data: new Date().toLocaleString() }).then(() => { alert("SALVO!"); location.reload(); }); }
 </script>
 </body>
 </html>
