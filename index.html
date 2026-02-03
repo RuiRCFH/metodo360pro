@@ -3,41 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MÉTODO 360 PRO | V. 6.1 Platinum</title>
+    <title>MÉTODO 360 PRO | V. 6.3 Final</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <style>
-        :root { --dark: #000d1a; --primary: #002d58; --accent: #c5a059; --bg: #f8f9fa; --success: #198754; --danger: #dc3545; }
+        :root { --dark: #000d1a; --primary: #002d58; --accent: #c5a059; --bg: #f8f9fa; }
         body { background: var(--bg); font-family: 'Inter', sans-serif; padding-bottom: 80px; }
         #loginScreen { background: linear-gradient(135deg, var(--dark) 0%, var(--primary) 100%); height: 100vh; display: flex; align-items: center; justify-content: center; position: fixed; width: 100%; z-index: 9999; }
-        .login-card { background: white; padding: 40px; border-radius: 30px; box-shadow: 0 30px 60px rgba(0,0,0,0.5); text-align: center; width: 380px; border-bottom: 8px solid var(--accent); }
+        .login-card { background: white; padding: 40px; border-radius: 30px; width: 380px; text-align: center; border-bottom: 8px solid var(--accent); }
         #mainContent { display: none; padding: 20px 15px; }
-        .card-pro { background: white; border-radius: 20px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); max-width: 1100px; margin: auto; border-top: 12px solid var(--primary); }
+        .card-pro { background: white; border-radius: 20px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); max-width: 1100px; margin: auto; border-top: 15px solid var(--primary); }
         .etapa { display: none; }
-        .ativa { display: block; animation: fadeIn 0.4s ease; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .titulo-secao { color: var(--accent); font-weight: 800; border-bottom: 2px solid #eee; padding-bottom: 8px; margin-bottom: 12px; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px; }
-
-        /* RÉGUA EVA PROMAX */
-        .eva-regua { display: flex; width: 100%; height: 45px; background: #eee; border-radius: 8px; overflow: hidden; border: 1px solid #ddd; margin: 10px 0; }
-        .eva-item { flex: 1; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; font-weight: bold; font-size: 0.9rem; transition: 0.2s; }
-        .eva-sel { transform: scaleY(1.25); box-shadow: inset 0 0 10px rgba(0,0,0,0.5); z-index: 2; border: 2px solid #000 !important; }
-
-        .compass-box { background: #fffde7; border-left: 10px solid var(--accent); padding: 15px; border-radius: 12px; font-size: 0.85rem; margin-top: 15px; color: #444; }
-        .tongue-matrix { width: 100%; border-collapse: separate; border-spacing: 2px; }
-        .tongue-matrix th { background: var(--primary); color: white; font-size: 0.6rem; padding: 6px; text-align: center; }
-        .tongue-matrix td { background: #fff; border: 1px solid #eee; padding: 4px; text-align: center; }
-        .btn-pro { background: var(--primary); color: white; padding: 15px; border-radius: 12px; border: none; font-weight: bold; width: 100%; transition: 0.3s; }
-        .score-panel { padding: 8px; border-radius: 8px; font-weight: bold; color: white; text-align: center; font-size: 0.85rem; }
+        .ativa { display: block; }
+        .titulo-secao { color: var(--accent); font-weight: 800; border-bottom: 2px solid #eee; padding-bottom: 8px; margin-bottom: 12px; text-transform: uppercase; font-size: 0.8rem; }
+        .eva-regua { display: flex; width: 100%; height: 45px; background: #eee; border-radius: 8px; overflow: hidden; margin: 10px 0; }
+        .eva-item { flex: 1; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; font-weight: bold; }
+        .eva-sel { transform: scaleY(1.25); border: 2px solid #000 !important; z-index: 2; }
+        .pergunta-full { font-size: 0.9rem; padding: 12px 0; border-bottom: 1px solid #f0f0f0; }
+        .btn-pro { background: var(--primary); color: white; padding: 15px; border-radius: 12px; border: none; font-weight: bold; width: 100%; }
+        .score-panel { padding: 10px; border-radius: 10px; font-weight: bold; color: white; text-align: center; margin-top: 10px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #eee; padding: 8px; text-align: center; font-size: 0.8rem; }
+        th { background: var(--primary); color: white; }
     </style>
 </head>
 <body>
 
 <div id="loginScreen">
     <div class="login-card">
-        <h2 class="fw-bold" style="color:var(--primary)">MÉTODO 360</h2>
-        <input type="password" id="pinInput" class="form-control form-control-lg text-center mb-4" placeholder="PIN (1234)">
+        <h2 style="color:var(--primary)">MÉTODO 360</h2>
+        <input type="password" id="pinInput" class="form-control text-center mb-4" placeholder="PIN">
         <button class="btn-pro" onclick="autenticar()">ENTRAR</button>
     </div>
 </div>
@@ -46,127 +42,124 @@
     <div class="card-pro">
         
         <div id="e1" class="etapa ativa">
-            <h5 class="titulo-secao">1. Identificação e Investigação</h5>
+            <h5 class="titulo-secao">1. Identificação</h5>
             <div class="row g-2">
-                <div class="col-md-5"><label class="small fw-bold">ID / INICIAIS:</label><input type="text" id="pacienteID" class="form-control" placeholder="Ex: JRS-0226"></div>
-                <div class="col-md-3"><label class="small fw-bold">NASC.:</label><input type="date" id="nasc" class="form-control" onchange="calcIdade()"></div>
-                <div class="col-md-2"><label class="small fw-bold">IDADE:</label><input type="text" id="idade" class="form-control" readonly></div>
+                <div class="col-md-6"><label class="small fw-bold">ID / INICIAIS:</label><input type="text" id="pacienteID" class="form-control"></div>
+                <div class="col-md-6"><label class="small fw-bold">NASCIMENTO:</label><input type="date" id="nasc" class="form-control" onchange="calcIdade()"></div>
                 <div class="col-12 mt-3"><label class="small fw-bold text-danger">EVA INICIAL:</label><div class="eva-regua" id="reguaA"></div></div>
-                <div class="col-12"><label class="small fw-bold">QUEIXA PRINCIPAL (QP):</label><textarea id="qp" class="form-control" rows="2" onkeyup="compass()"></textarea></div>
-                <div class="col-12"><label class="small fw-bold">HMA / HISTÓRIA:</label><textarea id="hma" class="form-control" rows="2"></textarea></div>
+                <div class="col-12"><label class="small fw-bold">QUEIXA PRINCIPAL:</label><textarea id="qp" class="form-control" rows="2"></textarea></div>
             </div>
-            <div id="compassE1" class="compass-box"><strong>🧭 Bússola:</strong> Aguardando dados...</div>
-            <div class="mt-3"><input type="checkbox" id="lgpd" onchange="toggleBtn()"> <label for="lgpd" class="small">Autorizo LGPD</label></div>
-            <button id="btnE1" class="btn-pro mt-4" onclick="ir(2)" disabled>AVANÇAR</button>
+            <button class="btn-pro mt-4" onclick="ir(2)">PRÓXIMO: ESCALAS</button>
         </div>
 
         <div id="e2" class="etapa">
-            <h5 class="titulo-secao">2. Escalas GAD-7 / IGI (14 Perguntas)</h5>
-            <div id="gadBox"></div><div id="gadRes" class="score-panel mt-2" style="background:#ddd">GAD: 0</div>
-            <div id="igiBox" class="mt-3"></div><div id="igiRes" class="score-panel mt-2" style="background:#ddd">IGI: 0</div>
-            <div class="d-flex gap-2 mt-4"><button class="btn btn-secondary w-50" onclick="ir(1)">VOLTAR</button><button class="btn-pro w-50" onclick="ir(3)">MTC PROMAX</button></div>
+            <h5 class="titulo-secao">2. Escalas Psíquicas Integrais</h5>
+            <div id="gadBox"></div><div id="gadRes" class="score-panel" style="background:#ddd">GAD-7: 0</div>
+            <hr>
+            <div id="igiBox"></div><div id="igiRes" class="score-panel" style="background:#ddd">IGI: 0</div>
+            <div class="d-flex gap-2 mt-4"><button class="btn btn-secondary w-50" onclick="ir(1)">VOLTAR</button><button class="btn-pro w-50" onclick="ir(3)">MTC</button></div>
         </div>
 
         <div id="e3" class="etapa">
-            <h5 class="titulo-secao">4. MTC: Língua e Pulsos</h5>
-            <div class="p-2 border rounded bg-light text-center"><input type="file" id="inputFoto" accept="image/*" class="form-control form-control-sm mb-2" onchange="preview(this)"><img id="prevL" src="" style="max-width:180px; display:none; margin:auto"></div>
-            <table class="tongue-matrix mt-3">
-                <thead><tr><th style="text-align:left; width:30%">SINAL</th><th>PONTA</th><th>LAT</th><th>CENTRO</th><th>RAIZ</th></tr></thead>
+            <h5 class="titulo-secao">3. Semiologia MTC</h5>
+            <table>
+                <thead><tr><th>SINAL</th><th>PONTA</th><th>LAT</th><th>CENTRO</th><th>RAIZ</th></tr></thead>
                 <tbody id="tongueBody"></tbody>
             </table>
-            <h5 class="titulo-secao">5. Pulsologia de 12 Coordenadas</h5>
-            <div class="row"><div class="col-md-6 border-end" id="pDir"></div><div class="col-md-6" id="pEsq"></div></div>
-            <h5 class="titulo-secao">6. Pontos Mu Álgicos</h5>
-            <div id="muBox" class="row g-2"></div>
-            <div id="compassMTC" class="compass-box mt-3"><strong>🧭 Bússola Integrada:</strong> Analisando...</div>
+            <h5 class="titulo-secao mt-4">4. Pulsos (12 Coordenadas)</h5>
+            <div class="row"><div class="col-6 border-end" id="pDir"></div><div class="col-6" id="pEsq"></div></div>
             <div class="d-flex gap-2 mt-4"><button class="btn btn-secondary w-50" onclick="ir(2)">VOLTAR</button><button class="btn-pro w-50" onclick="ir(4)">FINALIZAR</button></div>
         </div>
 
         <div id="e4" class="etapa">
-            <h5 class="titulo-secao">7. Síntese Final</h5>
-            <div class="col-12 mb-3"><label class="small fw-bold">EVA FINAL:</label><div class="eva-regua" id="reguaD"></div></div>
-            <div id="sugestaoFinalMTC" class="p-3 bg-light border rounded mb-3 small fw-bold text-primary"></div>
-            <textarea id="diag" class="form-control" rows="5" placeholder="Conduta..."></textarea>
-            <div class="d-flex flex-wrap gap-2 mt-3">
+            <h5 class="titulo-secao">4. Conclusão</h5>
+            <label class="small fw-bold">EVA FINAL:</label><div class="eva-regua" id="reguaD"></div>
+            <textarea id="diag" class="form-control mt-3" rows="5" placeholder="Conduta..."></textarea>
+            <div class="d-flex gap-2 mt-4">
                 <button class="btn btn-secondary flex-grow-1" onclick="ir(3)">VOLTAR</button>
                 <button class="btn btn-dark flex-grow-1" onclick="copiarParaIA()">COPIAR IA BRIDGE</button>
-                <button id="btnSalvar" class="btn btn-success flex-grow-1" onclick="salvarTudo()">SALVAR FIREBASE</button>
+                <button class="btn btn-success flex-grow-1" onclick="salvarTudo()">SALVAR</button>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    const firebaseConfig = { apiKey: "AIzaSyAI5X-Cb0Xf0G_cRoBX9YWqW1bn0nv-RA", authDomain: "metodo360pro-db0aa.firebaseapp.com", projectId: "metodo360pro-db0aa", storageBucket: "metodo360pro-db0aa.firebasestorage.app", messagingSenderId: "1088396585788", appId: "1:1088396585788:web:57853a7b0ff17c8306ec39", measurementId: "G-589QFHBJC4" };
+    const firebaseConfig = { apiKey: "AIzaSyAI5X-Cb0Xf0G_cRoBX9YWqW1bn0nv-RA", authDomain: "metodo360pro-db0aa.firebaseapp.com", projectId: "metodo360pro-db0aa", storageBucket: "metodo360pro-db0aa.firebasestorage.app", messagingSenderId: "1088396585788", appId: "1:1088396585788:web:57853a7b0ff17c8306ec39" };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    let evaA = 0; let evaD = 0;
+    const gadQuestions = ["Sentiu-se nervoso(a), ansioso(a) ou muito tenso(a)?", "Não foi capaz de parar ou de controlar as suas preocupações?", "Preocupou-se demasiado com diversas coisas?", "Teve dificuldade em relaxar?", "Sentiu-se tão inquieto(a) que foi difícil permanecer parado(a)?", "Ficou facilmente irritável ou aborrecido(a)?", "Sentiu medo, como se algo terrível pudesse acontecer?"];
+    const igiQuestions = ["Dificuldade em adormecer?", "Dificuldade em manter o sono?", "Problemas por acordar demasiado cedo?", "Quão satisfeito(a)/insatisfeito(a) está com o seu sono atual?", "Quanto o seu problema de sono interfere com as atividades diárias?", "Quão visível o seu problema de sono é para os outros?", "Quão preocupado(a)/perturbado(a) está com o seu problema de sono?"];
+    
+    let evaA=0, evaD=0;
 
-    function autenticar() { if(document.getElementById('pinInput').value === "1234") { document.getElementById('loginScreen').style.display='none'; document.getElementById('mainContent').style.display='block'; } }
-    function ir(n) { document.querySelectorAll('.etapa').forEach(e => e.classList.remove('ativa')); document.getElementById('e'+n).classList.add('ativa'); window.scrollTo(0,0); }
-    function calcIdade() {
-        const nasc = new Date(document.getElementById('nasc').value); const hoje = new Date();
-        let idade = hoje.getFullYear() - nasc.getFullYear();
-        if (hoje.getMonth() < nasc.getMonth() || (hoje.getMonth() === nasc.getMonth() && hoje.getDate() < nasc.getDate())) idade--;
-        document.getElementById('idade').value = idade + " anos";
-    }
-    function toggleBtn() { document.getElementById('btnE1').disabled = !document.getElementById('lgpd').checked; }
-    function preview(i) { if(i.files && i.files[0]){ const r = new FileReader(); r.onload = (e) => { document.getElementById('prevL').src = e.target.result; document.getElementById('prevL').style.display='block'; }; r.readAsDataURL(i.files[0]); } }
-    function setEva(tipo, val) {
-        if(tipo === 'A') { evaA = val; document.querySelectorAll('#reguaA .eva-item').forEach(el => el.classList.remove('eva-sel')); document.getElementById('evA'+val).classList.add('eva-sel'); }
-        else { evaD = val; document.querySelectorAll('#reguaD .eva-item').forEach(el => el.classList.remove('eva-sel')); document.getElementById('evD'+val).classList.add('eva-sel'); }
+    function autenticar() { if(document.getElementById('pinInput').value==="1234"){ document.getElementById('loginScreen').style.display='none'; document.getElementById('mainContent').style.display='block'; init(); } }
+    function ir(n) { document.querySelectorAll('.etapa').forEach(e=>e.classList.remove('ativa')); document.getElementById('e'+n).classList.add('ativa'); window.scrollTo(0,0); }
+    function calcIdade() { const n = new Date(document.getElementById('nasc').value); const h = new Date(); let i = h.getFullYear()-n.getFullYear(); document.getElementById('idade').value = i + " anos"; }
+
+    function setEva(t, v) {
+        if(t==='A'){ evaA=v; document.querySelectorAll('#reguaA .eva-item').forEach(e=>e.classList.remove('eva-sel')); document.getElementById('evA'+v).classList.add('eva-sel'); }
+        else { evaD=v; document.querySelectorAll('#reguaD .eva-item').forEach(e=>e.classList.remove('eva-sel')); document.getElementById('evD'+v).classList.add('eva-sel'); }
     }
 
     function init() {
         const colors = ["#28a745", "#54b33d", "#7fbe35", "#abca2d", "#d6d524", "#ffff1c", "#ffd61c", "#ffac1c", "#ff831c", "#ff591c", "#dc3545"];
         for(let i=0; i<=10; i++){
-            document.getElementById('reguaA').innerHTML += `<div id="evA${i}" class="eva-item" style="background:${colors[i]}" onclick="setEva('A', ${i})">${i}</div>`;
-            document.getElementById('reguaD').innerHTML += `<div id="evD${i}" class="eva-item" style="background:${colors[i]}" onclick="setEva('D', ${i})">${i}</div>`;
+            document.getElementById('reguaA').innerHTML += `<div id="evA${i}" class="eva-item" style="background:${colors[i]}" onclick="setEva('A',${i})">${i}</div>`;
+            document.getElementById('reguaD').innerHTML += `<div id="evD${i}" class="eva-item" style="background:${colors[i]}" onclick="setEva('D',${i})">${i}</div>`;
         }
+
+        gadQuestions.forEach((q, i) => {
+            document.getElementById('gadBox').innerHTML += `<div class="pergunta-full"><b>${q}</b><div class="btn-group w-100 mt-2">${[0,1,2,3].map(v=>`<input type="radio" class="btn-check" name="g${i}" id="g${i}${v}" value="${v}" onchange="calc()"><label class="btn btn-outline-primary btn-sm" for="g${i}${v}">${v}</label>`).join('')}</div></div>`;
+        });
+        igiQuestions.forEach((q, i) => {
+            document.getElementById('igiBox').innerHTML += `<div class="pergunta-full"><b>${q}</b><div class="btn-group w-100 mt-2">${[0,1,2,3,4].map(v=>`<input type="radio" class="btn-check" name="i${i}" id="i${i}${v}" value="${v}" onchange="calc()"><label class="btn btn-outline-primary btn-sm" for="i${i}${v}">${v}</label>`).join('')}</div></div>`;
+        });
+
         const signals = ["Cor Vermelha", "Cor Pálida", "Saburra Amarela", "Marca de Dentes", "Rachadura"];
         signals.forEach(s => {
-            let row = `<tr><td class="small fw-bold">${s}</td>`;
-            ["Ponta", "Lat", "Centro", "Raiz"].forEach(l => { row += `<td><input type="checkbox" name="tg" data-signal="${s}" data-loc="${l}" onchange="compass()"></td>`; });
-            document.getElementById('tongueBody').innerHTML += row + `</tr>`;
+            let r = `<tr><td>${s}</td>`;
+            ["Ponta", "Lat", "Centro", "Raiz"].forEach(l => { r += `<td><input type="checkbox" name="tg" data-s="${s}" data-l="${l}"></td>`; });
+            document.getElementById('tongueBody').innerHTML += r + `</tr>`;
         });
-        const gQ = ["Nervoso?", "Controle?", "Preocupação?", "Relaxar?", "Inquietude?", "Irritável?", "Medo?"];
-        const iQ = ["Sono?", "Manter?", "Cedo?", "Satisfação?", "Atividade?", "Outros?", "Estresse?"];
-        gQ.forEach((q, i) => document.getElementById('gadBox').innerHTML += `<div class="p-1 border-bottom small">${q} <div class="btn-group w-100">${[0,1,2,3].map(v => `<input type="radio" class="btn-check" name="g${i}" id="g${i}${v}" value="${v}" onchange="calc()"><label class="btn btn-outline-primary btn-sm py-0" for="g${i}${v}">${v}</label>`).join('')}</div></div>`);
-        iQ.forEach((q, i) => document.getElementById('igiBox').innerHTML += `<div class="p-1 border-bottom small">${q} <div class="btn-group w-100">${[0,1,2,3,4].map(v => `<input type="radio" class="btn-check" name="i${i}" id="i${i}${v}" value="${v}" onchange="calc()"><label class="btn btn-outline-primary btn-sm py-0" for="i${i}${v}">${v}</label>`).join('')}</div></div>`);
+
         const mP = (id, list, pref) => list.forEach((p, i) => {
-            document.getElementById(id).innerHTML += `<div class="mb-1 small fw-bold text-primary">${p} <div class="btn-group w-100">${["+++", "ok", "---"].map(v => `<input type="radio" class="btn-check" name="${pref}${i}" id="${pref}${i}${v}" value="${v}" ${v=='ok'?'checked':''} onchange="compass()"><label class="btn btn-outline-primary btn-sm py-0" style="font-size:0.5rem" for="${pref}${i}${v}">${v}</label>`).join('')}</div></div>`;
+            document.getElementById(id).innerHTML += `<div class="mb-1 small fw-bold">${p} <div class="btn-group w-100">${["+++", "ok", "---"].map(v => `<input type="radio" class="btn-check" name="${pref}${i}" id="${pref}${i}${v}" value="${v}" ${v=='ok'?'checked':''}><label class="btn btn-outline-primary btn-sm py-0" style="font-size:0.5rem" for="${pref}${i}${v}">${v}</label>`).join('')}</div></div>`;
         });
         mP('pDir', ["P", "IG", "BP", "E", "CS", "TA"], 'pd'); mP('pEsq', ["C", "ID", "F", "VB", "R", "B"], 'pe');
-        ["P1", "VC17", "VC12", "F14", "VB25", "E25", "VC4"].forEach(m => document.getElementById('muBox').innerHTML += `<div class="col-4 col-md-3"><div class="p-1 border rounded small text-center"><input type="checkbox" name="mu" value="${m}" onchange="compass()"> ${m}</div></div>`);
-    }
-    init();
-
-    function compass() {
-        const qp = document.getElementById('qp').value.toLowerCase();
-        let h1 = "🧭 ";
-        if(qp.includes("joelho")) h1 += "• Rigidez emocional. ";
-        if(qp.includes("estômago")) h1 += "• Não aceitação. ";
-        document.getElementById('compassE1').innerHTML = h1;
-        document.getElementById('sugestaoFinalMTC').innerText = "Analisando vetores...";
     }
 
     function calc() {
-        let g=0, i=0; document.querySelectorAll('input[name^="g"]:checked').forEach(e => g += parseInt(e.value)); document.querySelectorAll('input[name^="i"]:checked').forEach(e => i += parseInt(e.value));
-        const gR = document.getElementById('gadRes'); gR.className = `p-2 rounded mt-2 text-center text-white fw-bold bg-${g<=4?"success":g<=9?"info":"danger"}`; gR.innerText = `GAD: ${g}`;
-        const iR = document.getElementById('igiRes'); iR.className = `p-2 rounded mt-2 text-center text-white fw-bold bg-${i<=7?"success":i<=14?"info":"danger"}`; iR.innerText = `IGI: ${i}`;
+        let g=0, i=0;
+        document.querySelectorAll('input[name^="g"]:checked').forEach(e=>g+=parseInt(e.value));
+        document.querySelectorAll('input[name^="i"]:checked').forEach(e=>i+=parseInt(e.value));
+        document.getElementById('gadRes').innerText = "GAD-7 TOTAL: " + g;
+        document.getElementById('igiRes').innerText = "IGI TOTAL: " + i;
     }
 
     function copiarParaIA() {
-        const getRadio = (n) => { const el = document.querySelector(`input[name="${n}"]:checked`); return el ? el.value : "ok"; };
-        const tg = Array.from(document.querySelectorAll('input[name="tg"]:checked')).map(el => `${el.dataset.signal}(${el.dataset.loc})`);
-        const res = `[TRÍADE INTEGRADA] ID: ${document.getElementById('pacienteID').value}\nEVA: ${evaA}->${evaD}\nQP: ${document.getElementById('qp').value}\nLÍNGUA: ${tg.join(', ')}\nPULSOS ESQ: ${[0,2,4].map(i => getRadio('pe'+i)).join('|')}\nPULSOS DIR: ${[0,2,4].map(i => getRadio('pd'+i)).join('|')}\nSÍNDROME: ${document.getElementById('sugestaoFinalMTC').innerText}`;
-        navigator.clipboard.writeText(res).then(() => alert("Copiado!"));
+        let tg = Array.from(document.querySelectorAll('input[name="tg"]:checked')).map(e=>`${e.dataset.s}(${e.dataset.l})`).join(", ");
+        let gadResults = gadQuestions.map((q, i) => { let v = document.querySelector(`input[name="g${i}"]:checked`); return `${q}: ${v ? v.value : "N/A"}`; }).join("\n");
+        let igiResults = igiQuestions.map((q, i) => { let v = document.querySelector(`input[name="i${i}"]:checked`); return `${q}: ${v ? v.value : "N/A"}`; }).join("\n");
+        
+        const res = `[TRÍADE 360 - ID: ${document.getElementById('pacienteID').value}]\n` +
+                    `EVA: ${evaA} -> ${evaD}\n` +
+                    `QUEIXA: ${document.getElementById('qp').value}\n\n` +
+                    `--- ESCALAS INTEGRAIS ---\n${gadResults}\n${igiResults}\n\n` +
+                    `--- MTC ---\nLÍNGUA: ${tg}\nCONDUTA: ${document.getElementById('diag').value}`;
+        navigator.clipboard.writeText(res).then(() => alert("Copiado com Sucesso!"));
     }
 
     function salvarTudo() {
-        const payload = { data: new Date(), id: document.getElementById('pacienteID').value, qp: document.getElementById('qp').value };
-        db.collection("atendimentos_360").add(payload).then(() => { alert("SINCRONIZADO!"); location.reload(); });
+        const payload = { 
+            id: btoa(document.getElementById('pacienteID').value), 
+            data: new Date(), 
+            qp: document.getElementById('qp').value,
+            eva: { inicial: evaA, final: evaD },
+            scores: { gad: document.getElementById('gadRes').innerText, igi: document.getElementById('igiRes').innerText }
+        };
+        db.collection("atendimentos_360").add(payload).then(() => { alert("SALVO!"); location.reload(); });
     }
 </script>
 </body>
