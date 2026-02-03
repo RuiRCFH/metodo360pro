@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MÉTODO 360 PRO | V. 6.5</title>
+    <title>MÉTODO 360 PRO | V. 6.6 Soberania</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
@@ -13,24 +13,32 @@
         #loginScreen { background: linear-gradient(135deg, var(--dark) 0%, var(--primary) 100%); height: 100vh; display: flex; align-items: center; justify-content: center; position: fixed; width: 100%; z-index: 9999; }
         .login-card { background: white; padding: 40px; border-radius: 30px; width: 380px; text-align: center; border-bottom: 8px solid var(--accent); }
         #mainContent { display: none; padding: 20px 15px; }
-        .card-pro { background: white; border-radius: 20px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); max-width: 1000px; margin: auto; border-top: 15px solid var(--primary); }
+        .card-pro { background: white; border-radius: 20px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); max-width: 1100px; margin: auto; border-top: 15px solid var(--primary); }
         .etapa { display: none; }
         .ativa { display: block; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .titulo-secao { color: var(--accent); font-weight: 800; border-bottom: 2px solid #eee; padding-bottom: 8px; margin-bottom: 12px; text-transform: uppercase; font-size: 0.75rem; }
+        .titulo-secao { color: var(--accent); font-weight: 800; border-bottom: 2px solid #eee; padding-bottom: 8px; margin-bottom: 12px; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 1px; }
+        
+        /* EVA ESTÉTICA */
         .eva-regua { display: flex; width: 100%; height: 40px; background: #eee; border-radius: 8px; overflow: hidden; margin: 10px 0; }
-        .eva-item { flex: 1; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; font-weight: bold; font-size: 0.8rem; }
-        .eva-sel { transform: scaleY(1.3); border: 2px solid #000 !important; z-index: 5; box-shadow: 0 0 8px rgba(0,0,0,0.4); }
-        .pergunta-full { font-size: 0.85rem; padding: 10px 0; border-bottom: 1px solid #f0f0f0; }
-        .btn-pro { background: var(--primary); color: white; padding: 12px; border-radius: 10px; border: none; font-weight: bold; width: 100%; }
-        .score-panel { padding: 8px; border-radius: 8px; font-weight: bold; color: white; text-align: center; margin-top: 5px; font-size: 0.9rem; }
-        table { width: 100%; border-collapse: collapse; }
+        .eva-item { flex: 1; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; font-weight: bold; font-size: 0.8rem; transition: 0.2s; }
+        .eva-sel { transform: scaleY(1.3); border: 2px solid #000 !important; z-index: 5; box-shadow: 0 0 10px rgba(0,0,0,0.3); }
+
+        /* ESCALAS EXPLICATIVAS */
+        .pergunta-full { background: #fff; border: 1px solid #eee; padding: 15px; border-radius: 12px; margin-bottom: 10px; }
+        .legenda-v { font-size: 0.65rem; color: #666; display: block; margin-top: 2px; text-align: center; }
+
+        /* TABELAS MTC */
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th, td { border: 1px solid #eee; padding: 6px; text-align: center; font-size: 0.7rem; }
         th { background: var(--primary); color: white; }
-        .row-cat { background: #f1f1f1; font-weight: bold; text-align: left !important; padding-left: 10px; }
-        .mu-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; }
-        .mu-item { border: 1px solid #ddd; padding: 5px; border-radius: 5px; font-size: 0.75rem; text-align: center; background: #fff; cursor: pointer; }
-        .mu-item input { margin-right: 5px; }
+        .row-cat { background: #f9f9f9; font-weight: bold; color: var(--primary); text-align: left !important; padding-left: 10px; }
+        
+        .mu-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-top: 10px; }
+        .mu-item { border: 1px solid #ddd; padding: 5px; border-radius: 5px; font-size: 0.7rem; text-align: center; background: #fff; }
+
+        .btn-pro { background: var(--primary); color: white; padding: 15px; border-radius: 12px; border: none; font-weight: bold; width: 100%; transition: 0.3s; }
+        .score-panel { padding: 10px; border-radius: 10px; font-weight: bold; color: white; text-align: center; margin-top: 10px; }
     </style>
 </head>
 <body>
@@ -38,8 +46,8 @@
 <div id="loginScreen">
     <div class="login-card">
         <h2 style="color:var(--primary)">MÉTODO 360</h2>
-        <input type="password" id="pinInput" class="form-control text-center mb-4" placeholder="PIN">
-        <button class="btn-pro" onclick="autenticar()">ENTRAR</button>
+        <input type="password" id="pinInput" class="form-control text-center mb-4" placeholder="PIN (1234)">
+        <button class="btn-pro" onclick="autenticar()">DESBLOQUEAR</button>
     </div>
 </div>
 
@@ -47,59 +55,57 @@
     <div class="card-pro">
         
         <div id="e1" class="etapa ativa">
-            <h5 class="titulo-secao">1. Identificação & Autorização</h5>
-            <div class="p-3 mb-3 border rounded bg-light" style="font-size: 0.75rem;">
-                <input type="checkbox" id="termo"> <label for="termo"><b>TERMO DE AUTORIZAÇÃO:</b> Autorizo a coleta de dados clínicos e imagens para fins de prontuário eletrônico e análise integrativa sob sigilo profissional (LGPD).</label>
-            </div>
+            <h5 class="titulo-secao">1. Identificação e História Clínica</h5>
             <div class="row g-2">
-                <div class="col-md-8"><label class="small fw-bold">ID / INICIAIS:</label><input type="text" id="pacienteID" class="form-control"></div>
-                <div class="col-md-4"><label class="small fw-bold">NASC.:</label><input type="date" id="nasc" class="form-control" onchange="calcIdade()"></div>
-                <div class="col-12 mt-2"><label class="small fw-bold text-danger">EVA INICIAL:</label><div class="eva-regua" id="reguaA"></div></div>
-                <div class="col-12"><label class="small fw-bold">QUEIXA PRINCIPAL:</label><textarea id="qp" class="form-control" rows="2"></textarea></div>
+                <div class="col-md-6"><label class="small fw-bold">ID / INICIAIS DO PACIENTE:</label><input type="text" id="pacienteID" class="form-control"></div>
+                <div class="col-md-6"><label class="small fw-bold">NASCIMENTO:</label><input type="date" id="nasc" class="form-control" onchange="calcIdade()"></div>
+                <div class="col-12 mt-2"><label class="small fw-bold text-danger">EVA INICIAL (Nível de Dor):</label><div class="eva-regua" id="reguaA"></div></div>
+                <div class="col-12"><label class="small fw-bold">QUEIXA PRINCIPAL (QP):</label><textarea id="qp" class="form-control" rows="2"></textarea></div>
+                <div class="col-12"><label class="small fw-bold">HISTÓRIA PREGRESSA DA DOENÇA (HMA):</label><textarea id="hma" class="form-control" rows="3" placeholder="Evolução, tratamentos anteriores..."></textarea></div>
             </div>
-            <button class="btn-pro mt-4" onclick="ir(2)">PRÓXIMO: ESCALAS</button>
+            <button class="btn-pro mt-4" onclick="ir(2)">PRÓXIMO: ESCALAS PSÍQUICAS</button>
         </div>
 
         <div id="e2" class="etapa">
-            <h5 class="titulo-secao">2. Escalas Psíquicas (GAD-7 & IGI)</h5>
-            <div id="gadBox"></div><div id="gadRes" class="score-panel" style="background:#ddd">GAD: 0</div>
-            <div id="igiBox" class="mt-3"></div><div id="igiRes" class="score-panel" style="background:#ddd">IGI: 0</div>
-            <div class="d-flex gap-2 mt-4"><button class="btn btn-secondary w-50" onclick="ir(1)">VOLTAR</button><button class="btn-pro w-50" onclick="ir(3)">EXAME LÍNGUA</button></div>
+            <h5 class="titulo-secao">2. Escala de Ansiedade GAD-7 (Integral)</h5>
+            <div id="gadBox"></div><div id="gadRes" class="score-panel" style="background:#ddd">GAD-7: 0</div>
+            
+            <h5 class="titulo-secao mt-4">3. Índice de Insônia IGI (Integral)</h5>
+            <div id="igiBox"></div><div id="igiRes" class="score-panel" style="background:#ddd">IGI: 0</div>
+            
+            <div class="d-flex gap-2 mt-4"><button class="btn btn-secondary w-50" onclick="ir(1)">VOLTAR</button><button class="btn-pro w-50" onclick="ir(3)">EXAME DA LÍNGUA</button></div>
         </div>
 
         <div id="e3" class="etapa">
-            <h5 class="titulo-secao">3. Matriz da Língua ProMax</h5>
-            <div class="mb-3">
-                <label class="small fw-bold">ANEXAR FOTO DA LÍNGUA:</label>
+            <h5 class="titulo-secao">4. Matriz da Língua ProMax</h5>
+            <div class="mb-3 p-2 border rounded bg-light">
+                <label class="small fw-bold">📸 REGISTRO FOTOGRÁFICO:</label>
                 <input type="file" id="fotoLingua" class="form-control form-control-sm" accept="image/*">
             </div>
             <table>
-                <thead><tr><th>SINAL</th><th>PONTA</th><th>LAT</th><th>CENTRO</th><th>RAIZ</th></tr></thead>
+                <thead><tr><th>SINAL / TOPOGRAFIA</th><th>PONTA</th><th>LAT</th><th>CENTRO</th><th>RAIZ</th></tr></thead>
                 <tbody id="tongueBody"></tbody>
             </table>
-            <div class="mt-3">
-                <label class="small fw-bold">OBSERVAÇÕES ADICIONAIS (LÍNGUA):</label>
-                <textarea id="obsLingua" class="form-control" rows="2" placeholder="Geográfica, fissuras específicas..."></textarea>
-            </div>
-            <div class="d-flex gap-2 mt-4"><button class="btn btn-secondary w-50" onclick="ir(2)">VOLTAR</button><button class="btn-pro w-50" onclick="ir(4)">PULSOS & MU</button></div>
+            <div class="mt-3"><label class="small fw-bold">OUTRAS OBSERVAÇÕES DA LÍNGUA:</label><textarea id="obsLingua" class="form-control" rows="2" placeholder="Geográfica, fissuras específicas, movimentos..."></textarea></div>
+            <div class="d-flex gap-2 mt-4"><button class="btn btn-secondary w-50" onclick="ir(2)">VOLTAR</button><button class="btn-pro w-50" onclick="ir(4)">PULSOS E PONTOS MU</button></div>
         </div>
 
         <div id="e4" class="etapa">
-            <h5 class="titulo-secao">4. Pulsologia (12 Coordenadas)</h5>
+            <h5 class="titulo-secao">5. Pulsologia de 12 Coordenadas (Vetor de Intensidade)</h5>
             <div class="row">
-                <div class="col-6 border-end" id="pDir"></div>
-                <div class="col-6" id="pEsq"></div>
+                <div class="col-md-6 border-end" id="pDir"></div>
+                <div class="col-md-6" id="pEsq"></div>
             </div>
-            <h5 class="titulo-secao mt-4">5. Avaliação Pontos MU</h5>
+            <h5 class="titulo-secao mt-4">6. Avaliação de Pontos MU (Alarme)</h5>
             <div class="mu-grid" id="muBox"></div>
             <div class="d-flex gap-2 mt-4"><button class="btn btn-secondary w-50" onclick="ir(3)">VOLTAR</button><button class="btn-pro w-50" onclick="ir(5)">SÍNTESE FINAL</button></div>
         </div>
 
         <div id="e5" class="etapa">
-            <h5 class="titulo-secao">6. Conclusão & IA Bridge</h5>
-            <label class="small fw-bold">EVA FINAL:</label><div class="eva-regua" id="reguaD"></div>
-            <textarea id="diag" class="form-control mt-2" rows="5" placeholder="Diagnóstico e Conduta..."></textarea>
-            <div class="d-flex gap-2 mt-3">
+            <h5 class="titulo-secao">7. Diagnóstico e Conduta Bridge</h5>
+            <label class="small fw-bold text-success">EVA FINAL (PÓS-ATENDIMENTO):</label><div class="eva-regua" id="reguaD"></div>
+            <textarea id="diag" class="form-control mt-2" rows="6" placeholder="Conduta integrada..."></textarea>
+            <div class="d-flex gap-2 mt-4">
                 <button class="btn btn-dark flex-grow-1" onclick="copiarParaIA()">COPIAR IA BRIDGE</button>
                 <button class="btn btn-success flex-grow-1" onclick="salvarTudo()">SALVAR NO FIREBASE</button>
             </div>
@@ -112,9 +118,10 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    const gadQ = ["Nervoso/Ansioso?", "Não controlou preocupação?", "Preocupação excessiva?", "Dificuldade relaxar?", "Inquietude?", "Irritabilidade?", "Medo do pior?"];
-    const igiQ = ["Dificuldade adormecer?", "Manter o sono?", "Acordar cedo?", "Satisfação sono?", "Interferência dia?", "Visibilidade problema?", "Preocupação sono?"];
-    
+    const gadQ = ["Sentiu-se nervoso(a) ou ansioso(a)?", "Não foi capaz de controlar as preocupações?", "Preocupou-se demais com diversas coisas?", "Teve dificuldade em relaxar?", "Ficou muito inquieto(a)?", "Irritou-se com facilidade?", "Sentiu medo de algo terrível acontecer?"];
+    const igiQ = ["Dificuldade em adormecer?", "Dificuldade em manter o sono?", "Acordar cedo demais?", "Satisfação com o sono atual?", "Interferência nas atividades diárias?", "Percepção de problemas pelos outros?", "Preocupação causada pelo sono?"];
+    const escalas = { gad: ["Nenhuma", "Vários dias", "Metade dos dias", "Quase todos"], igi: ["Nenhuma", "Ligeira", "Moderada", "Grave", "Muito Grave"] };
+
     let evaA=0, evaD=0;
 
     function autenticar() { if(document.getElementById('pinInput').value==="1234"){ document.getElementById('loginScreen').style.display='none'; document.getElementById('mainContent').style.display='block'; init(); } }
@@ -134,58 +141,63 @@
         }
 
         gadQ.forEach((q, i) => {
-            document.getElementById('gadBox').innerHTML += `<div class="pergunta-full"><b>${q}</b><div class="btn-group w-100 mt-1">${[0,1,2,3].map(v=>`<input type="radio" class="btn-check" name="g${i}" id="g${i}${v}" value="${v}" onchange="calc()"><label class="btn btn-outline-primary btn-sm" for="g${i}${v}">${v}</label>`).join('')}</div></div>`;
+            document.getElementById('gadBox').innerHTML += `<div class="pergunta-full"><b>${q}</b><div class="btn-group w-100 mt-2">${[0,1,2,3].map(v=>`<div class="flex-fill"><input type="radio" class="btn-check" name="g${i}" id="g${i}${v}" value="${v}" onchange="calc()"><label class="btn btn-outline-primary btn-sm w-100" for="g${i}${v}">${v}<span class="legenda-v">${escalas.gad[v]}</span></label></div>`).join('')}</div></div>`;
         });
+
         igiQ.forEach((q, i) => {
-            document.getElementById('igiBox').innerHTML += `<div class="pergunta-full"><b>${q}</b><div class="btn-group w-100 mt-1">${[0,1,2,3,4].map(v=>`<input type="radio" class="btn-check" name="i${i}" id="i${i}${v}" value="${v}" onchange="calc()"><label class="btn btn-outline-primary btn-sm" for="i${i}${v}">${v}</label>`).join('')}</div></div>`;
+            document.getElementById('igiBox').innerHTML += `<div class="pergunta-full"><b>${q}</b><div class="btn-group w-100 mt-2">${[0,1,2,3,4].map(v=>`<div class="flex-fill"><input type="radio" class="btn-check" name="i${i}" id="i${i}${v}" value="${v}" onchange="calc()"><label class="btn btn-outline-primary btn-sm w-100" for="i${i}${v}">${v}<span class="legenda-v">${escalas.igi[v]}</span></label></div>`).join('')}</div></div>`;
         });
 
-        const signals = ["Cor Vermelha", "Cor Pálida", "Saburra Amarela", "Saburra Branca", "Marca Dentes", "Rachaduras", "Inchada", "Magra"];
-        signals.forEach(s => {
-            let r = `<tr><td class="small fw-bold">${s}</td>`;
-            ["Ponta", "Lat", "Centro", "Raiz"].forEach(l => { r += `<td><input type="checkbox" name="tg" data-s="${s}" data-l="${l}"></td>`; });
-            document.getElementById('tongueBody').innerHTML += r + `</tr>`;
-        });
-
-        const muPoints = ["P1", "VC17", "VC14", "VC12", "F14", "F13", "VB24", "VB25", "E25", "VC4", "VC3"];
-        muPoints.forEach(p => {
-            document.getElementById('muBox').innerHTML += `<div class="mu-item"><input type="checkbox" name="mu" value="${p}"> ${p}</div>`;
+        const tongueData = [
+            {cat: "CORES", signals: ["Pálida", "Vermelha", "Púrpura", "Violácea"]},
+            {cat: "FORMA", signals: ["Denteada", "Inchada", "Magra", "Trêmula", "Desviada"]},
+            {cat: "SABURRA", signals: ["Amarela", "Branca", "Gordurosa", "Geográfica", "Pontos Verm."]}
+        ];
+        tongueData.forEach(c => {
+            document.getElementById('tongueBody').innerHTML += `<tr><td colspan="5" class="row-cat">${c.cat}</td></tr>`;
+            c.signals.forEach(s => {
+                let r = `<tr><td class="text-start ps-3">${s}</td>`;
+                ["Ponta", "Lat", "Centro", "Raiz"].forEach(l => { r += `<td><input type="checkbox" name="tg" data-s="${s}" data-l="${l}"></td>`; });
+                document.getElementById('tongueBody').innerHTML += r + `</tr>`;
+            });
         });
 
         const mP = (id, list, pref) => list.forEach((p, i) => {
-            document.getElementById(id).innerHTML += `<div class="mb-1 small fw-bold text-primary">${p} <div class="btn-group w-100">${["+++", "ok", "---"].map(v => `<input type="radio" class="btn-check" name="${pref}${i}" id="${pref}${i}${v}" value="${v}" ${v=='ok'?'checked':''}><label class="btn btn-outline-primary btn-sm py-0" style="font-size:0.5rem" for="${pref}${i}${v}">${v}</label>`).join('')}</div></div>`;
+            document.getElementById(id).innerHTML += `<div class="mb-2 small fw-bold text-primary">${p} <div class="btn-group w-100 mt-1">${["+++", "++", "+", "ok", "-", "--", "---"].map(v => `<input type="radio" class="btn-check" name="${pref}${i}" id="${pref}${i}${v}" value="${v}" ${v=='ok'?'checked':''}><label class="btn btn-outline-primary btn-sm py-0" style="font-size:0.5rem" for="${pref}${i}${v}">${v}</label>`).join('')}</div></div>`;
         });
-        mP('pDir', ["P (1DP)", "IG", "BP (2DP)", "E", "CS (3DP)", "TA"], 'pd'); 
-        mP('pEsq', ["C (1EP)", "ID", "F (2EP)", "VB", "R (3EP)", "B"], 'pe');
+        mP('pDir', ["Pulmão", "Intest. Grosso", "Baço", "Estômago", "CS", "TA"], 'pd'); 
+        mP('pEsq', ["Coração", "Intest. Delgado", "Fígado", "Vesícula", "Rim", "Bexiga"], 'pe');
+
+        ["P1", "VC17", "VC14", "VC12", "F14", "F13", "VB24", "VB25", "E25", "VC4", "VC3"].forEach(p => {
+            document.getElementById('muBox').innerHTML += `<div class="mu-item"><input type="checkbox" name="mu" value="${p}"> ${p}</div>`;
+        });
     }
 
     function calc() {
         let g=0, i=0;
         document.querySelectorAll('input[name^="g"]:checked').forEach(e=>g+=parseInt(e.value));
         document.querySelectorAll('input[name^="i"]:checked').forEach(e=>i+=parseInt(e.value));
-        document.getElementById('gadRes').innerText = "GAD-7: " + g;
-        document.getElementById('igiRes').innerText = "IGI: " + i;
+        const gR = document.getElementById('gadRes'); gR.innerText = "GAD-7: " + g; gR.style.background = g<=4?"#198754":g<=9?"#0dcaf0":"#dc3545";
+        const iR = document.getElementById('igiRes'); iR.innerText = "IGI: " + i; iR.style.background = i<=7?"#198754":i<=14?"#0dcaf0":"#dc3545";
     }
 
     function copiarParaIA() {
+        const getR = (n) => { const el = document.querySelector(`input[name="${n}"]:checked`); return el ? el.value : "ok"; };
         let tg = Array.from(document.querySelectorAll('input[name="tg"]:checked')).map(e=>`${e.dataset.s}(${e.dataset.l})`).join(", ");
         let mu = Array.from(document.querySelectorAll('input[name="mu"]:checked')).map(e=>e.value).join(", ");
-        const getR = (n) => { const el = document.querySelector(`input[name="${n}"]:checked`); return el ? el.value : "ok"; };
-
-        const res = `[360 PROMAX - ID: ${document.getElementById('pacienteID').value}]\n` +
-                    `EVA: ${evaA}->${evaD}\n` +
+        
+        const res = `[TRÍADE 360 PROMAX - ID: ${document.getElementById('pacienteID').value}]\n` +
+                    `EVA: ${evaA}->${evaD}\nQP: ${document.getElementById('qp').value}\nHMA: ${document.getElementById('hma').value}\n` +
                     `GAD: ${document.getElementById('gadRes').innerText} | IGI: ${document.getElementById('igiRes').innerText}\n` +
                     `LÍNGUA: ${tg} | OBS: ${document.getElementById('obsLingua').value}\n` +
-                    `PULSOS D: ${[0,1,2,3,4,5].map(i=>getR('pd'+i)).join('|')}\n` +
-                    `PULSOS E: ${[0,1,2,3,4,5].map(i=>getR('pe'+i)).join('|')}\n` +
-                    `PONTOS MU: ${mu}\n` +
-                    `DIAGNÓSTICO: ${document.getElementById('diag').value}`;
-        navigator.clipboard.writeText(res).then(() => alert("Dossiê Integrado Copiado!"));
+                    `PULSOS D: ${[0,1,2,3,4,5].map(i=>getR('pd'+i)).join('|')}\nPULSOS E: ${[0,1,2,3,4,5].map(i=>getR('pe'+i)).join('|')}\n` +
+                    `MU: ${mu}\nCONDUTA: ${document.getElementById('diag').value}`;
+        navigator.clipboard.writeText(res).then(() => alert("✅ Dossiê Completo Copiado!"));
     }
 
     function salvarTudo() {
-        const payload = { id: btoa(document.getElementById('pacienteID').value), data: new Date(), qp: document.getElementById('qp').value, conduta: document.getElementById('diag').value };
-        db.collection("atendimentos_360").add(payload).then(() => { alert("SALVO!"); location.reload(); });
+        const payload = { id: btoa(document.getElementById('pacienteID').value), data: new Date(), qp: document.getElementById('qp').value, hma: document.getElementById('hma').value };
+        db.collection("atendimentos_360").add(payload).then(() => { alert("🚀 SALVO NO FIREBASE!"); location.reload(); });
     }
 </script>
 </body>
