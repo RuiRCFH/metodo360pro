@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MÉTODO 360 PRO | V. 6.9.4</title>
+    <title>MÉTODO 360 PRO | V. 6.9.5</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
@@ -19,8 +19,8 @@
         .eva-regua { display: flex; width: 100%; height: 40px; background: #eee; border-radius: 8px; overflow: hidden; margin: 10px 0; }
         .eva-item { flex: 1; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; font-weight: bold; font-size: 0.8rem; }
         .eva-sel { transform: scaleY(1.3); border: 2px solid #000 !important; z-index: 5; box-shadow: 0 0 10px rgba(0,0,0,0.4); }
-        .pergunta-full { background: #fff; border: 1px solid #eee; padding: 12px; border-radius: 12px; margin-bottom: 8px; }
-        .legenda-v { font-size: 0.6rem; color: #666; display: block; text-align: center; }
+        .pergunta-full { background: #fff; border: 1px solid #eee; padding: 15px; border-radius: 12px; margin-bottom: 10px; }
+        .legenda-v { font-size: 0.6rem; color: #666; display: block; text-align: center; line-height: 1.1; margin-top: 2px; }
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th, td { border: 1px solid #eee; padding: 6px; text-align: center; font-size: 0.75rem; }
         th { background: var(--primary); color: white; }
@@ -36,7 +36,7 @@
     <div class="login-card p-5 bg-white shadow-lg rounded-4 text-center" style="width: 380px;">
         <h2 class="mb-4" style="color:var(--primary)">MÉTODO 360 PRO</h2>
         <input type="password" id="pinInput" class="form-control form-control-lg text-center mb-4" placeholder="PIN (1234)">
-        <button class="btn-pro" onclick="autenticar()">DESBLOQUEAR</button>
+        <button class="btn-pro" onclick="autenticar()">DESBLOQUEAR ACESSO</button>
     </div>
 </div>
 
@@ -65,22 +65,23 @@
         </div>
 
         <div id="e2" class="etapa">
-            <h5 class="titulo-secao">2. Escalas Ansiedade (GAD) e Sono (IGI)</h5>
+            <h5 class="titulo-secao">2. Escala de Ansiedade GAD-7 (Integral)</h5>
             <div id="gadBox"></div><div id="gadRes" class="p-2 rounded text-center text-white fw-bold bg-secondary mt-2">GAD-7: 0</div>
-            <div id="igiBox" class="mt-4"></div><div id="igiRes" class="p-2 rounded text-center text-white fw-bold bg-secondary mt-2">IGI: 0</div>
+            <h5 class="titulo-secao mt-4">3. Índice de Gravidade de Insônia IGI (Integral)</h5>
+            <div id="igiBox"></div><div id="igiRes" class="p-2 rounded text-center text-white fw-bold bg-secondary mt-2">IGI: 0</div>
             <div class="d-flex gap-2 mt-4"><button class="btn btn-secondary w-50" onclick="ir(1)">VOLTAR</button><button class="btn-pro w-50" onclick="ir(3)">EXAME LÍNGUA</button></div>
         </div>
 
         <div id="e3" class="etapa">
-            <h5 class="titulo-secao">3. Matriz Lingual Platinum</h5>
+            <h5 class="titulo-secao">4. Matriz Lingual ProMax</h5>
             <div class="mb-3 p-2 border rounded bg-light"><input type="file" id="fotoL" class="form-control form-control-sm" accept="image/*"></div>
             <table><thead><tr><th>SINAL</th><th>PONTA</th><th>LAT</th><th>CENTRO</th><th>RAIZ</th></tr></thead><tbody id="tongueBody"></tbody></table>
-            <textarea id="obsLingua" class="form-control mt-3" rows="2" placeholder="Notas..."></textarea>
+            <textarea id="obsLingua" class="form-control mt-3" rows="2" placeholder="Notas da língua..."></textarea>
             <div class="d-flex gap-2 mt-4"><button class="btn btn-secondary w-50" onclick="ir(2)">VOLTAR</button><button class="btn-pro w-50" onclick="ir(4)">PULSOS & MU</button></div>
         </div>
 
         <div id="e4" class="etapa">
-            <h5 class="titulo-secao">4. Pulsologia & Mu</h5>
+            <h5 class="titulo-secao">5. Pulsologia (12 Coordenadas) & Mu</h5>
             <div class="row"><div class="col-md-6 border-end" id="pDir"></div><div class="col-md-6" id="pEsq"></div></div>
             <h5 class="titulo-secao mt-4">Pontos Mu Álgicos</h5>
             <div class="mu-grid" id="muBox"></div>
@@ -88,7 +89,7 @@
         </div>
 
         <div id="e5" class="etapa">
-            <h5 class="titulo-secao">5. Síntese Final</h5>
+            <h5 class="titulo-secao">6. Síntese e IA Bridge</h5>
             <label class="small fw-bold text-success">EVA FINAL:</label><div class="eva-regua" id="reguaD"></div>
             <textarea id="diag" class="form-control mt-2" rows="6" placeholder="Conduta..."></textarea>
             <div class="d-flex gap-2 mt-4">
@@ -100,17 +101,11 @@
 </div>
 
 <script>
-    // SISTEMA DE ACESSO IMEDIATO
     function autenticar() {
-        const pin = document.getElementById('pinInput').value;
-        if(pin === "1234") {
+        if(document.getElementById('pinInput').value === "1234") {
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('mainContent').style.display = 'block';
-            // Só inicializa o restante após a tela sumir
-            setTimeout(() => { 
-                init();
-                conectarFirebase();
-            }, 50);
+            setTimeout(() => { init(); conectarFirebase(); }, 50);
         } else { alert("PIN INCORRETO"); }
     }
 
@@ -121,9 +116,31 @@
         db = firebase.firestore();
     }
 
-    const gadQ = ["Sentiu-se nervoso?", "Controle preocupação?", "Preocupação excessiva?", "Dificuldade relaxar?", "Inquietude?", "Irritabilidade?", "Medo do pior?"];
-    const igiQ = ["Adormecer?", "Manter sono?", "Acordar cedo?", "Satisfação?", "Interferência?", "Visível?", "Preocupação?"];
-    const legends = { gad: ["Nenhuma", "Vários dias", "Metade", "Quase todos"], igi: ["Nenhum", "Ligeiro", "Moderado", "Grave", "Muito Grave"] };
+    // PERGUNTAS INTEGRAIS E OFICIAIS
+    const gadQ = [
+        "Sentiu-se nervoso(a), ansioso(a) ou muito tenso(a)?",
+        "Não foi capaz de parar ou de controlar as suas preocupações?",
+        "Preocupou-se demasiado com diversas coisas?",
+        "Teve dificuldade em relaxar?",
+        "Sentiu-se tão inquieto(a) que foi difícil permanecer parado(a)?",
+        "Ficou facilmente irritável ou aborrecido(a)?",
+        "Sentiu medo, como se algo terrível pudesse acontecer?"
+    ];
+    const igiQ = [
+        "Dificuldade em adormecer?",
+        "Dificuldade em manter o sono?",
+        "Problemas por acordar demasiado cedo?",
+        "Quão satisfeito(a)/insatisfeito(a) está com o seu sono atual?",
+        "Quanto o seu problema de sono interfere com as atividades diárias?",
+        "Quão visível o seu problema de sono é para os outros?",
+        "Quão preocupado(a)/perturbado(a) está com o seu problema de sono?"
+    ];
+    
+    const legends = { 
+        gad: ["Nenhuma", "Vários dias", "Metade dos dias", "Quase todos"], 
+        igi: ["Nenhum", "Ligeiro", "Moderado", "Grave", "Muito Grave"] 
+    };
+
     let evaA=0, evaD=0, scoreG=0, scoreI=0;
 
     function ir(n) { document.querySelectorAll('.etapa').forEach(e=>e.classList.remove('ativa')); document.getElementById('e'+n).classList.add('ativa'); window.scrollTo(0,0); }
@@ -143,12 +160,12 @@
 
         document.getElementById('gadBox').innerHTML = "";
         gadQ.forEach((q, i) => {
-            document.getElementById('gadBox').innerHTML += `<div class="pergunta-full"><b>${q}</b><div class="btn-group w-100 mt-2">${[0,1,2,3].map(v=>`<div class="flex-fill"><input type="radio" class="btn-check" name="g${i}" id="g${i}${v}" value="${v}" onchange="calc()"><label class="btn btn-outline-primary btn-sm w-100" for="g${i}${v}">${v}<span class="legenda-v">${legends.gad[v]}</span></label></div>`).join('')}</div></div>`;
+            document.getElementById('gadBox').innerHTML += `<div class="pergunta-full"><b>${i+1}. ${q}</b><div class="btn-group w-100 mt-2">${[0,1,2,3].map(v=>`<div class="flex-fill"><input type="radio" class="btn-check" name="g${i}" id="g${i}${v}" value="${v}" onchange="calc()"><label class="btn btn-outline-primary btn-sm w-100" for="g${i}${v}">${v}<span class="legenda-v">${legends.gad[v]}</span></label></div>`).join('')}</div></div>`;
         });
 
         document.getElementById('igiBox').innerHTML = "";
         igiQ.forEach((q, i) => {
-            document.getElementById('igiBox').innerHTML += `<div class="pergunta-full"><b>${q}</b><div class="btn-group w-100 mt-2">${[0,1,2,3,4].map(v=>`<div class="flex-fill"><input type="radio" class="btn-check" name="i${i}" id="i${i}${v}" value="${v}" onchange="calc()"><label class="btn btn-outline-primary btn-sm w-100" for="i${i}${v}">${v}<span class="legenda-v">${legends.igi[v]}</span></label></div>`).join('')}</div></div>`;
+            document.getElementById('igiBox').innerHTML += `<div class="pergunta-full"><b>${i+1}. ${q}</b><div class="btn-group w-100 mt-2">${[0,1,2,3,4].map(v=>`<div class="flex-fill"><input type="radio" class="btn-check" name="i${i}" id="i${i}${v}" value="${v}" onchange="calc()"><label class="btn btn-outline-primary btn-sm w-100" for="i${i}${v}">${v}<span class="legenda-v">${legends.igi[v]}</span></label></div>`).join('')}</div></div>`;
         });
 
         const tongueData = [{cat:"CORES", signals:["Pálida","Vermelha","Púrpura","Violácea"]},{cat:"FORMA", signals:["Denteada","Inchada","Magra","Trêmula","Desviada"]},{cat:"SABURRA", signals:["Amarela","Branca","Gordurosa","Geográfica","Pontos Verm."]}];
