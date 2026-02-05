@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MÉTODO 360 PRO | V. 7.7</title>
+    <title>MÉTODO 360 PRO | V. 7.8</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
@@ -28,7 +28,7 @@
         .mu-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
         .mu-item { border: 1px solid #ddd; padding: 8px; border-radius: 8px; font-size: 0.7rem; text-align: center; background: #fff; }
         .btn-pro { background: var(--primary); color: white; padding: 15px; border-radius: 12px; border: none; font-weight: bold; width: 100%; cursor: pointer; }
-        .sugestao-crono { background: #fff9e6; border: 1px solid #ffe699; padding: 10px; border-radius: 10px; margin-top: 10px; font-size: 0.85rem; color: #856404; }
+        .crono-badge { background: #fff9e6; border: 1px solid #ffe699; padding: 8px; border-radius: 8px; font-size: 0.8rem; color: #856404; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -37,164 +37,9 @@
     <div class="login-card p-5 bg-white shadow-lg rounded-4 text-center" style="width: 380px;">
         <h2 class="mb-4" style="color:var(--primary)">MÉTODO 360 PRO</h2>
         <input type="password" id="pinInput" class="form-control form-control-lg text-center mb-4" placeholder="PIN (1234)">
-        <button class="btn-pro" onclick="autenticar()">DESBLOQUEAR</button>
+        <button class="btn-pro" onclick="autenticar()">DESBLOQUEAR ACESSO</button>
     </div>
 </div>
 
 <div id="mainContent" class="container">
     <div class="card-pro">
-        
-        <div id="e1" class="etapa ativa">
-            <h5 class="titulo-secao">1. Identificação & Mapa Natal</h5>
-            <div class="row g-2">
-                <div class="col-md-4"><label class="small fw-bold">ID / INICIAIS:</label><input type="text" id="pacienteID" class="form-control"></div>
-                <div class="col-md-3"><label class="small fw-bold">SEXO:</label>
-                    <select id="sexo" class="form-select"><option value="F">Feminino (7)</option><option value="M">Masculino (8)</option></select>
-                </div>
-                <div class="col-md-3"><label class="small fw-bold">NASC.:</label><input type="date" id="nasc" class="form-control"></div>
-                <div class="col-md-2"><label class="small fw-bold">SESSÃO:</label>
-                    <select id="sessaoNum" class="form-select">
-                        <option value="1">1/12</option><option value="2">2/12</option><option value="3">3/12</option>
-                        <option value="4">4/12</option><option value="5">5/12</option><option value="6">6/12</option>
-                        <option value="7">7/12</option><option value="8">8/12</option><option value="9">9/12</option>
-                        <option value="10">10/12</option><option value="11">11/12</option><option value="12">12/12</option>
-                    </select>
-                </div>
-                <div class="col-md-6"><label class="small fw-bold">HORA NASC.:</label><input type="time" id="horaNasc" class="form-control"></div>
-                <div class="col-md-6"><label class="small fw-bold">LOCAL NATAL:</label><input type="text" id="localNasc" class="form-control" placeholder="Cidade"></div>
-                <div class="col-12 mt-2"><label class="small fw-bold text-danger">EVA INICIAL:</label><div class="eva-regua" id="reguaA"></div></div>
-                <div class="col-12"><label class="small fw-bold">QUEIXA PRINCIPAL:</label><textarea id="qp" class="form-control" rows="2"></textarea></div>
-            </div>
-            <button class="btn-pro mt-4" onclick="ir(2)">PRÓXIMO: ESCALAS</button>
-        </div>
-
-        <div id="e2" class="etapa">
-            <h5 class="titulo-secao">2. Escalas Psíquicas (GAD-7 e IGI)</h5>
-            <div id="gadBox"></div><div id="gadRes" class="p-2 rounded text-center text-white fw-bold bg-secondary mt-2">GAD-7: 0</div>
-            <div id="igiBox" class="mt-4"></div>
-            <div id="igiRes" class="p-2 rounded text-center text-white fw-bold bg-secondary mt-2">IGI: 0</div>
-            <div id="igiAux" class="text-center small mt-1 text-muted fw-bold"></div>
-            <div class="d-flex gap-2 mt-4"><button class="btn btn-secondary w-50" onclick="ir(1)">VOLTAR</button><button class="btn-pro w-50" onclick="ir(3)">EXAME LÍNGUA</button></div>
-        </div>
-
-        <div id="e3" class="etapa">
-            <h5 class="titulo-secao">3. Matriz Lingual Platinum & Foto</h5>
-            <div class="row g-2 mb-3">
-                <div class="col-md-6">
-                    <input type="file" id="fotoL" class="form-control mb-2" accept="image/*" onchange="previewImage(event)">
-                    <div id="previewBox" style="height:150px; background:#eee; display:flex; align-items:center; justify-content:center; border-radius:10px; overflow:hidden;">
-                        <img id="imgDisplay" src="#" style="display:none; width:100%; height:100%; object-fit:contain;">
-                        <span id="previewText" class="small text-muted">Aguardando Foto...</span>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <table style="font-size:0.6rem;"><thead><tr><th>SINAL</th><th>P</th><th>L</th><th>C</th><th>R</th></tr></thead><tbody id="tongueBody"></tbody></table>
-                </div>
-            </div>
-            <textarea id="obsLingua" class="form-control mt-2" rows="2" placeholder="Notas..."></textarea>
-            <div class="d-flex gap-2 mt-4"><button class="btn btn-secondary w-50" onclick="ir(2)">VOLTAR</button><button class="btn-pro w-50" onclick="ir(4)">PULSOS & MU</button></div>
-        </div>
-
-        <div id="e4" class="etapa">
-            <h5 class="titulo-secao">4. Pulsologia (12 Coordenadas) & Fukushin</h5>
-            <div class="row"><div class="col-md-6 border-end" id="pDir"></div><div class="col-md-6" id="pEsq"></div></div>
-            <h5 class="titulo-secao mt-3">Abdomen & Mu</h5>
-            <textarea id="fukushin" class="form-control mb-2" rows="2" placeholder="Notas de palpação..."></textarea>
-            <div class="mu-grid" id="muBox"></div>
-            <div class="d-flex gap-2 mt-4"><button class="btn btn-secondary w-50" onclick="ir(3)">VOLTAR</button><button class="btn-pro w-50" onclick="ir(5)">SÍNTESE FINAL</button></div>
-        </div>
-
-        <div id="e5" class="etapa">
-            <h5 class="titulo-secao">5. Síntese Final & Autossoma Crono</h5>
-            <div id="cronoSuggest" class="sugestao-crono">Calculando ponto aberto do momento...</div>
-            <label class="small fw-bold text-success mt-3">EVA FINAL:</label><div class="eva-regua" id="reguaD"></div>
-            <textarea id="diag" class="form-control mt-2" rows="6" placeholder="Conduta..."></textarea>
-            <div class="d-flex gap-2 mt-4">
-                <button class="btn btn-secondary flex-grow-1" onclick="ir(4)">VOLTAR</button>
-                <button class="btn btn-dark flex-grow-1" onclick="copiarParaIA()">COPIAR IA</button>
-                <button class="btn btn-success flex-grow-1" onclick="salvarTudo()">SALVAR FIREBASE</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script>
-    function autenticar() {
-        if(document.getElementById('pinInput').value === "1234") {
-            document.getElementById('loginScreen').style.display = 'none';
-            document.getElementById('mainContent').style.display = 'block';
-            init(); 
-            setTimeout(conectarFirebase, 1000);
-            setInterval(calcularPontoAberto, 60000); // Atualiza ponto aberto a cada minuto
-        } else { alert("PIN Incorreto"); }
-    }
-
-    let db;
-    function conectarFirebase() {
-        try {
-            const config = { apiKey: "AIzaSyAI5X-Cb0Xf0G_cRoBX9YWqW1bn0nv-RA", authDomain: "metodo360pro-db0aa.firebaseapp.com", projectId: "metodo360pro-db0aa", storageBucket: "metodo360pro-db0aa.firebasestorage.app", messagingSenderId: "1088396585788", appId: "1:1088396585788:web:57853a7b0ff17c8306ec39" };
-            firebase.initializeApp(config); db = firebase.firestore();
-        } catch(e) {}
-    }
-
-    function previewImage(event) {
-        const reader = new FileReader();
-        reader.onload = function() {
-            const output = document.getElementById('imgDisplay');
-            output.src = reader.result; output.style.display = "block";
-            document.getElementById('previewText').style.display = "none";
-        };
-        reader.readAsDataURL(event.target.files[0]);
-    }
-
-    const gadQ = ["Sentiu-se nervoso(a), ansioso(a) ou muito tenso(a)?", "Não foi capaz de parar ou de controlar as suas preocupações?", "Preocupou-se demasiado com diversas coisas?", "Teve dificuldade em relaxar?", "Sentiu-se tão inquieto(a) que foi difícil permanecer parado(a)?", "Ficou facilmente irritável ou aborrecido(a)?", "Sentiu medo, como se algo terrível pudesse acontecer?"];
-    const igiQ = ["Dificuldade em adormecer?", "Dificuldade em manter o sono?", "Problemas por acordar demasiado cedo?", "Quão satisfeito(a)/insatisfeito(a) está com o seu sono atual?", "Quanto o seu problema de sono interfere com as atividades diárias?", "Quão visível o seu problema de sono é para os outros?", "Quão preocupado(a)/perturbado(a) está com o seu problema de sono?"];
-    const legends = { gad: ["Nenhuma", "Vários dias", "Metade", "Quase todos"], igi: ["Nenhum", "Ligeiro", "Moderado", "Grave", "Muito Grave"] };
-    let evaA=0, evaD=0, scoreG=0, scoreI=0;
-
-    function ir(n) { 
-        document.querySelectorAll('.etapa').forEach(e=>e.classList.remove('ativa')); 
-        document.getElementById('e'+n).classList.add('ativa'); 
-        window.scrollTo(0,0);
-        if(n === 5) calcularPontoAberto();
-    }
-
-    function setEva(t, v) {
-        const id = (t==='A') ? 'reguaA' : 'reguaD';
-        if(t==='A') evaA=v; else evaD=v;
-        document.querySelectorAll(`#${id} .eva-item`).forEach(e=>e.classList.remove('eva-sel'));
-        document.getElementById(`ev${t}${v}`).classList.add('eva-sel');
-    }
-
-    function init() {
-        const colors = ["#28a745", "#54b33d", "#7fbe35", "#abca2d", "#d6d524", "#ffff1c", "#ffd61c", "#ffac1c", "#ff831c", "#ff591c", "#dc3545"];
-        document.getElementById('reguaA').innerHTML = ""; document.getElementById('reguaD').innerHTML = "";
-        for(let i=0; i<=10; i++){
-            document.getElementById('reguaA').innerHTML += `<div id="evA${i}" class="eva-item" style="background:${colors[i]}" onclick="setEva('A',${i})">${i}</div>`;
-            document.getElementById('reguaD').innerHTML += `<div id="evD${i}" class="eva-item" style="background:${colors[i]}" onclick="setEva('D',${i})">${i}</div>`;
-        }
-        document.getElementById('gadBox').innerHTML = "";
-        gadQ.forEach((q, i) => {
-            document.getElementById('gadBox').innerHTML += `<div class="pergunta-full"><b>${i+1}. ${q}</b><div class="btn-group w-100 mt-2">${[0,1,2,3].map(v=>`<div class="flex-fill"><input type="radio" class="btn-check" name="g${i}" id="g${i}${v}" value="${v}" onchange="calc()"><label class="btn btn-outline-primary btn-sm w-100" for="g${i}${v}">${v}<span class="legenda-v">${legends.gad[v]}</span></label></div>`).join('')}</div></div>`;
-        });
-        document.getElementById('igiBox').innerHTML = "";
-        igiQ.forEach((q, i) => {
-            document.getElementById('igiBox').innerHTML += `<div class="pergunta-full"><b>${i+1}. ${q}</b><div class="btn-group w-100 mt-2">${[0,1,2,3,4].map(v=>`<div class="flex-fill"><input type="radio" class="btn-check" name="i${i}" id="i${i}${v}" value="${v}" onchange="calc()"><label class="btn btn-outline-primary btn-sm w-100" for="i${i}${v}">${v}<span class="legenda-v">${legends.igi[v]}</span></label></div>`).join('')}</div></div>`;
-        });
-        const tongueData = [{cat:"CORES", signals:["Pálida","Vermelha","Púrpura","Violácea"]},{cat:"FORMA", signals:["Denteada","Inchada","Magra","Trêmula"]},{cat:"SABURRA", signals:["Amarela","Branca","Gordurosa","SEM SABURRA"]}];
-        document.getElementById('tongueBody').innerHTML = "";
-        tongueData.forEach(c => {
-            document.getElementById('tongueBody').innerHTML += `<tr><td colspan="5" class="row-cat">${c.cat}</td></tr>`;
-            c.signals.forEach(s => {
-                let r = `<tr><td class="text-start ps-1" style="font-size:0.65rem">${s}</td>`;
-                ["P", "L", "C", "R"].forEach(l => { r += `<td><input type="checkbox" name="tg" data-s="${s}" data-l="${l}"></td>`; });
-                document.getElementById('tongueBody').innerHTML += r + `</tr>`;
-            });
-        });
-        const mP = (id, list, pref) => {
-            document.getElementById(id).innerHTML = "";
-            list.forEach((p, i) => {
-                document.getElementById(id).innerHTML += `<div class="mb-2 small fw-bold text-primary">${p} <div class="btn-group w-100 mt-1">${["+++", "++", "+", "ok", "-", "--", "---"].map(v => `<input type="radio" class="btn-check" name="${pref}${i}" id="${pref}${i}${v}" value="${v}" ${v=='ok'?'checked':''}><label class="btn btn-outline-primary btn-sm py-0" style="font-size:0.5rem" for="${pref}${i}${v}">${v}</label>`).join('')}</div></div>`;
-            });
-        };
-        mP('pDir', ["Pulmão", "IG", "Baço", "Estômago", "CS", "TA"], 'pd'); mP('p
