@@ -109,3 +109,126 @@
         </div>
 
         <div id="e5" class="etapa">
+            <h5 class="titulo-secao">5. Síntese Final & IA Bridge</h5>
+            <label class="small fw-bold text-success">EVA FINAL:</label><div class="eva-regua" id="reguaD"></div>
+            <textarea id="diag" class="form-control mt-2" rows="6" placeholder="Conduta Integrada..."></textarea>
+            <div class="d-flex gap-2 mt-4">
+                <button class="btn btn-secondary flex-grow-1" onclick="ir(4)">VOLTAR</button>
+                <button class="btn btn-dark flex-grow-1" onclick="copiarParaIA()">COPIAR IA</button>
+                <button class="btn btn-success flex-grow-1" onclick="salvarTudo()">SALVAR FIREBASE</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function autenticar() {
+        if(document.getElementById('pinInput').value === "1234") {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'block';
+            init(); 
+            // Conexão tardia para evitar travamento da interface
+            setTimeout(() => {
+                try {
+                    const config = { apiKey: "AIzaSyAI5X-Cb0Xf0G_cRoBX9YWqW1bn0nv-RA", authDomain: "metodo360pro-db0aa.firebaseapp.com", projectId: "metodo360pro-db0aa", storageBucket: "metodo360pro-db0aa.firebasestorage.app", messagingSenderId: "1088396585788", appId: "1:1088396585788:web:57853a7b0ff17c8306ec39" };
+                    firebase.initializeApp(config);
+                    db = firebase.firestore();
+                } catch(e) { console.warn("Firebase offline ou bloqueado."); }
+            }, 1500);
+        } else { alert("PIN Incorreto"); }
+    }
+
+    function previewImage(event) {
+        const reader = new FileReader();
+        reader.onload = function() {
+            const output = document.getElementById('imgDisplay');
+            output.src = reader.result; output.style.display = "block";
+            document.getElementById('previewText').style.display = "none";
+        };
+        reader.readAsDataURL(event.target.files[0]);
+    }
+
+    const gadQ = ["Sentiu-se nervoso(a), ansioso(a) ou muito tenso(a)?", "Não foi capaz de parar ou de controlar as suas preocupações?", "Preocupou-se demasiado com diversas coisas?", "Teve dificuldade em relaxar?", "Sentiu-se tão inquieto(a) que foi difícil permanecer parado(a)?", "Ficou facilmente irritável ou aborrecido(a)?", "Sentiu medo, como se algo terrível pudesse acontecer?"];
+    const igiQ = ["Dificuldade em adormecer?", "Dificuldade em manter o sono?", "Problemas por acordar demasiado cedo?", "Quão satisfeito(a)/insatisfeito(a) está com o seu sono atual?", "Quanto o seu problema de sono interfere com as atividades diárias?", "Quão visível o seu problema de sono é para os outros?", "Quão preocupado(a)/perturbado(a) está com o seu problema de sono?"];
+    const legends = { gad: ["Nenhuma", "Vários dias", "Metade", "Quase todos"], igi: ["Nenhum", "Ligeiro", "Moderado", "Grave", "Muito Grave"] };
+    let evaA=0, evaD=0, scoreG=0, scoreI=0, db;
+
+    function ir(n) { document.querySelectorAll('.etapa').forEach(e=>e.classList.remove('ativa')); document.getElementById('e'+n).classList.add('ativa'); window.scrollTo(0,0); }
+    function setEva(t, v) {
+        const id = (t==='A') ? 'reguaA' : 'reguaD';
+        if(t==='A') evaA=v; else evaD=v;
+        document.querySelectorAll(`#${id} .eva-item`).forEach(e=>e.classList.remove('eva-sel'));
+        document.getElementById(`ev${t}${v}`).classList.add('eva-sel');
+    }
+
+    function init() {
+        const colors = ["#28a745", "#54b33d", "#7fbe35", "#abca2d", "#d6d524", "#ffff1c", "#ffd61c", "#ffac1c", "#ff831c", "#ff591c", "#dc3545"];
+        document.getElementById('reguaA').innerHTML = ""; document.getElementById('reguaD').innerHTML = "";
+        for(let i=0; i<=10; i++){
+            document.getElementById('reguaA').innerHTML += `<div id="evA${i}" class="eva-item" style="background:${colors[i]}" onclick="setEva('A',${i})">${i}</div>`;
+            document.getElementById('reguaD').innerHTML += `<div id="evD${i}" class="eva-item" style="background:${colors[i]}" onclick="setEva('D',${i})">${i}</div>`;
+        }
+        document.getElementById('gadBox').innerHTML = "";
+        gadQ.forEach((q, i) => {
+            document.getElementById('gadBox').innerHTML += `<div class="pergunta-full"><b>${i+1}. ${q}</b><div class="btn-group w-100 mt-2">${[0,1,2,3].map(v=>`<div class="flex-fill"><input type="radio" class="btn-check" name="g${i}" id="g${i}${v}" value="${v}" onchange="calc()"><label class="btn btn-outline-primary btn-sm w-100" for="g${i}${v}">${v}<span class="legenda-v">${legends.gad[v]}</span></label></div>`).join('')}</div></div>`;
+        });
+        document.getElementById('igiBox').innerHTML = "";
+        igiQ.forEach((q, i) => {
+            document.getElementById('igiBox').innerHTML += `<div class="pergunta-full"><b>${i+1}. ${q}</b><div class="btn-group w-100 mt-2">${[0,1,2,3,4].map(v=>`<div class="flex-fill"><input type="radio" class="btn-check" name="i${i}" id="i${i}${v}" value="${v}" onchange="calc()"><label class="btn btn-outline-primary btn-sm w-100" for="i${i}${v}">${v}<span class="legenda-v">${legends.igi[v]}</span></label></div>`).join('')}</div></div>`;
+        });
+        const tongueData = [{cat:"CORES", signals:["Pálida","Vermelha","Púrpura","Violácea"]},{cat:"FORMA", signals:["Denteada","Inchada","Magra","Trêmula","Desviada"]},{cat:"SABURRA", signals:["Amarela","Branca","Gordurosa","Geográfica","Pontos Verm."]}];
+        document.getElementById('tongueBody').innerHTML = "";
+        tongueData.forEach(c => {
+            document.getElementById('tongueBody').innerHTML += `<tr><td colspan="5" class="row-cat">${c.cat}</td></tr>`;
+            c.signals.forEach(s => {
+                let r = `<tr><td class="text-start ps-1">${s}</td>`;
+                ["P", "L", "C", "R"].forEach(l => { r += `<td><input type="checkbox" name="tg" data-s="${s}" data-l="${l}"></td>`; });
+                document.getElementById('tongueBody').innerHTML += r + `</tr>`;
+            });
+        });
+        const mP = (id, list, pref) => {
+            document.getElementById(id).innerHTML = "";
+            list.forEach((p, i) => {
+                document.getElementById(id).innerHTML += `<div class="mb-2 small fw-bold text-primary">${p} <div class="btn-group w-100 mt-1">${["+++", "++", "+", "ok", "-", "--", "---"].map(v => `<input type="radio" class="btn-check" name="${pref}${i}" id="${pref}${i}${v}" value="${v}" ${v=='ok'?'checked':''}><label class="btn btn-outline-primary btn-sm py-0" style="font-size:0.5rem" for="${pref}${i}${v}">${v}</label>`).join('')}</div></div>`;
+            });
+        };
+        mP('pDir', ["Pulmão", "IG", "Baço", "Estômago", "CS", "TA"], 'pd'); mP('pEsq', ["Coração", "ID", "Fígado", "VB", "Rim", "Bexiga"], 'pe');
+        document.getElementById('muBox').innerHTML = "";
+        ["P1", "VC17", "VC14", "VC12", "F14", "F13", "VB24", "VB25", "E25", "VC4", "VC3"].forEach(p => { 
+            document.getElementById('muBox').innerHTML += `<div class="mu-item"><input type="checkbox" name="mu" value="${p}"> ${p}</div>`; 
+        });
+    }
+
+    function calc() {
+        scoreG=0; scoreI=0;
+        document.querySelectorAll('input[name^="g"]:checked').forEach(e=>scoreG+=parseInt(e.value));
+        document.querySelectorAll('input[name^="i"]:checked').forEach(e=>scoreI+=parseInt(e.value));
+        document.getElementById('gadRes').innerText = "GAD-7: " + scoreG;
+        document.getElementById('igiRes').innerText = "IGI: " + scoreI;
+    }
+
+    function copiarParaIA() {
+        const getR = (n) => { const el = document.querySelector(`input[name="${n}"]:checked`); return el ? el.value : "ok"; };
+        let tg = Array.from(document.querySelectorAll('input[name="tg"]:checked')).map(e=>`${e.dataset.s}(${e.dataset.l})`).join(", ");
+        let mu = Array.from(document.querySelectorAll('input[name="mu"]:checked')).map(e=>e.value).join(", ");
+        const res = `[360 PROMAX - SESSÃO ${document.getElementById('sessaoNum').value}]\nID: ${document.getElementById('pacienteID').value}\nEVA: ${evaA}->${evaD}\nGAD: ${scoreG} | IGI: ${scoreI}\nLÍNGUA: ${tg}\nPULSOS D: ${[0,1,2,3,4,5].map(i=>getR('pd'+i)).join('|')}\nPULSOS E: ${[0,1,2,3,4,5].map(i=>getR('pe'+i)).join('|')}\nFUKUSHIN: ${document.getElementById('fukushin').value}\nMU: ${mu}\nCONDUTA: ${document.getElementById('diag').value}`;
+        navigator.clipboard.writeText(res).then(() => alert("Copiado!"));
+    }
+
+    function salvarTudo() {
+        if(!db) { alert("Aguardando conexão ao Firebase... Tente novamente em segundos."); return; }
+        const getR = (n) => { const el = document.querySelector(`input[name="${n}"]:checked`); return el ? el.value : "ok"; };
+        const p = { 
+            id: btoa(document.getElementById('pacienteID').value), 
+            sessao: document.getElementById('sessaoNum').value,
+            nascimento: { data: document.getElementById('nasc').value, hora: document.getElementById('horaNasc').value, local: document.getElementById('localNasc').value },
+            data_atendimento: new Date(), 
+            scores: { g: scoreG, i: scoreI },
+            mtc: { l: Array.from(document.querySelectorAll('input[name="tg"]:checked')).map(e=>`${e.dataset.s}-${e.dataset.l}`), p_d: [0,1,2,3,4,5].map(i=>getR('pd'+i)), p_e: [0,1,2,3,4,5].map(i=>getR('pe'+i)), fukushin: document.getElementById('fukushin').value },
+            diag: document.getElementById('diag').value
+        };
+        db.collection("atendimentos_360").add(p).then(() => { alert("SINCRONIZADO!"); location.reload(); });
+    }
+</script>
+</body>
+</html>
