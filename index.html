@@ -1,45 +1,114 @@
-<div id="e3" class="etapa">
-            <h5 class="titulo-secao">3. Matriz Lingual ProMax + Registro Fotográfico</h5>
-            
-            <div class="row mb-3">
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MÉTODO 360 PRO | V. 7.3</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <style>
+        :root { --dark: #000d1a; --primary: #002d58; --accent: #c5a059; --bg: #f8f9fa; }
+        body { background: var(--bg); font-family: 'Inter', sans-serif; padding-bottom: 80px; }
+        #loginScreen { background: linear-gradient(135deg, var(--dark) 0%, var(--primary) 100%); height: 100vh; display: flex; align-items: center; justify-content: center; position: fixed; width: 100%; z-index: 9999; top:0; left:0; }
+        #mainContent { display: none; padding: 20px 15px; }
+        .card-pro { background: white; border-radius: 20px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); max-width: 1100px; margin: auto; border-top: 15px solid var(--primary); }
+        .etapa { display: none; }
+        .ativa { display: block; }
+        .titulo-secao { color: var(--accent); font-weight: 800; border-bottom: 2px solid #eee; padding-bottom: 8px; margin-bottom: 12px; text-transform: uppercase; font-size: 0.8rem; }
+        .eva-regua { display: flex; width: 100%; height: 40px; background: #eee; border-radius: 8px; overflow: hidden; margin: 10px 0; }
+        .eva-item { flex: 1; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; font-weight: bold; font-size: 0.8rem; }
+        .eva-sel { transform: scaleY(1.3); border: 2px solid #000 !important; z-index: 5; box-shadow: 0 0 10px rgba(0,0,0,0.4); }
+        .pergunta-full { background: #fff; border: 1px solid #eee; padding: 15px; border-radius: 12px; margin-bottom: 10px; }
+        .legenda-v { font-size: 0.6rem; color: #666; display: block; text-align: center; line-height: 1.1; margin-top: 2px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #eee; padding: 6px; text-align: center; font-size: 0.75rem; }
+        th { background: var(--primary); color: white; }
+        .row-cat { background: #f4f4f4; font-weight: bold; text-align: left !important; padding-left: 10px; }
+        .mu-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+        .mu-item { border: 1px solid #ddd; padding: 8px; border-radius: 8px; font-size: 0.7rem; text-align: center; background: #fff; }
+        .btn-pro { background: var(--primary); color: white; padding: 15px; border-radius: 12px; border: none; font-weight: bold; width: 100%; cursor: pointer; }
+        .preview-box { width: 100%; height: 200px; border: 2px dashed #ccc; border-radius: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #eee; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+<div id="loginScreen">
+    <div class="login-card p-5 bg-white shadow-lg rounded-4 text-center" style="width: 380px;">
+        <h2 class="mb-4" style="color:var(--primary)">MÉTODO 360 PRO</h2>
+        <input type="password" id="pinInput" class="form-control form-control-lg text-center mb-4" placeholder="PIN (1234)">
+        <button class="btn-pro" onclick="autenticar()">DESBLOQUEAR</button>
+    </div>
+</div>
+
+<div id="mainContent" class="container">
+    <div class="card-pro">
+        <div id="e1" class="etapa ativa">
+            <h5 class="titulo-secao">1. Identificação & Mapa Natal (Ba Zi)</h5>
+            <div class="row g-2">
+                <div class="col-md-4"><label class="small fw-bold">ID / INICIAIS:</label><input type="text" id="pacienteID" class="form-control"></div>
+                <div class="col-md-3"><label class="small fw-bold">SEXO:</label>
+                    <select id="sexo" class="form-select">
+                        <option value="F">Feminino (Ciclo 7)</option><option value="M">Masculino (Ciclo 8)</option>
+                    </select>
+                </div>
+                <div class="col-md-3"><label class="small fw-bold">DATA NASC.:</label><input type="date" id="nasc" class="form-control"></div>
+                <div class="col-md-2"><label class="small fw-bold">SESSÃO:</label>
+                    <select id="sessaoNum" class="form-select">
+                        <option value="1">1/12</option><option value="2">2/12</option><option value="3">3/12</option>
+                        <option value="4">4/12</option><option value="5">5/12</option><option value="6">6/12</option>
+                        <option value="7">7/12</option><option value="8">8/12</option><option value="9">9/12</option>
+                        <option value="10">10/12</option><option value="11">11/12</option><option value="12">12/12</option>
+                    </select>
+                </div>
+                <div class="col-md-6"><label class="small fw-bold">HORA NASCIMENTO:</label><input type="time" id="horaNasc" class="form-control"></div>
+                <div class="col-md-6"><label class="small fw-bold">LOCAL (CIDADE):</label><input type="text" id="localNasc" class="form-control" placeholder="Cidade/Estado"></div>
+                
+                <div class="col-12 mt-2"><label class="small fw-bold text-danger">EVA INICIAL:</label><div class="eva-regua" id="reguaA"></div></div>
+                <div class="col-12"><label class="small fw-bold">QUEIXA PRINCIPAL:</label><textarea id="qp" class="form-control" rows="2"></textarea></div>
+            </div>
+            <button class="btn-pro mt-4" onclick="ir(2)">PRÓXIMO: ESCALAS</button>
+        </div>
+
+        <div id="e2" class="etapa">
+            <h5 class="titulo-secao">2. Escalas Psíquicas (Integrais)</h5>
+            <div id="gadBox"></div><div id="gadRes" class="p-2 rounded text-center text-white fw-bold bg-secondary mt-2">GAD-7: 0</div>
+            <div id="igiBox" class="mt-4"></div><div id="igiRes" class="p-2 rounded text-center text-white fw-bold bg-secondary mt-2">IGI: 0</div>
+            <div class="d-flex gap-2 mt-4"><button class="btn btn-secondary w-50" onclick="ir(1)">VOLTAR</button><button class="btn-pro w-50" onclick="ir(3)">EXAME LÍNGUA</button></div>
+        </div>
+
+        <div id="e3" class="etapa">
+            <h5 class="titulo-secao">3. Matriz Lingual & Registro Fotográfico</h5>
+            <div class="row g-2 mb-3">
                 <div class="col-md-6">
-                    <label class="small fw-bold">CAPTURAR FOTO DA LÍNGUA:</label>
+                    <label class="small fw-bold">FOTO DA LÍNGUA:</label>
                     <input type="file" id="fotoL" class="form-control" accept="image/*" onchange="previewImage(event)">
                 </div>
-                <div class="col-md-6 text-center">
-                    <div id="imagePreviewContainer" style="width: 100%; height: 120px; border: 2px dashed #ccc; border-radius: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #eee;">
+                <div class="col-md-6">
+                    <div class="preview-box">
+                        <img id="imgDisplay" src="#" style="display:none; width: 100%; height: 100%; object-fit: contain;">
                         <span id="previewText" class="text-muted small">A foto aparecerá aqui</span>
-                        <img id="imgDisplay" src="#" style="display:none; width: 100%; height: 100%; object-fit: cover;">
                     </div>
                 </div>
             </div>
-
-            <table>
-                <thead><tr><th>SINAL</th><th>PONTA</th><th>LAT</th><th>CENTRO</th><th>RAIZ</th></tr></thead>
-                <tbody id="tongueBody"></tbody>
-            </table>
-            
-            <textarea id="obsLingua" class="form-control mt-3" rows="2" placeholder="Notas da língua..."></textarea>
-            
-            <div class="d-flex gap-2 mt-4">
-                <button class="btn btn-secondary w-50" onclick="ir(2)">VOLTAR</button>
-                <button class="btn-pro w-50" onclick="ir(4)">PULSOS & MU</button>
-            </div>
+            <table><thead><tr><th>SINAL</th><th>PONTA</th><th>LAT</th><th>CENTRO</th><th>RAIZ</th></tr></thead><tbody id="tongueBody"></tbody></table>
+            <textarea id="obsLingua" class="form-control mt-3" rows="2" placeholder="Notas..."></textarea>
+            <div class="d-flex gap-2 mt-4"><button class="btn btn-secondary w-50" onclick="ir(2)">VOLTAR</button><button class="btn-pro w-50" onclick="ir(4)">PULSOS & MU</button></div>
         </div>
 
-<script>
-    // Nova função para visualizar a foto antes de salvar
-    function previewImage(event) {
-        const reader = new FileReader();
-        reader.onload = function() {
-            const output = document.getElementById('imgDisplay');
-            const text = document.getElementById('previewText');
-            output.src = reader.result;
-            output.style.display = "block";
-            text.style.display = "none";
-        };
-        reader.readAsDataURL(event.target.files[0]);
-    }
+        <div id="e4" class="etapa">
+            <h5 class="titulo-secao">4. Pulsologia & Pontos Mu</h5>
+            <div class="row"><div class="col-md-6 border-end" id="pDir"></div><div class="col-md-6" id="pEsq"></div></div>
+            <h5 class="titulo-secao mt-4">Pontos Mu Álgicos</h5>
+            <div class="mu-grid" id="muBox"></div>
+            <div class="d-flex gap-2 mt-4"><button class="btn btn-secondary w-50" onclick="ir(3)">VOLTAR</button><button class="btn-pro w-50" onclick="ir(5)">SÍNTESE FINAL</button></div>
+        </div>
 
-    // ... (Mantendo as funções de salvar e inicializar da V. 7.1) ...
-</script>
+        <div id="e5" class="etapa">
+            <h5 class="titulo-secao">5. Síntese e Salvar</h5>
+            <label class="small fw-bold text-success">EVA FINAL:</label><div class="eva-regua" id="reguaD"></div>
+            <textarea id="diag" class="form-control mt-2" rows="6" placeholder="Conduta..."></textarea>
+            <div class="d-flex gap-2 mt-4">
+                <button class="btn btn-secondary flex-grow-1" onclick="ir(4)">VOLTAR</button>
+                <button class="btn btn-dark flex-grow-1" onclick="copiarParaIA()">COPIAR IA</button>
+                <button class="btn btn-success flex-grow-1" onclick="salvarTudo
