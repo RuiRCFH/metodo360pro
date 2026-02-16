@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MÉTODO 360 PRO | V. 8.0</title>
+    <title>MÉTODO 360 PRO | V. 9.0 PROMAX</title>
     <script async src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script async src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <style>
@@ -12,7 +12,7 @@
         #loginScreen { background: linear-gradient(135deg, var(--dark) 0%, var(--primary) 100%); height: 100vh; display: flex; align-items: center; justify-content: center; position: fixed; width: 100%; z-index: 9999; }
         .login-card { background: white; padding: 40px; border-radius: 20px; width: 320px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border-bottom: 8px solid var(--accent); }
         #mainContent { display: none; padding: 20px; max-width: 1100px; margin: auto; }
-        .card-pro { background: white; border-radius: 15px; padding: 25px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border-top: 15px solid var(--primary); }
+        .card-pro { background: white; border-radius: 15px; padding: 25px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border-top: 15px solid var(--primary); margin-bottom: 20px; }
         .etapa { display: none; }
         .ativa { display: block; }
         .titulo-secao { color: var(--accent); font-weight: bold; border-bottom: 1px solid #eee; padding-bottom: 5px; margin: 20px 0 10px; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px; }
@@ -34,6 +34,11 @@
         .row-cat { background: #f4f4f4; font-weight: bold; text-align: left !important; padding-left: 10px; color: var(--primary); }
         .mu-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
         .mu-item { border: 1px solid #ddd; padding: 8px; border-radius: 8px; font-size: 0.7rem; text-align: center; background: white; }
+        
+        /* Novas Classes para Subsídio e Multidimensão */
+        .subsidio-box { background: #fffcf0; border: 1px solid #ffeeba; padding: 15px; border-radius: 10px; margin-bottom: 20px; display: none; }
+        .tag-btn { background: #eee; border: 1px solid #ccc; padding: 5px 10px; border-radius: 20px; font-size: 0.7rem; cursor: pointer; display: inline-block; margin: 2px; }
+        .tag-active { background: var(--accent); color: white; border-color: var(--accent); }
     </style>
 </head>
 <body>
@@ -47,72 +52,68 @@
 </div>
 
 <div id="mainContent">
+    <div id="painelSubsidio" class="subsidio-box">
+        <h4 style="margin:0; color:#856404;">🔍 SUBSÍDIO CLÍNICO (MEMÓRIA DE CASO)</h4>
+        <div id="subsidioConteudo" style="font-size: 0.85rem; margin-top:10px;"></div>
+    </div>
+
     <div class="card-pro">
-        
         <div id="e1" class="etapa ativa">
             <h5 class="titulo-secao">1. Identificação & História Clínica</h5>
             <div class="row">
-                <div class="col"><label class="small fw-bold">ID / INICIAIS:</label><input type="text" id="pacienteID"></div>
-                <div class="col"><label class="small fw-bold">SEXO:</label><select id="sexo"><option value="F">Feminino (Ciclo 7)</option><option value="M">Masculino (Ciclo 8)</option></select></div>
-                <div class="col"><label class="small fw-bold">SESSÃO Nº:</label><select id="sessaoNum">${[1,2,3,4,5,6,7,8,9,10,11,12].map(n=>`<option value="${n}">${n}/12</option>`).join('')}</select></div>
+                <div class="col"><label class="small fw-bold">ID / INICIAIS:</label><input type="text" id="pacienteID" onblur="buscarHistorico()"></div>
+                <div class="col"><label class="small fw-bold">SEXO:</label><select id="sexo"><option value="F">Feminino</option><option value="M">Masculino</option></select></div>
+                <div class="col"><label class="small fw-bold">SESSÃO Nº:</label><input type="number" id="sessaoNum" placeholder="Ex: 1"></div>
             </div>
-            <div class="row">
-                <div class="col"><label class="small fw-bold">DATA NASC.:</label><input type="date" id="nasc"></div>
-                <div class="col"><label class="small fw-bold">HORA NASC.:</label><input type="time" id="horaNasc"></div>
-                <div class="col"><label class="small fw-bold">CIDADE NATAL:</label><input type="text" id="localNasc" placeholder="Localidade"></div>
+
+            <div class="titulo-secao">Dimensões Energéticas & Epigenéticas</div>
+            <div id="chakraTags">
+                <label class="small fw-bold">CHAKRAS EM FOCO:</label><br>
+                <span class="tag-btn" onclick="toggleTag(this)">Básico</span>
+                <span class="tag-btn" onclick="toggleTag(this)">Esplênico</span>
+                <span class="tag-btn" onclick="toggleTag(this)">Plexo Solar</span>
+                <span class="tag-btn" onclick="toggleTag(this)">Cardíaco</span>
+                <span class="tag-btn" onclick="toggleTag(this)">Laríngeo</span>
+                <span class="tag-btn" onclick="toggleTag(this)">Frontal</span>
+                <span class="tag-btn" onclick="toggleTag(this)">Coronário</span>
             </div>
+            
+            <div class="mt-3">
+                <label class="small fw-bold">FATORES MENTAIS / EPIGENÉTICOS / TRAUMAS:</label>
+                <textarea id="obsMultidim" rows="2" placeholder="Notas sobre hereditariedade, ambiente e estado mental..."></textarea>
+            </div>
+
             <label class="small fw-bold" style="color:red; display:block; margin-top:10px;">EVA INICIAL:</label>
             <div class="eva-regua" id="reguaA"></div>
             <div class="mt-3"><label class="small fw-bold">QUEIXA PRINCIPAL (QP):</label><textarea id="qp" rows="2"></textarea></div>
-            <div class="mt-3"><label class="small fw-bold text-primary">HISTÓRIA PREGRESSA DA DOENÇA (HMA):</label><textarea id="hma" rows="4" placeholder="Relato cronológico e detalhes dos sintomas..."></textarea></div>
+            <div class="mt-3"><label class="small fw-bold text-primary">HMA:</label><textarea id="hma" rows="3"></textarea></div>
             <button class="btn-pro mt-4" onclick="ir(2)">PRÓXIMO: ESCALAS</button>
         </div>
 
         <div id="e2" class="etapa">
-            <h5 class="titulo-secao">2. Escalas Ansiedade e Sono (Integrais)</h5>
-            <div id="gadBox"></div><div id="gadRes" style="background:#eee; padding:15px; text-align:center; font-weight:bold; border-radius:10px; border:1px solid #ccc;">GAD-7: 0</div>
-            <div id="igiBox" style="margin-top:25px;"></div><div id="igiRes" style="background:#eee; padding:15px; text-align:center; font-weight:bold; border-radius:10px; border:1px solid #ccc;">IGI: 0</div>
-            <div id="igiLegend" style="text-align:center; font-size:0.75rem; color:#primary; margin-top:8px; font-weight:bold;"></div>
-            <div class="row mt-4">
-                <div class="col"><button class="btn-pro" style="background:#666" onclick="ir(1)">VOLTAR</button></div>
-                <div class="col"><button class="btn-pro" onclick="ir(3)">EXAME LÍNGUA</button></div>
-            </div>
+            <h5 class="titulo-secao">2. Escalas Ansiedade e Sono</h5>
+            <div id="gadBox"></div><div id="gadRes" style="background:#eee; padding:15px; text-align:center; font-weight:bold; border-radius:10px;">GAD-7: 0</div>
+            <div id="igiBox" style="margin-top:25px;"></div><div id="igiRes" style="background:#eee; padding:15px; text-align:center; font-weight:bold; border-radius:10px;">IGI: 0</div>
+            <div id="igiLegend" style="text-align:center; font-size:0.75rem; color:var(--primary); margin-top:8px; font-weight:bold;"></div>
+            <div class="row mt-4"><button class="btn-pro" style="background:#666" onclick="ir(1)">VOLTAR</button><button class="btn-pro" onclick="ir(3)">EXAME LÍNGUA</button></div>
         </div>
 
         <div id="e3" class="etapa">
             <h5 class="titulo-secao">3. Matriz Lingual & Foto</h5>
             <div class="row">
-                <div class="col">
-                    <label class="small fw-bold">FOTO DA LÍNGUA:</label>
-                    <input type="file" id="fotoL" accept="image/*" onchange="previewImg(event)">
-                    <div id="pBox" style="height:160px; background:#f0f0f0; border:2px dashed #ccc; border-radius:15px; display:flex; align-items:center; justify-content:center; overflow:hidden; margin-top:10px;">
-                        <img id="imgDisplay" style="display:none; height:100%; object-fit: contain;"> <span id="pText" class="text-muted">Visualização</span>
-                    </div>
-                </div>
-                <div class="col">
-                    <table><thead><tr><th>SINAL</th><th>P</th><th>L</th><th>C</th><th>R</th></tr></thead><tbody id="tongueBody"></tbody></table>
-                </div>
+                <div class="col"><input type="file" id="fotoL" accept="image/*" onchange="previewImg(event)"><div id="pBox" style="height:160px; background:#f0f0f0; border:2px dashed #ccc; border-radius:15px; display:flex; align-items:center; justify-content:center; overflow:hidden; margin-top:10px;"><img id="imgDisplay" style="display:none; height:100%; object-fit: contain;"> <span id="pText" class="text-muted">Visualização</span></div></div>
+                <div class="col"><table><thead><tr><th>SINAL</th><th>P</th><th>L</th><th>C</th><th>R</th></tr></thead><tbody id="tongueBody"></tbody></table></div>
             </div>
-            <div class="mt-3"><label class="small fw-bold">NOTAS SEMIOLÓGICAS LÍNGUA:</label><textarea id="obsL" rows="2"></textarea></div>
-            <div class="row mt-4">
-                <div class="col"><button class="btn-pro" style="background:#666" onclick="ir(2)">VOLTAR</button></div>
-                <div class="col"><button class="btn-pro" onclick="ir(4)">PULSOS & MU</button></div>
-            </div>
+            <textarea id="obsL" rows="2" placeholder="Notas da língua..."></textarea>
+            <div class="row mt-4"><button class="btn-pro" style="background:#666" onclick="ir(2)">VOLTAR</button><button class="btn-pro" onclick="ir(4)">PULSOS & MU</button></div>
         </div>
 
         <div id="e4" class="etapa">
-            <h5 class="titulo-secao">4. Pulsologia (12 Meridianos) & Fukushin</h5>
-            <div class="row">
-                <div class="col border-end" id="pDir"></div>
-                <div class="col" id="pEsq"></div>
-            </div>
-            <h5 class="titulo-secao">Palpação Abdominal (Japonês) & Mu</h5>
-            <textarea id="fuku" placeholder="Sensibilidade abdominal, massas ou frio..." rows="2"></textarea>
+            <h5 class="titulo-secao">4. Pulsologia & Fukushin</h5>
+            <div class="row"><div class="col border-end" id="pDir"></div><div class="col" id="pEsq"></div></div>
+            <textarea id="fuku" placeholder="Fukushin / Mu..." rows="2"></textarea>
             <div class="mu-grid mt-3" id="muBox"></div>
-            <div class="row mt-4">
-                <div class="col"><button class="btn-pro" style="background:#666" onclick="ir(3)">VOLTAR</button></div>
-                <div class="col"><button class="btn-pro" onclick="ir(5)">SÍNTESE FINAL</button></div>
-            </div>
+            <div class="row mt-4"><button class="btn-pro" style="background:#666" onclick="ir(3)">VOLTAR</button><button class="btn-pro" onclick="ir(5)">SÍNTESE FINAL</button></div>
         </div>
 
         <div id="e5" class="etapa">
@@ -120,20 +121,19 @@
             <div id="cronoBox" style="background:#fff9e6; padding:15px; border-radius:10px; font-size:0.9rem; color:#856404; font-weight:bold; border:1px solid #ffe699;"></div>
             <label class="small fw-bold" style="color:green; display:block; margin-top:20px;">EVA FINAL:</label>
             <div class="eva-regua" id="reguaD"></div>
-            <textarea id="diag" placeholder="Plano Terapêutico Integrado..." rows="8" style="margin-top:10px;"></textarea>
+            <textarea id="diag" placeholder="Conduta Tung / Pontos / Estratégia..." rows="8" style="margin-top:10px;"></textarea>
             <button class="btn-pro" style="background:black" onclick="copiarIA()">COPIAR PARA IA BRIDGE</button>
             <button class="btn-pro" style="background:green" onclick="salvarFB()">SALVAR NO FIREBASE</button>
             <button class="btn-pro" style="background:#666" onclick="ir(4)">VOLTAR</button>
         </div>
-
     </div>
 </div>
 
 <script>
     const colors = ["#28a745", "#54b33d", "#7fbe35", "#abca2d", "#d6d524", "#ffff1c", "#ffd61c", "#ffac1c", "#ff831c", "#ff591c", "#dc3545"];
-    const gadQ = ["Sentiu-se nervoso(a), ansioso(a) ou muito tenso(a)?", "Não foi capaz de parar ou de controlar as suas preocupações?", "Preocupou-se demasiado com diversas coisas?", "Teve dificuldade em relaxar?", "Sentiu-se tão inquieto(a) que foi difícil permanecer parado(a)?", "Ficou facilmente irritável ou aborrecido(a)?", "Sentiu medo, como se algo terrível pudesse acontecer?"];
-    const igiQ = ["Dificuldade em adormecer?", "Dificuldade em manter o sono?", "Problemas por acordar demasiado cedo?", "Quão satisfeito(a)/insatisfeito(a) está com o seu sono atual?", "Quanto o seu problema de sono interfere com as atividades diárias?", "Quão visível o seu problema de sono é para os outros?", "Quão preocupado(a)/perturbado(a) está com o seu problema de sono?"];
-    const tgData = [{c:"COR", s:["Pálida","Vermelha","Púrpura","Violácea"]},{c:"FORMA", s:["Denteada","Inchada","Magra","Trêmula","Fissurada"]},{c:"SABURRA", s:["Amarela","Branca","Gordurosa","AUSÊNCIA SABURRA"]}];
+    const gadQ = ["Sentiu-se nervoso(a)?", "Não controlou preocupação?", "Preocupou-se demais?", "Dificuldade relaxar?", "Inquieto(a)?", "Irritável?", "Medo de algo terrível?"];
+    const igiQ = ["Dificuldade adormecer?", "Manter o sono?", "Acordar cedo?", "Satisfação com sono?", "Interferência diária?", "Visível aos outros?", "Preocupação com sono?"];
+    const tgData = [{c:"COR", s:["Pálida","Vermelha","Púrpura","Violácea"]},{c:"FORMA", s:["Denteada","Inchada","Magra","Trêmula","Fissurada"]},{c:"SABURRA", s:["Amarela","Branca","Gordurosa","AUSÊNCIA"]}];
     const pD = ["Pulmão", "IG", "Baço-P", "Estômago", "Pericárdio", "TA"];
     const pE = ["Coração", "ID", "Fígado", "Vesícula B.", "Rim", "Bexiga"];
     
@@ -147,6 +147,39 @@
             init(); setTimeout(conectar, 1500);
         } else alert("PIN Incorreto");
     }
+
+    // --- NOVO: BUSCA RETROSPECTIVA ---
+    async function buscarHistorico() {
+        const id = document.getElementById('pacienteID').value.trim().toUpperCase();
+        if(!id || !db) return;
+        
+        try {
+            const snapshot = await db.collection("atendimentos_360")
+                .where("paciente", "==", id).orderBy("data", "desc").get();
+            
+            const painel = document.getElementById('painelSubsidio');
+            const conteudo = document.getElementById('subsidioConteudo');
+            
+            if (snapshot.empty) {
+                painel.style.display = "none";
+                return;
+            }
+
+            let docs = [];
+            snapshot.forEach(d => docs.push(d.data()));
+            const ult = docs[0];
+            const prim = docs[docs.length - 1];
+
+            conteudo.innerHTML = `
+                <b>Evolução Histórica:</b> EVA Inicial Total: ${prim.eva[0]} | Última EVA Final: ${ult.eva[1]} <br>
+                <b>Últimos Scores:</b> GAD: ${ult.scores.gad} | IGI: ${ult.scores.igi} <br>
+                <b>Última Conduta:</b> ${ult.diagnostico ? ult.diagnostico.substring(0,80) + '...' : 'N/A'}
+            `;
+            painel.style.display = "block";
+        } catch(e) { console.log("Erro retrospectiva:", e); }
+    }
+
+    function toggleTag(el) { el.classList.toggle('tag-active'); }
 
     function ir(n) {
         document.querySelectorAll('.etapa').forEach(e => e.classList.remove('ativa'));
@@ -164,24 +197,11 @@
         }
         const gb = document.getElementById('gadBox');
         const ib = document.getElementById('igiBox');
-        gadQ.forEach((q,i) => {
-            gb.innerHTML += `<div class="pergunta-full"><small><b>${i+1}. ${q}</b></small><div class="btn-group">${[0,1,2,3].map(v => `<button class="btn-opt" id="g${i}_${v}" onclick="setSc('g',${i},${v})">${v}</button>`).join('')}</div></div>`;
-        });
-        igiQ.forEach((q,i) => {
-            ib.innerHTML += `<div class="pergunta-full"><small><b>${i+1}. ${q}</b></small><div class="btn-group">${[0,1,2,3,4].map(v => `<button class="btn-opt" id="i${i}_${v}" onclick="setSc('i',${i},${v})">${v}</button>`).join('')}</div></div>`;
-        });
+        gadQ.forEach((q,i) => { gb.innerHTML += `<div class="pergunta-full"><small><b>${i+1}. ${q}</b></small><div class="btn-group">${[0,1,2,3].map(v => `<button class="btn-opt" id="g${i}_${v}" onclick="setSc('g',${i},${v})">${v}</button>`).join('')}</div></div>`; });
+        igiQ.forEach((q,i) => { ib.innerHTML += `<div class="pergunta-full"><small><b>${i+1}. ${q}</b></small><div class="btn-group">${[0,1,2,3,4].map(v => `<button class="btn-opt" id="i${i}_${v}" onclick="setSc('i',${i},${v})">${v}</button>`).join('')}</div></div>`; });
         const tBody = document.getElementById('tongueBody');
-        tgData.forEach(cat => {
-            tBody.innerHTML += `<tr class="row-cat"><td colspan="5">${cat.c}</td></tr>`;
-            cat.s.forEach(sig => {
-                tBody.innerHTML += `<tr><td>${sig}</td>${['P','L','C','R'].map(l => `<td><input type="checkbox" class="tg-chk" data-s="${sig}" data-l="${l}"></td>`).join('')}</tr>`;
-            });
-        });
-        const drawP = (cont, list, pref) => {
-            list.forEach((p,i) => {
-                document.getElementById(cont).innerHTML += `<div style="margin-bottom:8px;"><small><b>${p}</b></small><div class="btn-group">${['+++','++','+','ok','-','--','---'].map(v => `<button class="btn-opt" data-ref="${pref}${i}" onclick="setPulse('${pref}${i}',this)">${v}</button>`).join('')}</div></div>`;
-            });
-        };
+        tgData.forEach(cat => { tBody.innerHTML += `<tr class="row-cat"><td colspan="5">${cat.c}</td></tr>`; cat.s.forEach(sig => { tBody.innerHTML += `<tr><td>${sig}</td>${['P','L','C','R'].map(l => `<td><input type="checkbox" class="tg-chk" data-s="${sig}" data-l="${l}"></td>`).join('')}</tr>`; }); });
+        const drawP = (cont, list, pref) => { list.forEach((p,i) => { document.getElementById(cont).innerHTML += `<div style="margin-bottom:8px;"><small><b>${p}</b></small><div class="btn-group">${['+++','++','+','ok','-','--','---'].map(v => `<button class="btn-opt" data-ref="${pref}${i}" onclick="setPulse('${pref}${i}',this)">${v}</button>`).join('')}</div></div>`; }); };
         drawP('pDir', pD, 'pd'); drawP('pEsq', pE, 'pe');
         const mu = ["P1", "VC17", "VC14", "VC12", "F14", "F13", "VB24", "VB25", "E25", "VC4", "VC3"];
         mu.forEach(m => document.getElementById('muBox').innerHTML += `<div class="mu-item"><input type="checkbox" class="mu-chk" value="${m}"> ${m}</div>`);
@@ -211,8 +231,7 @@
         scI = Object.values(answers.i).reduce((a,b)=>a+b, 0);
         document.getElementById('gadRes').innerText = "GAD-7 Score: " + scG;
         document.getElementById('igiRes').innerText = "IGI Score: " + scI;
-        let leg = "";
-        if(scI<=7) leg="Ausência de Insónia Clínica"; else if(scI<=14) leg="Insónia Ligeira"; else if(scI<=21) leg="Insónia Moderada"; else leg="Insónia Grave";
+        let leg = (scI<=7) ? "Ausência Insónia" : (scI<=14) ? "Ligeira" : (scI<=21) ? "Moderada" : "Grave";
         document.getElementById('igiLegend').innerText = leg;
     }
 
@@ -220,7 +239,7 @@
         const h = new Date().getHours();
         const map = [[3,4,"Pulmão","P7/P9"],[5,6,"IG","IG4/11"],[7,8,"Estômago","E36/44"],[9,10,"Baço","BP3/6"],[11,12,"Coração","C7/9"],[13,14,"ID","ID3"],[15,16,"Bexiga","B60/62"],[17,18,"Rim","R3/6"],[19,20,"CS","PC6"],[21,22,"TA","TA5"],[23,0,"VB","VB41"],[1,2,"Fígado","F3"]];
         const r = map.find(m => m[0]===h || m[1]===h);
-        document.getElementById('cronoBox').innerHTML = r ? `⏱️ <b>Sugestão Crono:</b> Ponto ${r[3]} (Maré do ${r[2]})` : "Cálculo indisponível";
+        document.getElementById('cronoBox').innerHTML = r ? `⏱️ <b>Crono-Ponto:</b> ${r[3]} (${r[2]})` : "Cálculo indisponível";
     }
 
     function previewImg(e) {
@@ -237,23 +256,23 @@
     }
 
     function copiarIA() {
-        const tg = Array.from(document.querySelectorAll('.tg-chk:checked')).map(c => `${c.dataset.s}(${c.dataset.l})`).join(', ');
-        const mu = Array.from(document.querySelectorAll('.mu-chk:checked')).map(c => c.value).join(', ');
-        const t = `[360 PROMAX - SESSÃO ${document.getElementById('sessaoNum').value}]\nID: ${document.getElementById('pacienteID').value}\nQP: ${document.getElementById('qp').value}\nHMA: ${document.getElementById('hma').value}\nEVA: ${evaA}->${evaD}\nGAD: ${scG} | IGI: ${scI}\nLíngua: ${tg}\nMu: ${mu}\nConduta: ${document.getElementById('diag').value}`;
+        const tags = Array.from(document.querySelectorAll('.tag-active')).map(t => t.innerText).join(', ');
+        const t = `[360 PROMAX - SESSÃO ${document.getElementById('sessaoNum').value}]\nID: ${document.getElementById('pacienteID').value}\nMultidimensão: ${tags}\nEpigenética: ${document.getElementById('obsMultidim').value}\nEVA: ${evaA}->${evaD}\nGAD: ${scG} | IGI: ${scI}\nConduta: ${document.getElementById('diag').value}`;
         navigator.clipboard.writeText(t).then(() => alert("Copiado!"));
     }
 
     function salvarFB() {
         if(!db) return alert("Erro de conexão");
+        const tags = Array.from(document.querySelectorAll('.tag-active')).map(t => t.innerText);
         db.collection("atendimentos_360").add({
-            paciente: document.getElementById('pacienteID').value,
-            hma: document.getElementById('hma').value,
+            paciente: document.getElementById('pacienteID').value.toUpperCase(),
             data: new Date(),
             sessao: document.getElementById('sessaoNum').value,
             scores: { gad: scG, igi: scI },
             eva: [evaA, evaD],
+            multidim: { tags, obs: document.getElementById('obsMultidim').value },
             diagnostico: document.getElementById('diag').value
-        }).then(() => { alert("Salvo!"); location.reload(); });
+        }).then(() => { alert("Salvo no Arquivo Histórico!"); location.reload(); });
     }
 </script>
 </body>
