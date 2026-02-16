@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MÉTODO 360 PRO | V. 9.3 (Restaurado)</title>
-    <script async src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script async src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <title>MÉTODO 360 PRO | V. 9.6 PROMAX</title>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     
     <style>
-        /* RESTAURAÇÃO COMPLETA DO DESIGN ORIGINAL (Imagem a89547) */
+        /* DESIGN ORIGINAL RESTAURADO (Fundo escuro e cards arredondados) */
         :root { --dark: #000d1a; --primary: #002d58; --accent: #c5a059; --bg: #f8f9fa; }
         body { background: var(--bg); font-family: sans-serif; margin: 0; padding-bottom: 80px; }
         
@@ -59,19 +59,12 @@
         .eva-item { flex: 1; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; font-size: 0.8rem; font-weight: bold; }
         .eva-sel { border: 4px solid black !important; transform: scaleY(1.1); z-index: 2; }
 
-        /* Estilo das Escalas GAD/IGI */
         .pergunta-full { background: #fdfdfd; border: 1px solid #eee; padding: 15px; border-radius: 12px; margin-bottom: 15px; }
         .btn-group { display: flex; gap: 4px; margin-top: 8px; }
         .btn-opt { flex: 1; padding: 10px 2px; font-size: 0.7rem; border: 1px solid var(--primary); background: white; cursor: pointer; border-radius: 6px; }
         .opt-sel { background: var(--primary); color: white; }
 
-        /* Estilo das Tabelas de Língua e Pulsos */
-        table { width: 100%; border-collapse: collapse; font-size: 0.75rem; margin-top: 10px; }
-        th, td { border: 1px solid #eee; padding: 8px; text-align: center; }
-        th { background: var(--primary); color: white; }
-        .row-cat { background: #f4f4f4; font-weight: bold; text-align: left !important; padding-left: 10px; color: var(--primary); }
-
-        /* Painel de Subsídio Inteligente */
+        /* Painel de Subsídio Discreto */
         .painel-memoria { 
             background: #fffcf0; border-left: 8px solid var(--accent); 
             padding: 15px; margin-bottom: 20px; border-radius: 10px; 
@@ -106,7 +99,9 @@
             <label class="small fw-bold" style="color:red; display:block; margin-top:10px;">EVA INICIAL:</label>
             <div class="eva-regua" id="reguaA"></div>
             <div class="mt-3"><label class="small fw-bold">QUEIXA PRINCIPAL (QP):</label><textarea id="qp" rows="2"></textarea></div>
-            <div class="mt-3"><label class="small fw-bold text-primary">HISTÓRIA PREGRESSA (HMA):</label><textarea id="hma" rows="4" placeholder="Descreva o caso, incluindo desajustes de Chakras ou Epigenética aqui..."></textarea></div>
+            <div class="mt-3"><label class="small fw-bold text-primary">HISTÓRIA PREGRESSA (HMA):</label>
+                <textarea id="hma" rows="4" placeholder="Descreva os desajustes de Chakras e Epigenética aqui..."></textarea>
+            </div>
             <button class="btn-pro mt-4" onclick="ir(2)">PRÓXIMO: ESCALAS</button>
         </div>
 
@@ -114,23 +109,26 @@
             <h5 class="titulo-secao">2. Escalas Ansiedade e Sono</h5>
             <div id="gadBox"></div><div id="gadRes" style="background:#eee; padding:15px; text-align:center; font-weight:bold; border-radius:10px;">GAD-7: 0</div>
             <div id="igiBox" style="margin-top:25px;"></div><div id="igiRes" style="background:#eee; padding:15px; text-align:center; font-weight:bold; border-radius:10px;">IGI: 0</div>
-            <div class="row mt-4"><div class="col"><button class="btn-pro" style="background:#666" onclick="ir(1)">VOLTAR</button></div><div class="col"><button class="btn-pro" onclick="ir(3)">EXAME LÍNGUA</button></div></div>
+            <div class="row mt-4">
+                <div class="col"><button class="btn-pro" style="background:#666" onclick="ir(1)">VOLTAR</button></div>
+                <div class="col"><button class="btn-pro" onclick="ir(5)">SÍNTESE FINAL</button></div>
+            </div>
         </div>
 
         <div id="e5" class="etapa">
             <h5 class="titulo-secao">5. Síntese Clínica & Ponto Aberto</h5>
-            <div id="cronoBox" style="background:#fff9e6; padding:15px; border-radius:10px; font-weight:bold; color:#856404; margin-bottom:10px;"></div>
-            <label class="small fw-bold" style="color:green;">EVA FINAL:</label>
+            <label class="small fw-bold" style="color:green; display:block; margin-top:20px;">EVA FINAL:</label>
             <div class="eva-regua" id="reguaD"></div>
-            <textarea id="diag" placeholder="Conduta Tung / Pontos / Observações de desajustes..." rows="8" style="margin-top:10px;"></textarea>
-            <button class="btn-pro" style="background:green" onclick="salvarFB()">SALVAR NO ARQUIVO HISTÓRICO</button>
-            <button class="btn-pro" style="background:#666" onclick="ir(1)">VOLTAR AO INÍCIO</button>
+            <textarea id="diag" placeholder="Conduta Tung / Observações de desajustes..." rows="8" style="margin-top:10px;"></textarea>
+            <button class="btn-pro" style="background:black" onclick="copiarIA()">COPIAR IA BRIDGE (INTEGRAL)</button>
+            <button class="btn-pro" style="background:green" onclick="salvarFB()">SALVAR NO FIREBASE</button>
+            <button class="btn-pro" style="background:#666" onclick="ir(2)">VOLTAR</button>
         </div>
     </div>
 </div>
 
 <script>
-    // CONFIGURAÇÃO FIREBASE (Igual à imagem a89547)
+    // CONFIGURAÇÃO FIREBASE
     const firebaseConfig = { 
         apiKey: "AIzaSyAI5X-Cb0Xf0G_cRoBX9YWqW1bn0nv-RA", 
         authDomain: "metodo360pro-db0aa.firebaseapp.com", 
@@ -140,58 +138,105 @@
         appId: "1:1088396585788:web:57853a7b0ff17c8306ec39" 
     };
     
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
     const colors = ["#28a745", "#54b33d", "#7fbe35", "#abca2d", "#d6d524", "#ffff1c", "#ffd61c", "#ffac1c", "#ff831c", "#ff591c", "#dc3545"];
-    const gadQ = ["Sentiu-se nervoso?", "Preocupações incontroláveis?", "Preocupou-se demais?", "Dificuldade relaxar?", "Inquieto(a)?", "Irritável?", "Medo de algo terrível?"];
+    const gadQ = ["Sentiu-se nervoso?", "Preocupações incontroláveis?", "Preocupação excessiva?", "Dificuldade relaxar?", "Inquieto(a)?", "Irritável?", "Medo de algo terrível?"];
     const igiQ = ["Dificuldade adormecer?", "Manter o sono?", "Acordar cedo?", "Satisfação com sono?", "Interferência diária?", "Visível aos outros?", "Preocupação com sono?"];
     
-    let evaA=0, evaD=0, scG=0, scI=0, db;
+    let evaA=0, evaD=0, scG=0, scI=0;
     const answers = { g: {}, i: {} };
 
     function autenticar() {
         if(document.getElementById('pinInput').value === "1234") {
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('mainContent').style.display = 'block';
-            init(); setTimeout(conectar, 1500);
+            init();
         } else alert("PIN Incorreto");
     }
 
-    // --- RECONHECIMENTO AUTOMÁTICO DE LONGA DATA ---
+    // --- INTELIGÊNCIA DE RECONHECIMENTO DE LONGA DATA ---
     async function buscarHistoricoInteligente() {
         const id = document.getElementById('pacienteID').value.trim().toUpperCase();
-        if(!id || !db) return;
+        if(!id) return;
         try {
-            const snapshot = await db.collection("atendimentos_360").where("paciente", "==", id).orderBy("data", "desc").limit(3).get();
+            const snapshot = await db.collection("atendimentos_360").where("paciente", "==", id).orderBy("data", "desc").get();
             if (!snapshot.empty) {
                 let resumo = "";
-                snapshot.forEach(doc => {
-                    const d = doc.data();
-                    resumo += `📌 <b>Sessão ${d.sessao}:</b> EVA Final ${d.eva ? d.eva[1] : '?'} | <b>Nota:</b> <i>"${d.diagnostico ? d.diagnostico.substring(0,100) : ''}..."</i><br>`;
-                });
+                let docs = [];
+                snapshot.forEach(doc => docs.push(doc.data()));
+                
+                const ult = docs[0];
+                const prim = docs[docs.length - 1];
+                
+                resumo = `📌 <b>Marco Zero:</b> EVA ${prim.eva[0]} | 📈 <b>Último Final:</b> EVA ${ult.eva[1]} <br>` +
+                         `<b>Nota Retrospectiva:</b> <i>"${ult.diagnostico ? ult.diagnostico.substring(0,100) : ''}..."</i>`;
+                
                 document.getElementById('conteudoMemoria').innerHTML = resumo;
                 document.getElementById('painelMemoria').style.display = "block";
-                window.scrollTo(0,0);
             }
         } catch(e) { console.log("Erro na busca inteligente:", e); }
     }
 
     function init() {
-        // Inicializar Réguas EVA
         const ra = document.getElementById('reguaA'); const rd = document.getElementById('reguaD');
         for(let i=0; i<=10; i++) {
             ra.innerHTML += `<div id="evA${i}" class="eva-item" style="background:${colors[i]}" onclick="setEva('A',${i})">${i}</div>`;
             rd.innerHTML += `<div id="evD${i}" class="eva-item" style="background:${colors[i]}" onclick="setEva('D',${i})">${i}</div>`;
         }
-        // Inicializar GAD e IGI
         const gb = document.getElementById('gadBox'); const ib = document.getElementById('igiBox');
         gadQ.forEach((q,i) => { gb.innerHTML += `<div class="pergunta-full"><small><b>${i+1}. ${q}</b></small><div class="btn-group">${[0,1,2,3].map(v => `<button class="btn-opt" id="g${i}_${v}" onclick="setSc('g',${i},${v})">${v}</button>`).join('')}</div></div>`; });
         igiQ.forEach((q,i) => { ib.innerHTML += `<div class="pergunta-full"><small><b>${i+1}. ${q}</b></small><div class="btn-group">${[0,1,2,3,4].map(v => `<button class="btn-opt" id="i${i}_${v}" onclick="setSc('i',${i},${v})">${v}</button>`).join('')}</div></div>`; });
     }
 
-    function setEva(t,v) { if(t==='A') evaA=v; else evaD=v; document.querySelectorAll(`#regua${t} .eva-item`).forEach(e => e.classList.remove('eva-sel')); document.getElementById(`ev${t}${v}`).classList.add('eva-sel'); }
-    function setSc(t,q,v) { answers[t][q]=v; document.querySelectorAll(`[id^="${t}${q}_"]`).forEach(b => b.classList.remove('opt-sel')); document.getElementById(`${t}${q}_${v}`).classList.add('opt-sel'); scG=Object.values(answers.g).reduce((a,b)=>a+b,0); scI=Object.values(answers.i).reduce((a,b)=>a+b,0); document.getElementById('gadRes').innerText="GAD-7: "+scG; document.getElementById('igiRes').innerText="IGI: "+scI; }
-    function ir(n) { document.querySelectorAll('.etapa').forEach(e => e.classList.remove('ativa')); document.getElementById('e'+n).classList.add('ativa'); window.scrollTo(0,0); }
-    function conectar() { try { firebase.initializeApp(firebaseConfig); db=firebase.firestore(); } catch(e){} }
-    function salvarFB() { if(!db)return; db.collection("atendimentos_360").add({ paciente: document.getElementById('pacienteID').value.toUpperCase(), data: new Date(), sessao: document.getElementById('sessaoNum').value, eva: [evaA, evaD], scores: { gad: scG, igi: scI }, diagnostico: document.getElementById('diag').value }).then(()=>{alert("Sessão Salva com Sucesso!"); location.reload();}); }
+    function setEva(t,v) { 
+        if(t==='A') evaA=v; else evaD=v; 
+        document.querySelectorAll(`#regua${t} .eva-item`).forEach(e => e.classList.remove('eva-sel')); 
+        document.getElementById(`ev${t}${v}`).classList.add('eva-sel'); 
+    }
+    
+    function setSc(t,q,v) { 
+        answers[t][q]=v; 
+        document.querySelectorAll(`[id^="${t}${q}_"]`).forEach(b => b.classList.remove('opt-sel')); 
+        document.getElementById(`${t}${q}_${v}`).classList.add('opt-sel'); 
+        scG=Object.values(answers.g).reduce((a,b)=>a+b,0); 
+        scI=Object.values(answers.i).reduce((a,b)=>a+b,0); 
+        document.getElementById('gadRes').innerText="GAD-7: "+scG; 
+        document.getElementById('igiRes').innerText="IGI: "+scI; 
+    }
+
+    function ir(n) { 
+        document.querySelectorAll('.etapa').forEach(e => e.classList.remove('ativa')); 
+        document.getElementById('e'+n).classList.add('ativa'); 
+        window.scrollTo(0,0); 
+    }
+
+    // --- NOVO: EXPORTAÇÃO INTELIGENTE PARA IA BRIDGE ---
+    function copiarIA() {
+        const textoLivre = (document.getElementById('hma').value + " " + document.getElementById('diag').value).toLowerCase();
+        let desajustes = [];
+        if (textoLivre.includes("chakra")) desajustes.push("Bioenergético (Chakras)");
+        if (textoLivre.includes("herança") || textoLivre.includes("família")) desajustes.push("Epigenético/Hereditário");
+        
+        const relatorio = `[MÉTODO 360 PROMAX]\nID: ${document.getElementById('pacienteID').value}\nSESSÃO: ${document.getElementById('sessaoNum').value}\n` +
+                          `EVA: ${evaA}->${evaD} | GAD: ${scG} | IGI: ${scI}\n` +
+                          `DESAJUSTES DETECTADOS: ${desajustes.join(' | ') || "Análise Geral"}\n` +
+                          `CONDUTA: ${document.getElementById('diag').value}`;
+                          
+        navigator.clipboard.writeText(relatorio).then(() => alert("Inteligência Clínica Copiada!"));
+    }
+
+    function salvarFB() {
+        db.collection("atendimentos_360").add({ 
+            paciente: document.getElementById('pacienteID').value.toUpperCase(), 
+            data: new Date(), 
+            sessao: document.getElementById('sessaoNum').value, 
+            eva: [evaA, evaD], 
+            scores: { gad: scG, igi: scI }, 
+            diagnostico: document.getElementById('diag').value 
+        }).then(() => { alert("Sessão Arquivada com Sucesso!"); location.reload(); });
+    }
 </script>
 </body>
 </html>
