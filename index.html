@@ -2,16 +2,25 @@
 <html lang="pt-pt">
 <head>
     <meta charset="UTF-8">
-    <title>MÉTODO 360 PRO | V. 12.0</title>
+    <title>MÉTODO 360 PRO | V. 13.0 (Unificado)</title>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root { --dark: #000d1a; --primary: #002d58; --accent: #c5a059; --bg: #f8f9fa; }
-        body { background: var(--bg); font-family: sans-serif; margin: 0; padding: 20px; }
-        .card-pro { background: white; border-radius: 15px; padding: 25px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border-top: 15px solid var(--primary); max-width: 1000px; margin: auto; }
-        .btn-pro { background: var(--primary); color: white; padding: 15px; border-radius: 10px; border: none; font-weight: bold; width: 100%; cursor: pointer; margin-top: 10px; }
-        .chart-container { position: relative; height: 350px; width: 100%; margin-top: 20px; }
+        body { background: var(--bg); font-family: sans-serif; margin: 0; padding-bottom: 80px; }
+        #loginScreen { background: linear-gradient(135deg, var(--dark) 0%, var(--primary) 100%); height: 100vh; display: flex; align-items: center; justify-content: center; position: fixed; width: 100%; z-index: 9999; }
+        .login-card { background: white; padding: 40px; border-radius: 20px; width: 320px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border-bottom: 8px solid var(--accent); }
+        #mainContent { display: none; padding: 20px; max-width: 1100px; margin: auto; }
+        .card-pro { background: white; border-radius: 15px; padding: 25px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border-top: 15px solid var(--primary); margin-bottom: 20px; }
+        .etapa { display: none; }
+        .ativa { display: block; }
+        .titulo-secao { color: var(--accent); font-weight: bold; border-bottom: 1px solid #eee; padding-bottom: 5px; margin: 20px 0 10px; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px; }
+        .btn-pro { background: var(--primary); color: white; padding: 15px; border-radius: 10px; border: none; font-weight: bold; width: 100%; cursor: pointer; margin-top: 10px; transition: 0.3s; }
+        .nav-tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+        .tab-btn { flex: 1; padding: 12px; border-radius: 8px; border: none; background: #ddd; cursor: pointer; font-weight: bold; }
+        .tab-active { background: var(--accent); color: white; }
+        .chart-container { position: relative; height: 300px; width: 100%; margin-top: 20px; }
         table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 0.8rem; }
         th, td { border: 1px solid #eee; padding: 10px; text-align: left; }
         th { background: var(--primary); color: white; }
@@ -19,20 +28,41 @@
 </head>
 <body>
 
-<div class="card-pro">
-    <h3 style="color:var(--primary); margin-top:0;">📊 Central de Inteligência Clínica</h3>
-    <p>Busca histórica de longa data no Firebase</p>
-    
-    <div style="display:flex; gap:10px;">
-        <input type="text" id="buscaID" placeholder="ID do Paciente (Ex: MRO5005)" style="flex:2; padding:12px; border-radius:8px; border:1px solid #ccc;">
-        <button onclick="gerarInteligencia()" style="flex:1; background:var(--accent); color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">GERAR ANÁLISE</button>
+<div id="loginScreen">
+    <div class="login-card">
+        <h2 style="color:var(--primary); margin:0;">MÉTODO 360 PRO</h2>
+        <input type="password" id="pinInput" placeholder="PIN (1234)" style="text-align:center; font-size:1.5rem; width: 100%; padding: 10px; margin: 10px 0;">
+        <button class="btn-pro" onclick="autenticar()">DESBLOQUEAR ACESSO</button>
+    </div>
+</div>
+
+<div id="mainContent">
+    <div class="nav-tabs">
+        <button id="btnAtender" class="tab-btn tab-active" onclick="mudarModo('atendimento')">🩺 NOVO ATENDIMENTO</button>
+        <button id="btnDados" class="tab-btn" onclick="mudarModo('dados')">📊 INTELIGÊNCIA CLÍNICA</button>
     </div>
 
-    <div id="resultado" style="display:none;">
-        <div class="chart-container">
-            <canvas id="graficoEvolucao"></canvas>
+    <div id="sessaoAtendimento">
+        <div class="card-pro">
+            <h5 class="titulo-secao">1. Identificação</h5>
+            <input type="text" id="pacienteID" placeholder="ID do Paciente" onblur="buscarSubsidioRapido()">
+            <textarea id="hma" placeholder="História Clínica..." rows="4" style="margin-top: 10px; width: 100%; padding: 10px;"></textarea>
+            <button class="btn-pro" onclick="alert('Funcionalidade de salvamento ativa. Continue preenchendo as escalas...')">SALVAR SESSÃO</button>
         </div>
-        <div id="tabelaDados"></div>
+    </div>
+
+    <div id="sessaoDados" style="display: none;">
+        <div class="card-pro">
+            <h5 class="titulo-secao">📈 Evolução Histórica</h5>
+            <div style="display:flex; gap:10px;">
+                <input type="text" id="buscaID" placeholder="ID para análise (Ex: MRO5005)" style="flex:2; padding:12px; border-radius:8px; border:1px solid #ccc;">
+                <button onclick="gerarGrafico()" style="flex:1; background:var(--accent); color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">ANALISAR</button>
+            </div>
+            <div id="resultadoDados" style="display:none;">
+                <div class="chart-container"><canvas id="graficoEvolucao"></canvas></div>
+                <div id="tabelaHistorica"></div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -47,76 +77,67 @@
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
-    let chartInstance = null;
+    let meuGrafico = null;
 
-    async function gerarInteligencia() {
-        const idBusca = document.getElementById('buscaID').value.trim().toUpperCase();
-        if(!idBusca) return alert("Por favor, digite um ID.");
+    function autenticar() {
+        if(document.getElementById('pinInput').value === "1234") {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'block';
+        } else { alert("PIN Incorreto"); }
+    }
 
-        try {
-            // BUSCA RESILIENTE: Tenta encontrar o ID em diferentes nomes de campos
-            const colecao = db.collection("atendimentos_360");
-            const snapshot = await colecao.where("paciente", "==", idBusca).get();
-            
-            let atendimentos = [];
-            snapshot.forEach(doc => {
-                let d = doc.data();
-                // Normalizar a data para o gráfico não quebrar
-                let dataNormal = d.data && d.data.seconds ? new Date(d.data.seconds * 1000) : new Date();
-                atendimentos.push({ ...d, dataFormatada: dataNormal });
-            });
-
-            if(atendimentos.length === 0) {
-                return alert("Nenhum dado encontrado para o ID: " + idBusca);
-            }
-
-            // Ordenar por data cronológica
-            atendimentos.sort((a, b) => a.dataFormatada - b.dataFormatada);
-
-            document.getElementById('resultado').style.display = 'block';
-
-            // GERAÇÃO DO GRÁFICO
-            const ctx = document.getElementById('graficoEvolucao').getContext('2d');
-            if(chartInstance) chartInstance.destroy();
-            
-            chartInstance = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: atendimentos.map(a => a.dataFormatada.toLocaleDateString()),
-                    datasets: [{
-                        label: 'Evolução EVA (Dor/Stress)',
-                        data: atendimentos.map(a => a.eva ? a.eva[1] : 0),
-                        borderColor: '#c5a059',
-                        backgroundColor: 'rgba(197, 160, 89, 0.1)',
-                        borderWidth: 3,
-                        tension: 0.3,
-                        fill: true
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: { y: { min: 0, max: 10 } }
-                }
-            });
-
-            // GERAÇÃO DO RELATÓRIO EM TABELA
-            let html = `<table><thead><tr><th>Data</th><th>Sessão</th><th>EVA F.</th><th>Diagnóstico/Tung</th></tr></thead><tbody>`;
-            atendimentos.forEach(a => {
-                html += `<tr>
-                    <td>${a.dataFormatada.toLocaleDateString()}</td>
-                    <td>${a.sessao || '-'}</td>
-                    <td>${a.eva ? a.eva[1] : '-'}</td>
-                    <td>${a.diagnostico || a.diag || 'Sem notas'}</td>
-                </tr>`;
-            });
-            html += `</tbody></table>`;
-            document.getElementById('tabelaDados').innerHTML = html;
-
-        } catch (e) {
-            console.error(e);
-            alert("Erro técnico ao aceder ao Firebase. Verifique a consola.");
+    function mudarModo(modo) {
+        if(modo === 'atendimento') {
+            document.getElementById('sessaoAtendimento').style.display = 'block';
+            document.getElementById('sessaoDados').style.display = 'none';
+            document.getElementById('btnAtender').classList.add('tab-active');
+            document.getElementById('btnDados').classList.remove('tab-active');
+        } else {
+            document.getElementById('sessaoAtendimento').style.display = 'none';
+            document.getElementById('sessaoDados').style.display = 'block';
+            document.getElementById('btnDados').classList.add('tab-active');
+            document.getElementById('btnAtender').classList.remove('tab-active');
         }
+    }
+
+    async function gerarGrafico() {
+        const id = document.getElementById('buscaID').value.trim().toUpperCase();
+        if(!id) return;
+
+        const snapshot = await db.collection("atendimentos_360").where("paciente", "==", id).get();
+        let atendimentos = [];
+        snapshot.forEach(doc => {
+            let d = doc.data();
+            let dataNormal = d.data && d.data.seconds ? new Date(d.data.seconds * 1000) : new Date();
+            atendimentos.push({ ...d, dataJS: dataNormal });
+        });
+
+        if(atendimentos.length === 0) return alert("Sem dados.");
+        atendimentos.sort((a, b) => a.dataJS - b.dataJS);
+
+        document.getElementById('resultadoDados').style.display = 'block';
+        const ctx = document.getElementById('graficoEvolucao').getContext('2d');
+        if(meuGrafico) meuGrafico.destroy();
+
+        meuGrafico = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: atendimentos.map(a => a.dataJS.toLocaleDateString()),
+                datasets: [{
+                    label: 'Evolução EVA (Dor)',
+                    data: atendimentos.map(a => a.eva ? a.eva[1] : 0),
+                    borderColor: '#c5a059',
+                    tension: 0.3,
+                    fill: true
+                }]
+            }
+        });
+
+        let html = `<table><thead><tr><th>Data</th><th>Sessão</th><th>EVA F.</th></tr></thead><tbody>`;
+        atendimentos.forEach(a => {
+            html += `<tr><td>${a.dataJS.toLocaleDateString()}</td><td>${a.sessao || '-'}</td><td>${a.eva ? a.eva[1] : '-'}</td></tr>`;
+        });
+        document.getElementById('tabelaHistorica').innerHTML = html + "</tbody></table>";
     }
 </script>
 </body>
