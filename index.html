@@ -2,7 +2,7 @@
 <html lang="pt-pt">
 <head>
     <meta charset="UTF-8">
-    <title>MÉTODO 360 PRO | V. 13.0 (Unificado)</title>
+    <title>MÉTODO 360 PRO | V. 14.0</title>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -10,18 +10,15 @@
         :root { --dark: #000d1a; --primary: #002d58; --accent: #c5a059; --bg: #f8f9fa; }
         body { background: var(--bg); font-family: sans-serif; margin: 0; padding-bottom: 80px; }
         #loginScreen { background: linear-gradient(135deg, var(--dark) 0%, var(--primary) 100%); height: 100vh; display: flex; align-items: center; justify-content: center; position: fixed; width: 100%; z-index: 9999; }
-        .login-card { background: white; padding: 40px; border-radius: 20px; width: 320px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border-bottom: 8px solid var(--accent); }
-        #mainContent { display: none; padding: 20px; max-width: 1100px; margin: auto; }
-        .card-pro { background: white; border-radius: 15px; padding: 25px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border-top: 15px solid var(--primary); margin-bottom: 20px; }
-        .etapa { display: none; }
-        .ativa { display: block; }
-        .titulo-secao { color: var(--accent); font-weight: bold; border-bottom: 1px solid #eee; padding-bottom: 5px; margin: 20px 0 10px; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px; }
-        .btn-pro { background: var(--primary); color: white; padding: 15px; border-radius: 10px; border: none; font-weight: bold; width: 100%; cursor: pointer; margin-top: 10px; transition: 0.3s; }
-        .nav-tabs { display: flex; gap: 10px; margin-bottom: 20px; }
-        .tab-btn { flex: 1; padding: 12px; border-radius: 8px; border: none; background: #ddd; cursor: pointer; font-weight: bold; }
-        .tab-active { background: var(--accent); color: white; }
-        .chart-container { position: relative; height: 300px; width: 100%; margin-top: 20px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 0.8rem; }
+        #mainContent { display: none; padding: 20px; max-width: 1000px; margin: auto; }
+        .card-pro { background: white; border-radius: 15px; padding: 25px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border-top: 15px solid var(--primary); margin-bottom: 25px; }
+        .titulo-secao { color: var(--accent); font-weight: bold; border-bottom: 1px solid #eee; padding-bottom: 5px; margin-bottom: 15px; text-transform: uppercase; font-size: 0.85rem; }
+        .btn-pro { background: var(--primary); color: white; padding: 15px; border-radius: 10px; border: none; font-weight: bold; width: 100%; cursor: pointer; margin-top: 10px; }
+        .eva-regua { display: flex; height: 35px; border-radius: 8px; overflow: hidden; margin: 10px 0; border: 1px solid #ddd; }
+        .eva-item { flex: 1; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; font-size: 0.8rem; font-weight: bold; }
+        .eva-sel { border: 4px solid black !important; transform: scaleY(1.1); z-index: 2; }
+        .chart-container { height: 250px; width: 100%; margin: 20px 0; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.8rem; margin-top: 10px; }
         th, td { border: 1px solid #eee; padding: 10px; text-align: left; }
         th { background: var(--primary); color: white; }
     </style>
@@ -29,40 +26,44 @@
 <body>
 
 <div id="loginScreen">
-    <div class="login-card">
-        <h2 style="color:var(--primary); margin:0;">MÉTODO 360 PRO</h2>
-        <input type="password" id="pinInput" placeholder="PIN (1234)" style="text-align:center; font-size:1.5rem; width: 100%; padding: 10px; margin: 10px 0;">
-        <button class="btn-pro" onclick="autenticar()">DESBLOQUEAR ACESSO</button>
+    <div style="background:white; padding:40px; border-radius:20px; text-align:center;">
+        <h2 style="color:var(--primary);">MÉTODO 360 PRO</h2>
+        <input type="password" id="pinInput" placeholder="PIN (1234)" style="padding:10px; width:100%; margin:10px 0;">
+        <button class="btn-pro" onclick="autenticar()">ENTRAR</button>
     </div>
 </div>
 
 <div id="mainContent">
-    <div class="nav-tabs">
-        <button id="btnAtender" class="tab-btn tab-active" onclick="mudarModo('atendimento')">🩺 NOVO ATENDIMENTO</button>
-        <button id="btnDados" class="tab-btn" onclick="mudarModo('dados')">📊 INTELIGÊNCIA CLÍNICA</button>
-    </div>
-
-    <div id="sessaoAtendimento">
-        <div class="card-pro">
-            <h5 class="titulo-secao">1. Identificação</h5>
-            <input type="text" id="pacienteID" placeholder="ID do Paciente" onblur="buscarSubsidioRapido()">
-            <textarea id="hma" placeholder="História Clínica..." rows="4" style="margin-top: 10px; width: 100%; padding: 10px;"></textarea>
-            <button class="btn-pro" onclick="alert('Funcionalidade de salvamento ativa. Continue preenchendo as escalas...')">SALVAR SESSÃO</button>
+    <div class="card-pro" style="border-top-color: var(--accent);">
+        <h5 class="titulo-secao">📊 MEMÓRIA CLÍNICA & EVOLUÇÃO</h5>
+        <div style="display:flex; gap:10px; margin-bottom:15px;">
+            <input type="text" id="buscaID" placeholder="ID do Paciente para Histórico" style="flex:2; padding:10px;">
+            <button onclick="gerarGrafico()" style="flex:1; background:var(--accent); color:white; border:none; border-radius:8px; cursor:pointer;">BUSCAR DADOS</button>
+        </div>
+        <div id="painelDados" style="display:none;">
+            <div class="chart-container"><canvas id="graficoEvolucao"></canvas></div>
+            <div id="tabelaHistorica"></div>
         </div>
     </div>
 
-    <div id="sessaoDados" style="display: none;">
-        <div class="card-pro">
-            <h5 class="titulo-secao">📈 Evolução Histórica</h5>
-            <div style="display:flex; gap:10px;">
-                <input type="text" id="buscaID" placeholder="ID para análise (Ex: MRO5005)" style="flex:2; padding:12px; border-radius:8px; border:1px solid #ccc;">
-                <button onclick="gerarGrafico()" style="flex:1; background:var(--accent); color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">ANALISAR</button>
-            </div>
-            <div id="resultadoDados" style="display:none;">
-                <div class="chart-container"><canvas id="graficoEvolucao"></canvas></div>
-                <div id="tabelaHistorica"></div>
-            </div>
+    <div class="card-pro">
+        <h5 class="titulo-secao">🩺 NOVO ATENDIMENTO</h5>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+            <input type="text" id="pacienteID" placeholder="ID Atendimento Atual">
+            <input type="number" id="sessaoNum" placeholder="Sessão Nº">
         </div>
+        
+        <p style="color:red; font-size:0.8rem; font-weight:bold; margin-top:20px;">EVA INICIAL:</p>
+        <div class="eva-regua" id="reguaA"></div>
+
+        <textarea id="hma" placeholder="História Clínica / Queixa Principal" rows="4" style="width:100%; margin-top:15px; padding:10px;"></textarea>
+
+        <p style="color:green; font-size:0.8rem; font-weight:bold; margin-top:20px;">EVA FINAL:</p>
+        <div class="eva-regua" id="reguaD"></div>
+
+        <textarea id="diag" placeholder="Conduta Tung / Notas da Sessão" rows="6" style="width:100%; margin-top:15px; padding:10px;"></textarea>
+
+        <button class="btn-pro" onclick="salvarSessao()" style="background:green;">SALVAR ATENDIMENTO</button>
     </div>
 </div>
 
@@ -77,67 +78,68 @@
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
-    let meuGrafico = null;
+    let evaA=0, evaD=0, meuGrafico=null;
 
     function autenticar() {
         if(document.getElementById('pinInput').value === "1234") {
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('mainContent').style.display = 'block';
-        } else { alert("PIN Incorreto"); }
+            initEva();
+        }
     }
 
-    function mudarModo(modo) {
-        if(modo === 'atendimento') {
-            document.getElementById('sessaoAtendimento').style.display = 'block';
-            document.getElementById('sessaoDados').style.display = 'none';
-            document.getElementById('btnAtender').classList.add('tab-active');
-            document.getElementById('btnDados').classList.remove('tab-active');
-        } else {
-            document.getElementById('sessaoAtendimento').style.display = 'none';
-            document.getElementById('sessaoDados').style.display = 'block';
-            document.getElementById('btnDados').classList.add('tab-active');
-            document.getElementById('btnAtender').classList.remove('tab-active');
+    function initEva() {
+        const colors = ["#28a745", "#54b33d", "#7fbe35", "#abca2d", "#d6d524", "#ffff1c", "#ffd61c", "#ffac1c", "#ff831c", "#ff591c", "#dc3545"];
+        const ra = document.getElementById('reguaA'); const rd = document.getElementById('reguaD');
+        ra.innerHTML = ''; rd.innerHTML = '';
+        for(let i=0; i<=10; i++) {
+            ra.innerHTML += `<div id="evA${i}" class="eva-item" style="background:${colors[i]}" onclick="setEva('A',${i})">${i}</div>`;
+            rd.innerHTML += `<div id="evD${i}" class="eva-item" style="background:${colors[i]}" onclick="setEva('D',${i})">${i}</div>`;
         }
+    }
+
+    function setEva(t,v) {
+        if(t==='A') evaA=v; else evaD=v;
+        document.querySelectorAll(`#regua${t} .eva-item`).forEach(e => e.classList.remove('eva-sel'));
+        document.getElementById(`ev${t}${v}`).classList.add('eva-sel');
     }
 
     async function gerarGrafico() {
         const id = document.getElementById('buscaID').value.trim().toUpperCase();
-        if(!id) return;
-
         const snapshot = await db.collection("atendimentos_360").where("paciente", "==", id).get();
-        let atendimentos = [];
+        let dados = [];
         snapshot.forEach(doc => {
             let d = doc.data();
             let dataNormal = d.data && d.data.seconds ? new Date(d.data.seconds * 1000) : new Date();
-            atendimentos.push({ ...d, dataJS: dataNormal });
+            dados.push({ ...d, dataJS: dataNormal });
         });
-
-        if(atendimentos.length === 0) return alert("Sem dados.");
-        atendimentos.sort((a, b) => a.dataJS - b.dataJS);
-
-        document.getElementById('resultadoDados').style.display = 'block';
-        const ctx = document.getElementById('graficoEvolucao').getContext('2d');
+        if(dados.length === 0) return alert("Nenhum dado encontrado.");
+        dados.sort((a, b) => a.dataJS - b.dataJS);
+        
+        document.getElementById('painelDados').style.display = 'block';
         if(meuGrafico) meuGrafico.destroy();
-
-        meuGrafico = new Chart(ctx, {
+        meuGrafico = new Chart(document.getElementById('graficoEvolucao').getContext('2d'), {
             type: 'line',
             data: {
-                labels: atendimentos.map(a => a.dataJS.toLocaleDateString()),
-                datasets: [{
-                    label: 'Evolução EVA (Dor)',
-                    data: atendimentos.map(a => a.eva ? a.eva[1] : 0),
-                    borderColor: '#c5a059',
-                    tension: 0.3,
-                    fill: true
-                }]
+                labels: dados.map(d => d.dataJS.toLocaleDateString()),
+                datasets: [{ label: 'EVA Final', data: dados.map(d => d.eva ? d.eva[1] : 0), borderColor: '#c5a059', tension: 0.3 }]
             }
         });
+    }
 
-        let html = `<table><thead><tr><th>Data</th><th>Sessão</th><th>EVA F.</th></tr></thead><tbody>`;
-        atendimentos.forEach(a => {
-            html += `<tr><td>${a.dataJS.toLocaleDateString()}</td><td>${a.sessao || '-'}</td><td>${a.eva ? a.eva[1] : '-'}</td></tr>`;
+    async function salvarSessao() {
+        const id = document.getElementById('pacienteID').value.trim().toUpperCase();
+        if(!id) return alert("Insira o ID do Paciente");
+        await db.collection("atendimentos_360").add({
+            paciente: id,
+            data: new Date(),
+            sessao: document.getElementById('sessaoNum').value,
+            eva: [evaA, evaD],
+            diagnostico: document.getElementById('diag').value,
+            hma: document.getElementById('hma').value
         });
-        document.getElementById('tabelaHistorica').innerHTML = html + "</tbody></table>";
+        alert("Sessão Salva!");
+        location.reload();
     }
 </script>
 </body>
