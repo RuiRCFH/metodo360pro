@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MÉTODO 360 PRO | V. 11.0 (Inteligência Clínica)</title>
+    <title>MÉTODO 360 PRO | V. 11.5</title>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -20,16 +20,13 @@
         .titulo-secao { color: var(--accent); font-weight: bold; border-bottom: 1px solid #eee; padding-bottom: 5px; margin: 20px 0 10px; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px; }
         .btn-pro { background: var(--primary); color: white; padding: 15px; border-radius: 10px; border: none; font-weight: bold; width: 100%; cursor: pointer; margin-top: 10px; transition: 0.3s; }
         .btn-stats { background: var(--accent); color: white; }
-        .row { display: flex; flex-wrap: wrap; gap: 10px; }
-        .col { flex: 1; min-width: 200px; }
-        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 0.9rem; }
-        .eva-regua { display: flex; height: 35px; border-radius: 8px; overflow: hidden; margin: 10px 0; border: 1px solid #ddd; }
-        .eva-item { flex: 1; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; font-size: 0.8rem; font-weight: bold; }
-        .eva-sel { border: 4px solid black !important; transform: scaleY(1.1); z-index: 2; }
-        .chart-box { height: 250px; margin: 20px 0; }
-        table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
-        th, td { border: 1px solid #eee; padding: 10px; text-align: left; }
+        .chart-container { position: relative; height: 300px; width: 100%; margin: 20px 0; background: #fff; border-radius: 10px; padding: 10px; border: 1px solid #eee; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 0.85rem; }
+        th, td { border: 1px solid #eee; padding: 12px; text-align: left; }
         th { background: var(--primary); color: white; }
+        .row { display: flex; flex-wrap: wrap; gap: 10px; }
+        .col { flex: 1; min-width: 250px; }
+        input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; }
     </style>
 </head>
 <body>
@@ -44,163 +41,129 @@
 
 <div id="mainContent">
     <div style="display:flex; gap:10px; margin-bottom:20px;">
-        <button class="btn-pro" onclick="ir(1)" style="flex:1">🩺 NOVO ATENDIMENTO</button>
-        <button class="btn-pro btn-stats" onclick="abrirDashboard()" style="flex:1">📊 CENTRAL DE DADOS</button>
+        <button class="btn-pro" onclick="ir(1)" style="flex:1">🩺 ATENDIMENTO</button>
+        <button class="btn-pro btn-stats" onclick="abrirDashboard()" style="flex:1">📊 ESTATÍSTICAS</button>
     </div>
 
     <div id="e0" class="etapa">
         <div class="card-pro">
             <h5 class="titulo-secao">🔎 PESQUISA POR PACIENTE</h5>
-            <div style="display:flex; gap:10px;">
-                <input type="text" id="buscaID" placeholder="Digite ID do Paciente">
-                <button class="btn-pro" onclick="analisarPaciente()" style="margin:0; width:150px;">ANALISAR</button>
+            <div class="row">
+                <div class="col"><input type="text" id="buscaID" placeholder="Digite ID do Paciente (Ex: MRO5005)"></div>
+                <div class="col"><button class="btn-pro" onclick="analisarPaciente()" style="margin:0;">GERAR GRÁFICO E RELATÓRIO</button></div>
             </div>
-            <div id="graphPaciente" class="chart-box" style="display:none;"><canvas id="chartEvolucao"></canvas></div>
-            <div id="relatorioIndividual" style="margin-top:20px;"></div>
-        </div>
-
-        <div class="card-pro">
-            <h5 class="titulo-secao">🌍 RELATÓRIO GERAL DA CLÍNICA</h5>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
-                <div class="chart-box"><canvas id="chartGeral"></canvas></div>
-                <div id="listaQueixas"></div>
+            
+            <div id="areaGrafico" style="display:none;">
+                <div class="chart-container">
+                    <canvas id="chartEvolucao"></canvas>
+                </div>
+                <div id="relatorioIndividual"></div>
             </div>
         </div>
     </div>
 
     <div id="e1" class="etapa ativa">
         <div class="card-pro">
-            <h5 class="titulo-secao">1. Identificação</h5>
-            <div class="row">
-                <div class="col"><label class="small fw-bold">ID:</label><input type="text" id="pacienteID"></div>
-                <div class="col"><label class="small fw-bold">SESSÃO Nº:</label><input type="number" id="sessaoNum"></div>
-            </div>
-            <label class="small fw-bold" style="color:red; display:block; margin-top:15px;">EVA INICIAL:</label>
-            <div class="eva-regua" id="reguaA"></div>
-            <textarea id="hma" rows="4" placeholder="Anamnese, desajustes detectados..." style="margin-top:15px;"></textarea>
-            <button class="btn-pro" onclick="ir(2)">PRÓXIMO: ESCALAS</button>
-        </div>
-    </div>
-
-    <div id="e5" class="etapa">
-        <div class="card-pro">
-            <h5 class="titulo-secao">5. Síntese e Conduta Tung</h5>
-            <label class="small fw-bold" style="color:green;">EVA FINAL:</label>
-            <div class="eva-regua" id="reguaD"></div>
-            <textarea id="diag" rows="8" placeholder="Pontos de Tung, meridianos e observações..."></textarea>
-            <button class="btn-pro" style="background:black" onclick="copiarIA()">COPIAR IA BRIDGE</button>
-            <button class="btn-pro" style="background:green" onclick="salvarFB()">SALVAR NO ARQUIVO</button>
+            <h5 class="titulo-secao">NOVA SESSÃO</h5>
+            <p>Selecione a Central de Estatísticas para ver os gráficos históricos.</p>
         </div>
     </div>
 </div>
 
 <script>
+    // Configuração Firebase
     const firebaseConfig = { apiKey: "AIzaSyAI5X-Cb0Xf0G_cRoBX9YWqW1bn0nv-RA", authDomain: "metodo360pro-db0aa.firebaseapp.com", projectId: "metodo360pro-db0aa", storageBucket: "metodo360pro-db0aa.firebasestorage.app", messagingSenderId: "1088396585788", appId: "1:1088396585788:web:57853a7b0ff17c8306ec39" };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
-    let chartEv, chartGl;
+    let meuGrafico = null;
 
     function autenticar() {
         if(document.getElementById('pinInput').value === "1234") {
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('mainContent').style.display = 'block';
-            initEva();
         }
-    }
-
-    function initEva() {
-        const colors = ["#28a745", "#54b33d", "#7fbe35", "#abca2d", "#d6d524", "#ffff1c", "#ffd61c", "#ffac1c", "#ff831c", "#ff591c", "#dc3545"];
-        const ra = document.getElementById('reguaA'); const rd = document.getElementById('reguaD');
-        ra.innerHTML = ''; rd.innerHTML = '';
-        for(let i=0; i<=10; i++) {
-            ra.innerHTML += `<div id="evA${i}" class="eva-item" style="background:${colors[i]}" onclick="setEva('A',${i})">${i}</div>`;
-            rd.innerHTML += `<div id="evD${i}" class="eva-item" style="background:${colors[i]}" onclick="setEva('D',${i})">${i}</div>`;
-        }
-    }
-
-    let evaA=0, evaD=0;
-    function setEva(t,v) {
-        if(t==='A') evaA=v; else evaD=v;
-        document.querySelectorAll(`#regua${t} .eva-item`).forEach(e => e.classList.remove('eva-sel'));
-        document.getElementById(`ev${t}${v}`).classList.add('eva-sel');
     }
 
     function ir(n) {
         document.querySelectorAll('.etapa').forEach(e => e.classList.remove('ativa'));
         document.getElementById('e'+n).classList.add('ativa');
-        window.scrollTo(0,0);
     }
 
-    // --- LÓGICA DE GRÁFICOS E RELATÓRIOS ---
+    function abrirDashboard() { ir(0); }
 
     async function analisarPaciente() {
-        const id = document.getElementById('buscaID').value.trim().toUpperCase();
-        if(!id) return;
-        
-        const snap = await db.collection("atendimentos_360").where("paciente", "==", id).orderBy("data", "asc").get();
-        if(snap.empty) return alert("Paciente não encontrado.");
+        const idBusca = document.getElementById('buscaID').value.trim().toUpperCase();
+        if(!idBusca) return alert("Digite um ID");
 
-        let labels = [], evaS = [], sessoes = [];
-        let htmlRel = `<table><thead><tr><th>Data</th><th>Sessão</th><th>EVA F.</th><th>Conduta</th></tr></thead><tbody>`;
+        try {
+            // Busca com suporte a múltiplos nomes de campo (paciente ou id)
+            const snap = await db.collection("atendimentos_360")
+                .where("paciente", "==", idBusca)
+                .get();
 
-        snap.forEach(doc => {
-            const d = doc.data();
-            const dataStr = new Date(d.data.seconds * 1000).toLocaleDateString();
-            labels.push(dataStr);
-            evaS.push(d.eva[1]);
-            htmlRel += `<tr><td>${dataStr}</td><td>${d.sessao}</td><td>${d.eva[1]}</td><td>${d.diagnostico.substring(0,50)}...</td></tr>`;
-        });
+            if(snap.empty) {
+                return alert("Nenhum dado encontrado para este ID.");
+            }
 
-        htmlRel += `</tbody></table>`;
-        document.getElementById('relatorioIndividual').innerHTML = htmlRel;
-        document.getElementById('graphPaciente').style.display = 'block';
-        
-        if(chartEv) chartEv.destroy();
-        chartEv = new Chart(document.getElementById('chartEvolucao'), {
-            type: 'line',
-            data: { labels: labels, datasets: [{ label: 'Tendência EVA', data: evaS, borderColor: '#c5a059', fill: false }] },
-            options: { maintainAspectRatio: false }
-        });
-    }
+            let dados = [];
+            snap.forEach(doc => {
+                let d = doc.data();
+                // Normalização da data (Firebase Timestamp para JS Date)
+                let dataJS = d.data.seconds ? new Date(d.data.seconds * 1000) : new Date(d.data);
+                dados.push({ ...d, dataJS: dataJS });
+            });
 
-    async function abrirDashboard() {
-        ir(0);
-        const snap = await db.collection("atendimentos_360").get();
-        let stats = { "Ansiedade": 0, "Dor Crónica": 0, "Insónia": 0, "Outros": 0 };
-        
-        snap.forEach(doc => {
-            const d = doc.data().diagnostico.toLowerCase();
-            if(d.includes("ansiedade")) stats["Ansiedade"]++;
-            else if(d.includes("dor") || d.includes("lombar")) stats["Dor Crónica"]++;
-            else if(d.includes("sono") || d.includes("insónia")) stats["Insónia"]++;
-            else stats["Outros"]++;
-        });
+            // Ordenar por data
+            dados.sort((a, b) => a.dataJS - b.dataJS);
 
-        if(chartGl) chartGl.destroy();
-        chartGl = new Chart(document.getElementById('chartGeral'), {
-            type: 'doughnut',
-            data: { 
-                labels: Object.keys(stats), 
-                datasets: [{ data: Object.values(stats), backgroundColor: ['#002d58', '#c5a059', '#28a745', '#dc3545'] }] 
-            },
-            options: { maintainAspectRatio: false }
-        });
-    }
+            // Preparar Gráfico
+            let labels = dados.map(d => d.dataJS.toLocaleDateString());
+            let valoresEVA = dados.map(d => d.eva ? d.eva[1] : 0);
 
-    function copiarIA() {
-        const rel = `[RELATÓRIO IA 360]\nID: ${document.getElementById('pacienteID').value}\nSESSÃO: ${document.getElementById('sessaoNum').value}\nEVA: ${evaA}->${evaD}\nCONDUTA: ${document.getElementById('diag').value}`;
-        navigator.clipboard.writeText(rel).then(() => alert("Copiado para IA Bridge!"));
-    }
+            document.getElementById('areaGrafico').style.display = 'block';
+            
+            const ctx = document.getElementById('chartEvolucao').getContext('2d');
+            if(meuGrafico) meuGrafico.destroy();
+            
+            meuGrafico = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Evolução EVA (Dor/Stress)',
+                        data: valoresEVA,
+                        borderColor: '#c5a059',
+                        backgroundColor: 'rgba(197, 160, 89, 0.1)',
+                        borderWidth: 3,
+                        pointRadius: 5,
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: { y: { min: 0, max: 10 } }
+                }
+            });
 
-    function salvarFB() {
-        db.collection("atendimentos_360").add({
-            paciente: document.getElementById('pacienteID').value.toUpperCase(),
-            data: new Date(),
-            sessao: document.getElementById('sessaoNum').value,
-            eva: [evaA, evaD],
-            scores: { gad: 0, igi: 0 }, // Mantendo estrutura para não quebrar
-            diagnostico: document.getElementById('diag').value
-        }).then(() => { alert("Salvo!"); location.reload(); });
+            // Gerar Tabela de Relatório
+            let html = `<table><thead><tr><th>Data</th><th>Sessão</th><th>EVA F.</th><th>Conduta Tung</th></tr></thead><tbody>`;
+            dados.forEach(d => {
+                html += `<tr>
+                    <td>${d.dataJS.toLocaleDateString()}</td>
+                    <td>${d.sessao || '-'}</td>
+                    <td>${d.eva ? d.eva[1] : '-'}</td>
+                    <td>${d.diagnostico || d.diag || 'Sem notas'}</td>
+                </tr>`;
+            });
+            html += `</tbody></table>`;
+            document.getElementById('relatorioIndividual').innerHTML = html;
+
+        } catch (e) {
+            console.error(e);
+            alert("Erro ao gerar gráficos. Verifique o console.");
+        }
     }
 </script>
 </body>
