@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MÉTODO 360 PRO | V. 18.0 FINAL</title>
+    <title>MÉTODO 360 PRO | V. 19.0</title>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -24,9 +24,8 @@
         .btn-group { display: flex; gap: 4px; margin-top: 8px; }
         .btn-opt { flex: 1; padding: 10px 2px; font-size: 0.7rem; border: 1px solid var(--primary); background: white; cursor: pointer; border-radius: 6px; }
         .opt-sel { background: var(--primary); color: white; }
-        table { width: 100%; border-collapse: collapse; font-size: 0.75rem; margin-top: 10px; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.75rem; }
         th, td { border: 1px solid #eee; padding: 8px; text-align: center; }
-        th { background: var(--primary); color: white; }
         textarea, input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; }
     </style>
 </head>
@@ -41,6 +40,15 @@
 </div>
 
 <div id="mainContent">
+    <div class="card-pro" style="border-top-color: var(--accent);">
+        <h5 class="titulo-secao">📊 MEMÓRIA DO PACIENTE</h5>
+        <div style="display:flex; gap:10px;">
+            <input type="text" id="buscaID" placeholder="ID para Histórico">
+            <button onclick="gerarGrafico()" style="width:120px; background:var(--accent); color:white; border:none; border-radius:8px; cursor:pointer;">BUSCAR</button>
+        </div>
+        <div id="painelDados" style="display:none; height:200px; margin-top:20px;"><canvas id="graficoEvolucao"></canvas></div>
+    </div>
+
     <div class="card-pro">
         <div id="e1" class="etapa ativa">
             <h5 class="titulo-secao">1. Identificação</h5>
@@ -48,15 +56,53 @@
                 <input type="text" id="pacienteID" placeholder="ID Atual">
                 <input type="number" id="sessaoNum" placeholder="Sessão Nº">
             </div>
-            <p style="color:red; font-size:0.75rem; font-weight:bold; margin-top:20px;">EVA INICIAL:</p>
+            <p style="color:red; font-size:0.75rem; font-weight:bold; margin-top:15px;">EVA INICIAL:</p>
             <div class="eva-regua" id="reguaA"></div>
-            <textarea id="hma" placeholder="Queixa Principal / HMA" rows="4" style="margin-top:15px;"></textarea>
+            <textarea id="hma" placeholder="Queixa Principal / HMA" rows="3" style="margin-top:10px;"></textarea>
             <button class="btn-pro" onclick="ir(2)">PRÓXIMO: ESCALAS</button>
         </div>
 
         <div id="e2" class="etapa">
-            <h5 class="titulo-secao">2. Escalas de Ansiedade e Sono</h5>
-            <div style="background:#eef5ff; padding:10px; border-radius:10px; margin-bottom:10px;">
-                <strong style="color:var(--primary)">ANS {GAD-7}</strong>
-                <div id="gadBox"></div>
-                <div id="resGad" style="text-align:right; font-weight:bold; color:var(--primary)">Total G
+            <h5 class="titulo-secao">2. Escalas GAD-7 e IGI</h5>
+            <div id="gadBox"></div>
+            <div id="igiBox" style="margin-top:20px;"></div>
+            <button class="btn-pro" onclick="ir(3)">PRÓXIMO: LÍNGUA</button>
+            <button class="btn-pro" style="background:#666" onclick="ir(1)">VOLTAR</button>
+        </div>
+
+        <div id="e3" class="etapa">
+            <h5 class="titulo-secao">3. Matriz Lingual</h5>
+            <table>
+                <thead><tr><th>SINAL</th><th>P</th><th>L</th><th>C</th><th>R</th></tr></thead>
+                <tbody id="tongueBody"></tbody>
+            </table>
+            <button class="btn-pro mt-4" onclick="ir(4)">PRÓXIMO: PULSOS</button>
+            <button class="btn-pro" style="background:#666" onclick="ir(2)">VOLTAR</button>
+        </div>
+
+        <div id="e4" class="etapa">
+            <h5 class="titulo-secao">4. Pulsologia</h5>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
+                <div id="pDir"></div><div id="pEsq"></div>
+            </div>
+            <button class="btn-pro mt-4" onclick="ir(5)">PRÓXIMO: FINALIZAR</button>
+            <button class="btn-pro" style="background:#666" onclick="ir(3)">VOLTAR</button>
+        </div>
+
+        <div id="e5" class="etapa">
+            <h5 class="titulo-secao">5. Síntese e IA Bridge</h5>
+            <p style="color:green; font-size:0.75rem; font-weight:bold;">EVA FINAL:</p>
+            <div class="eva-regua" id="reguaD"></div>
+            <textarea id="diag" placeholder="Conduta Tung / Meridianos..." rows="6" style="margin-top:10px;"></textarea>
+            <button class="btn-pro" style="background:black" onclick="copiarIA()">COPIAR IA BRIDGE</button>
+            <button class="btn-pro" style="background:green" onclick="salvarSessao()">FINALIZAR E SALVAR</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const firebaseConfig = { apiKey: "AIzaSyAI5X-Cb0Xf0G_cRoBX9YWqW1bn0nv-RA", authDomain: "metodo360pro-db0aa.firebaseapp.com", projectId: "metodo360pro-db0aa", storageBucket: "metodo360pro-db0aa.firebasestorage.app", messagingSenderId: "1088396585788", appId: "1:1088396585788:web:57853a7b0ff17c8306ec39" };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    
+    const gadQ = ["Nervoso?", "Incontrolável?", "Excesso
