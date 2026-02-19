@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MÉTODO 360 PRO | V. 21.0</title>
+    <title>MÉTODO 360 PRO | V. 23.0</title>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -11,23 +11,21 @@
         :root { --dark: #000d1a; --primary: #002d58; --accent: #c5a059; --bg: #f8f9fa; }
         body { background: var(--bg); font-family: sans-serif; margin: 0; padding-bottom: 80px; }
         #loginScreen { background: linear-gradient(135deg, var(--dark) 0%, var(--primary) 100%); height: 100vh; display: flex; align-items: center; justify-content: center; position: fixed; width: 100%; z-index: 9999; }
-        #mainContent { display: none; padding: 20px; max-width: 1000px; margin: auto; }
+        #mainContent { display: none; padding: 20px; max-width: 1100px; margin: auto; }
         .card-pro { background: white; border-radius: 15px; padding: 25px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border-top: 15px solid var(--primary); margin-bottom: 25px; }
         .etapa { display: none; }
         .ativa { display: block; }
         .titulo-secao { color: var(--accent); font-weight: bold; border-bottom: 1px solid #eee; padding-bottom: 5px; margin-bottom: 15px; text-transform: uppercase; font-size: 0.85rem; }
         .btn-pro { background: var(--primary); color: white; padding: 15px; border-radius: 10px; border: none; font-weight: bold; width: 100%; cursor: pointer; margin-top: 10px; }
-        .eva-regua { display: flex; height: 35px; border-radius: 8px; overflow: hidden; margin: 10px 0; border: 1px solid #ddd; }
-        .eva-item { flex: 1; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; font-size: 0.8rem; font-weight: bold; }
-        .eva-sel { border: 4px solid black !important; transform: scaleY(1.1); z-index: 2; }
-        .pergunta-full { background: #fdfdfd; border: 1px solid #eee; padding: 15px; border-radius: 12px; margin-bottom: 10px; }
-        .btn-group { display: flex; gap: 4px; margin-top: 8px; }
-        .btn-opt { flex: 1; padding: 10px 2px; font-size: 0.7rem; border: 1px solid var(--primary); background: white; cursor: pointer; border-radius: 6px; }
+        .btn-opt { flex: 1; padding: 8px 2px; font-size: 0.65rem; border: 1px solid var(--primary); background: white; cursor: pointer; border-radius: 4px; }
         .opt-sel { background: var(--primary); color: white; }
+        .display-score { background: var(--dark); color: var(--accent); padding: 10px; border-radius: 8px; text-align: center; font-size: 1.1rem; font-weight: bold; margin-bottom: 15px; border: 1px solid var(--accent); }
         table { width: 100%; border-collapse: collapse; font-size: 0.75rem; margin-top: 10px; }
-        th, td { border: 1px solid #eee; padding: 8px; text-align: center; }
-        textarea, input, select { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; }
-        .chart-container { height: 300px; margin: 20px 0; background: #fff; padding: 10px; border-radius: 10px; border: 1px solid #eee; }
+        th, td { border: 1px solid #eee; padding: 6px; text-align: center; }
+        .row-cat { background: #f4f4f4; font-weight: bold; text-align: left !important; padding-left: 10px; color: var(--primary); }
+        .pulse-box { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .pulse-label { font-size: 0.7rem; font-weight: bold; color: var(--primary); display: block; margin-top: 8px; }
+        textarea, input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; }
     </style>
 </head>
 <body>
@@ -41,149 +39,36 @@
 </div>
 
 <div id="mainContent">
-    <div class="card-pro" style="border-top-color: var(--accent);">
-        <h5 class="titulo-secao">📊 EVOLUÇÃO COMPARATIVA (EVA | GAD | IGI)</h5>
-        <div style="display:flex; gap:10px;">
-            <input type="text" id="buscaID" placeholder="ID do Paciente">
-            <button onclick="gerarGraficoTriplo()" style="width:140px; background:var(--accent); color:white; border:none; border-radius:8px; cursor:pointer; font-weight:bold;">ANALISAR</button>
-        </div>
-        <div id="painelDados" style="display:none;" class="chart-container">
-            <canvas id="graficoTriplo"></canvas>
-        </div>
-    </div>
-
     <div class="card-pro">
         <div id="e1" class="etapa ativa">
             <h5 class="titulo-secao">1. Identificação</h5>
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                <input type="text" id="pacienteID" placeholder="ID Atual">
-                <input type="number" id="sessaoNum" placeholder="Sessão Nº">
+                <input type="text" id="pacienteID" placeholder="ID Paciente">
+                <input type="number" id="sessaoNum" placeholder="Sessão">
             </div>
-            <p style="color:red; font-size:0.75rem; font-weight:bold; margin-top:20px;">EVA INICIAL:</p>
-            <div class="eva-regua" id="reguaA"></div>
-            <textarea id="hma" placeholder="Queixa Principal e HMA..." rows="4" style="margin-top:15px;"></textarea>
             <button class="btn-pro" onclick="ir(2)">PRÓXIMO: ESCALAS</button>
         </div>
 
         <div id="e2" class="etapa">
-            <h5 class="titulo-secao">2. Escalas Clínicas Completas</h5>
+            <h5 class="titulo-secao">2. Escalas (Autossoma)</h5>
+            <div id="displayGad" class="display-score">GAD-7: 0</div>
             <div id="gadBox"></div>
-            <div id="igiBox" style="margin-top:25px;"></div>
-            <button class="btn-pro" onclick="ir(3)">PRÓXIMO: MATRIZ LINGUAL</button>
-            <button class="btn-pro" style="background:#666" onclick="ir(1)">VOLTAR</button>
+            <div id="displayIgi" class="display-score" style="margin-top:20px;">IGI: 0</div>
+            <div id="igiBox"></div>
+            <button class="btn-pro" onclick="ir(3)">PRÓXIMO: LÍNGUA</button>
         </div>
 
         <div id="e3" class="etapa">
-            <h5 class="titulo-secao">3. Matriz Lingual (Semiologia Completa)</h5>
-            <div style="overflow-x:auto;">
-                <table>
-                    <thead><tr><th>SINAL</th><th>Ponta</th><th>Laterais</th><th>Centro</th><th>Raiz</th></tr></thead>
-                    <tbody id="tongueBody"></tbody>
-                </table>
-            </div>
-            <textarea id="obsLingua" placeholder="Notas adicionais da língua..." rows="2" style="margin-top:10px;"></textarea>
-            <button class="btn-pro mt-4" onclick="ir(4)">PRÓXIMO: PULSOLOGIA</button>
-            <button class="btn-pro" style="background:#666" onclick="ir(2)">VOLTAR</button>
+            <h5 class="titulo-secao">3. Matriz Lingual 360</h5>
+            <table>
+                <thead><tr><th>CARACTERÍSTICA</th><th>Ponta</th><th>Laterais</th><th>Centro</th><th>Raiz</th></tr></thead>
+                <tbody id="tongueBody"></tbody>
+            </table>
+            <textarea id="obsLingua" placeholder="Notas sobre a Saburra e Humidade..." rows="2" style="margin-top:10px;"></textarea>
+            <button class="btn-pro mt-3" onclick="ir(4)">PRÓXIMO: PULSOLOGIA</button>
         </div>
 
         <div id="e4" class="etapa">
-            <h5 class="titulo-secao">4. Pulsologia & Meridianos</h5>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
-                <div id="pDir"><strong>Direito (Cun/Guan/Chi)</strong></div>
-                <div id="pEsq"><strong>Esquerdo (Cun/Guan/Chi)</strong></div>
-            </div>
-            <button class="btn-pro mt-4" onclick="ir(5)">PRÓXIMO: SÍNTESE FINAL</button>
-            <button class="btn-pro" style="background:#666" onclick="ir(3)">VOLTAR</button>
-        </div>
-
-        <div id="e5" class="etapa">
-            <h5 class="titulo-secao">5. Síntese Clínica & IA</h5>
-            <p style="color:green; font-size:0.75rem; font-weight:bold;">EVA FINAL:</p>
-            <div class="eva-regua" id="reguaD"></div>
-            <textarea id="diag" placeholder="Conduta Tung / Pontos / Observações de Desajustes..." rows="8" style="margin-top:10px;"></textarea>
-            <button class="btn-pro" style="background:black" onclick="copiarIA()">COPIAR IA BRIDGE</button>
-            <button class="btn-pro" style="background:green" onclick="salvarSessao()">SALVAR SESSÃO</button>
-            <button class="btn-pro" style="background:#666" onclick="ir(4)">VOLTAR</button>
-        </div>
-    </div>
-</div>
-
-<script>
-    const firebaseConfig = { apiKey: "AIzaSyAI5X-Cb0Xf0G_cRoBX9YWqW1bn0nv-RA", authDomain: "metodo360pro-db0aa.firebaseapp.com", projectId: "metodo360pro-db0aa", storageBucket: "metodo360pro-db0aa.firebasestorage.app", messagingSenderId: "1088396585788", appId: "1:1088396585788:web:57853a7b0ff17c8306ec39" };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-
-    const gadQ = ["Sentiu-se nervoso(a), ansioso(a) ou muito tenso(a)?", "Não foi capaz de parar ou de controlar as suas preocupações?", "Preocupou-se demasiado com diversas coisas?", "Teve dificuldade em relaxar?", "Sentiu-se tão inquieto(a) que foi difícil permanecer parado(a)?", "Ficou facilmente irritável ou aborrecido(a)?", "Sentiu medo, como se algo terrível pudesse acontecer?"];
-    const igiQ = ["Dificuldade em adormecer?", "Dificuldade em manter o sono?", "Problemas por acordar demasiado cedo?", "Satisfação com o seu padrão de sono atual?", "Interferência do sono nas atividades diárias?", "Perceção dos outros sobre o seu problema de sono?", "Preocupação/Angústia com o problema de sono?"];
-    const sinaisL = ["Pálida", "Rosada", "Vermelha", "Púrpura", "Violácea", "Denteada", "Inchada", "Magra", "Fissurada", "Geográfica", "Sab. Branca", "Sab. Amarela", "Sab. Gordurosa"];
-    const meridianosD = ["P / IG", "BP / E", "PC / TA"];
-    const meridianosE = ["C / ID", "F / VB", "R / B"];
-
-    let evaA=0, evaD=0, gTotal=0, iTotal=0, meuGrafico=null;
-    const scores = { g: {}, i: {} };
-
-    function autenticar() { if(document.getElementById('pinInput').value === "1234") { document.getElementById('loginScreen').style.display = 'none'; document.getElementById('mainContent').style.display = 'block'; initApp(); } }
-
-    function initApp() {
-        const colors = ["#28a745", "#54b33d", "#7fbe35", "#abca2d", "#d6d524", "#ffff1c", "#ffd61c", "#ffac1c", "#ff831c", "#ff591c", "#dc3545"];
-        const ra = document.getElementById('reguaA'); const rd = document.getElementById('reguaD');
-        ra.innerHTML = ''; rd.innerHTML = '';
-        for(let i=0; i<=10; i++) {
-            ra.innerHTML += `<div id="evA${i}" class="eva-item" style="background:${colors[i]}" onclick="setEva('A',${i})">${i}</div>`;
-            rd.innerHTML += `<div id="evD${i}" class="eva-item" style="background:${colors[i]}" onclick="setEva('D',${i})">${i}</div>`;
-        }
-        
-        const gb = document.getElementById('gadBox'); gb.innerHTML = '<strong style="color:var(--primary)">ESCALA DE ANSIEDADE GAD-7</strong>';
-        gadQ.forEach((q,i) => { gb.innerHTML += `<div class="pergunta-full"><small>${i+1}. ${q}</small><div class="btn-group">${[0,1,2,3].map(v => `<button class="btn-opt" id="g${i}_${v}" onclick="setSc('g',${i},${v})">${v}</button>`).join('')}</div></div>`; });
-
-        const ib = document.getElementById('igiBox'); ib.innerHTML = '<strong style="color:#856404">ÍNDICE DE GRAVIDADE DE INSÓNIA (IGI)</strong>';
-        igiQ.forEach((q,i) => { ib.innerHTML += `<div class="pergunta-full"><small>${i+1}. ${q}</small><div class="btn-group">${[0,1,2,3,4].map(v => `<button class="btn-opt" id="i${i}_${v}" onclick="setSc('i',${i},${v})">${v}</button>`).join('')}</div></div>`; });
-
-        const tb = document.getElementById('tongueBody'); tb.innerHTML = '';
-        sinaisL.forEach(s => { tb.innerHTML += `<tr><td style="text-align:left">${s}</td>${['P','L','C','R'].map(l => `<td><input type="checkbox"></td>`).join('')}</tr>`; });
-
-        const pD = document.getElementById('pDir'); const pE = document.getElementById('pEsq');
-        meridianosD.forEach(m => { pD.innerHTML += `<div style="margin-top:12px;"><small><b>${m}</b></small><div class="btn-group">${['+++','++','+','ok','-','--','---'].map(v => `<button class="btn-opt" onclick="selP(this)">${v}</button>`).join('')}</div></div>`; });
-        meridianosE.forEach(m => { pE.innerHTML += `<div style="margin-top:12px;"><small><b>${m}</b></small><div class="btn-group">${['+++','++','+','ok','-','--','---'].map(v => `<button class="btn-opt" onclick="selP(this)">${v}</button>`).join('')}</div></div>`; });
-    }
-
-    function setEva(t,v) { if(t==='A') evaA=v; else evaD=v; document.querySelectorAll(`#regua${t} .eva-item`).forEach(e => e.classList.remove('eva-sel')); document.getElementById(`ev${t}${v}`).classList.add('eva-sel'); }
-    function setSc(t,q,v) { scores[t][q]=v; document.querySelectorAll(`[id^="${t}${q}_"]`).forEach(b => b.classList.remove('opt-sel')); document.getElementById(`${t}${q}_${v}`).classList.add('opt-sel'); calcularTotais(); }
-    function calcularTotais() { gTotal = Object.values(scores.g).reduce((a,b)=>a+b,0); iTotal = Object.values(scores.i).reduce((a,b)=>a+b,0); }
-    function selP(b) { b.parentElement.querySelectorAll('.btn-opt').forEach(x => x.classList.remove('opt-sel')); b.classList.add('opt-sel'); }
-    function ir(n) { document.querySelectorAll('.etapa').forEach(e => e.classList.remove('ativa')); document.getElementById('e'+n).classList.add('ativa'); window.scrollTo(0,0); }
-
-    async function gerarGraficoTriplo() {
-        const id = document.getElementById('buscaID').value.trim().toUpperCase();
-        const snap = await db.collection("atendimentos_360").where("paciente", "==", id).get();
-        let dds = []; snap.forEach(doc => { let d = doc.data(); dds.push({...d, dt: d.data.seconds ? new Date(d.data.seconds*1000) : new Date()}) });
-        if(dds.length === 0) return alert("Sem dados para este ID.");
-        dds.sort((a,b) => a.dt - b.dt);
-        document.getElementById('painelDados').style.display = 'block';
-        if(meuGrafico) meuGrafico.destroy();
-        meuGrafico = new Chart(document.getElementById('graficoTriplo').getContext('2d'), {
-            type: 'line',
-            data: {
-                labels: dds.map(d=>d.dt.toLocaleDateString()),
-                datasets: [
-                    { label: 'EVA (Dor)', data: dds.map(d=>d.eva[1]), borderColor: 'red', tension: 0.2 },
-                    { label: 'GAD-7 (Ansiedade)', data: dds.map(d=>d.scores ? d.scores.gad : 0), borderColor: 'blue', tension: 0.2 },
-                    { label: 'IGI (Sono)', data: dds.map(d=>d.scores ? d.scores.igi : 0), borderColor: 'orange', tension: 0.2 }
-                ]
-            },
-            options: { responsive: true, maintainAspectRatio: false }
-        });
-    }
-
-    function salvarSessao() {
-        const id = document.getElementById('pacienteID').value.toUpperCase();
-        db.collection("atendimentos_360").add({ paciente: id, data: new Date(), sessao: document.getElementById('sessaoNum').value, eva: [evaA, evaD], scores: { gad: gTotal, igi: iTotal }, diagnostico: document.getElementById('diag').value, hma: document.getElementById('hma').value }).then(() => { alert("Sessão Arquivada!"); location.reload(); });
-    }
-
-    function copiarIA() {
-        const txt = `[MÉTODO 360 PRO]\nID: ${document.getElementById('pacienteID').value}\nSESSÃO: ${document.getElementById('sessaoNum').value}\nEVA: ${evaA}->${evaD}\nGAD: ${gTotal} | IGI: ${iTotal}\nSÍNTESE: ${document.getElementById('diag').value}`;
-        navigator.clipboard.writeText(txt).then(() => alert("Copiado para IA Bridge!"));
-    }
-</script>
-</body>
-</html>
+            <h5 class="titulo-secao">4. Pulsologia (12 Meridianos)</h5>
+            <div class="pulse-box">
+                <div id="pDir"><strong>PULSO DIREITO</strong></div>
