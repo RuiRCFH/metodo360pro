@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MÉTODO 360 PRO | V. 9.9 GRÁFICO</title>
+    <title>MÉTODO 360 PRO | V. 10.1</title>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root { --dark: #000d1a; --primary: #002d58; --accent: #c5a059; --bg: #f8f9fa; }
         body { background: var(--bg); font-family: sans-serif; margin: 0; padding-bottom: 80px; }
@@ -32,8 +31,6 @@
         th, td { border: 1px solid #eee; padding: 8px; text-align: center; }
         th { background: var(--primary); color: white; }
         .row-cat { background: #f4f4f4; font-weight: bold; text-align: left !important; padding-left: 10px; color: var(--primary); }
-        .painel-memoria { background: #fffcf0; border-left: 8px solid var(--accent); padding: 15px; margin-bottom: 20px; border-radius: 10px; display: none; border: 1px solid #ffeeba; }
-        .chart-container { height: 200px; margin-bottom: 20px; }
     </style>
 </head>
 <body>
@@ -47,51 +44,64 @@
 </div>
 
 <div id="mainContent">
-    <div id="painelMemoria" class="painel-memoria">
-        <h4 style="margin:0; color:var(--primary);">📜 EVOLUÇÃO CLÍNICA</h4>
-        <div class="chart-container"><canvas id="evolucaoChart"></canvas></div>
-        <div id="conteudoMemoria" style="font-size: 0.85rem; color:#555;"></div>
-    </div>
-
     <div class="card-pro">
         <div id="e1" class="etapa ativa">
-            <h5 class="titulo-secao">1. Identificação</h5>
+            <h5 class="titulo-secao">1. Identificação & História Clínica</h5>
             <div class="row">
-                <div class="col"><label class="small fw-bold">ID:</label><input type="text" id="pacienteID" onblur="buscarHistoricoInteligente()"></div>
-                <div class="col"><label class="small fw-bold">SESSÃO:</label><input type="text" id="sessaoNum"></div>
+                <div class="col"><label class="small fw-bold">ID / INICIAIS:</label><input type="text" id="pacienteID"></div>
+                <div class="col"><label class="small fw-bold">SEXO:</label>
+                    <select id="sexo">
+                        <option value="F">Feminino (Ciclo 7)</option>
+                        <option value="M">Masculino (Ciclo 8)</option>
+                    </select>
+                </div>
+                <div class="col"><label class="small fw-bold">SESSÃO Nº:</label>
+                    <select id="sessaoNum">
+                        <option value="1">1/12</option><option value="2">2/12</option><option value="3">3/12</option>
+                        <option value="4">4/12</option><option value="5">5/12</option><option value="6">6/12</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col"><label class="small fw-bold">DATA NASC.:</label><input type="date" id="nasc"></div>
+                <div class="col"><label class="small fw-bold">HORA NASC.:</label><input type="time" id="horaNasc"></div>
+                <div class="col"><label class="small fw-bold">CIDADE NATAL:</label><input type="text" id="localNasc" placeholder="Localidade"></div>
             </div>
             <label class="small fw-bold" style="color:red; display:block; margin-top:10px;">EVA INICIAL:</label>
             <div class="eva-regua" id="reguaA"></div>
-            <div class="mt-3"><label class="small fw-bold text-primary">HISTÓRIA (HMA):</label><textarea id="hma" rows="4"></textarea></div>
-            <button class="btn-pro mt-4" onclick="ir(2)">PRÓXIMO</button>
+            <div class="mt-3"><label class="small fw-bold">QUEIXA PRINCIPAL (QP):</label><textarea id="qp" rows="2"></textarea></div>
+            <div class="mt-3"><label class="small fw-bold text-primary">HISTÓRIA PREGRESSA (HMA):</label><textarea id="hma" rows="4"></textarea></div>
+            <button class="btn-pro mt-4" onclick="ir(2)">PRÓXIMO: ESCALAS</button>
         </div>
 
         <div id="e2" class="etapa">
-            <h5 class="titulo-secao">2. Escalas GAD e IGI</h5>
-            <div id="gadBox"></div><div id="gadRes" style="background:#eee; padding:15px; text-align:center; font-weight:bold; border-radius:10px;">GAD-7: 0</div>
-            <div id="igiBox" style="margin-top:25px;"></div><div id="igiRes" style="background:#eee; padding:15px; text-align:center; font-weight:bold; border-radius:10px;">IGI: 0</div>
-            <div class="row mt-4"><div class="col"><button class="btn-pro" style="background:#666" onclick="ir(1)">VOLTAR</button></div><div class="col"><button class="btn-pro" onclick="ir(3)">LÍNGUA</button></div></div>
+            <h5 class="titulo-secao">2. Escalas Ansiedade e Sono</h5>
+            <div id="gadBox"></div><div id="gadRes" class="pergunta-full" style="text-align:center; font-weight:bold;">GAD-7: 0</div>
+            <div id="igiBox" style="margin-top:25px;"></div><div id="igiRes" class="pergunta-full" style="text-align:center; font-weight:bold;">IGI: 0</div>
+            <div class="row mt-4"><div class="col"><button class="btn-pro" style="background:#666" onclick="ir(1)">VOLTAR</button></div><div class="col"><button class="btn-pro" onclick="ir(3)">EXAME LÍNGUA</button></div></div>
         </div>
 
         <div id="e3" class="etapa">
             <h5 class="titulo-secao">3. Matriz Lingual</h5>
-            <table><thead><tr><th>SINAL</th><th>P</th><th>L</th><th>C</th><th>R</th></tr></thead><tbody id="tongueBody"></tbody></table>
-            <div class="row mt-4"><div class="col"><button class="btn-pro" style="background:#666" onclick="ir(2)">VOLTAR</button></div><div class="col"><button class="btn-pro" onclick="ir(4)">PULSOS</button></div></div>
+            <div style="overflow-x:auto;">
+                <table><thead><tr><th>SINAL</th><th>P</th><th>L</th><th>C</th><th>R</th></tr></thead><tbody id="tongueBody"></tbody></table>
+            </div>
+            <div class="row mt-4"><div class="col"><button class="btn-pro" style="background:#666" onclick="ir(2)">VOLTAR</button></div><div class="col"><button class="btn-pro" onclick="ir(4)">PULSOLOGIA</button></div></div>
         </div>
 
         <div id="e4" class="etapa">
             <h5 class="titulo-secao">4. Pulsologia</h5>
-            <div class="row"><div id="pDir" class="col border-end"></div><div id="pEsq" class="col"></div></div>
-            <div class="row mt-4"><div class="col"><button class="btn-pro" style="background:#666" onclick="ir(3)">VOLTAR</button></div><div class="col"><button class="btn-pro" onclick="ir(5)">SÍNTESE</button></div></div>
+            <div class="row"><div class="col border-end" id="pDir"></div><div class="col" id="pEsq"></div></div>
+            <div class="row mt-4"><div class="col"><button class="btn-pro" style="background:#666" onclick="ir(3)">VOLTAR</button></div><div class="col"><button class="btn-pro" onclick="ir(5)">SÍNTESE FINAL</button></div></div>
         </div>
 
         <div id="e5" class="etapa">
-            <h5 class="titulo-secao">5. Síntese Final</h5>
-            <label class="small fw-bold" style="color:green;">EVA FINAL:</label>
+            <h5 class="titulo-secao">5. Síntese Clínica & Ponto Aberto</h5>
+            <label class="small fw-bold" style="color:green; display:block; margin-top:20px;">EVA FINAL:</label>
             <div class="eva-regua" id="reguaD"></div>
-            <textarea id="diag" placeholder="Conduta Tung..." rows="8" style="margin-top:10px;"></textarea>
-            <button class="btn-pro" style="background:black" onclick="copiarIA()">COPIAR IA BRIDGE</button>
-            <button class="btn-pro" style="background:green" onclick="salvarFB()">SALVAR</button>
+            <textarea id="diag" placeholder="Conduta Tung / Observações de desajustes..." rows="8" style="margin-top:10px;"></textarea>
+            <button class="btn-pro" style="background:black" onclick="copiarIA()">COPIAR IA BRIDGE (INTEGRAL)</button>
+            <button class="btn-pro" style="background:green" onclick="salvarFB()">SALVAR NO FIREBASE</button>
             <button class="btn-pro" style="background:#666" onclick="ir(4)">VOLTAR</button>
         </div>
     </div>
@@ -101,71 +111,120 @@
     const firebaseConfig = { apiKey: "AIzaSyAI5X-Cb0Xf0G_cRoBX9YWqW1bn0nv-RA", authDomain: "metodo360pro-db0aa.firebaseapp.com", projectId: "metodo360pro-db0aa", storageBucket: "metodo360pro-db0aa.firebasestorage.app", messagingSenderId: "1088396585788", appId: "1:1088396585788:web:57853a7b0ff17c8306ec39" };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
-    let evolChart;
 
     const colors = ["#28a745", "#54b33d", "#7fbe35", "#abca2d", "#d6d524", "#ffff1c", "#ffd61c", "#ffac1c", "#ff831c", "#ff591c", "#dc3545"];
-    const tgData = [{c:"COR", s:["Pálida","Vermelha","Púrpura"]},{c:"FORMA", s:["Denteada","Inchada","Fissurada"]},{c:"SABURRA", s:["Amarela","Branca","AUSÊNCIA"]}];
-    
+    const gadQuestions = [
+        "Sentiu-se nervoso(a), ansioso(a) ou muito tenso(a)?",
+        "Não foi capaz de parar ou de controlar as suas preocupações?",
+        "Preocupou-se demasiado com diversas coisas?",
+        "Teve dificuldade em relaxar?",
+        "Sentiu-se tão inquieto(a) que foi difícil permanecer parado(a)?",
+        "Ficou facilmente irritável ou aborrecido(a)?",
+        "Sentiu medo, como se algo terrível pudesse acontecer?"
+    ];
+    const igiQuestions = [
+        "Dificuldade em adormecer?",
+        "Dificuldade em manter o sono?",
+        "Problemas por acordar demasiado cedo?",
+        "Quão satisfeito(a)/insatisfeito(a) está com o seu sono atual?",
+        "Quanto o seu problema de sono interfere com as atividades diárias?",
+        "Quão visível o seu problema de sono é para os outros?",
+        "Quão preocupado(a)/perturbado(a) está com o seu problema de sono?"
+    ];
+    const tgData = [
+        {c:"COR", s:["Pálida","Vermelha","Púrpura"]},
+        {c:"FORMA", s:["Denteada","Inchada","Fissurada"]},
+        {c:"SABURRA", s:["Amarela","Branca","AUSÊNCIA"]}
+    ];
+    const pD = ["P", "IG", "BP"]; const pE = ["C", "ID", "F"];
+
     let evaA=0, evaD=0, scG=0, scI=0;
     const answers = { g: {}, i: {}, pd: {}, pe: {} };
 
-    function autenticar() { if(document.getElementById('pinInput').value === "1234") { document.getElementById('loginScreen').style.display = 'none'; document.getElementById('mainContent').style.display = 'block'; init(); } }
-
-    async function buscarHistoricoInteligente() {
-        const id = document.getElementById('pacienteID').value.trim().toUpperCase();
-        if(!id) return;
-        const snapshot = await db.collection("atendimentos_360").where("paciente", "==", id).orderBy("data", "asc").get();
-        if (!snapshot.empty) {
-            let labels = [], evaS = [], gadS = [];
-            snapshot.forEach(doc => {
-                const d = doc.data();
-                labels.push(`Sess ${d.sessao}`);
-                evaS.push(d.eva[1]);
-                gadS.push(d.scores.gad);
-            });
-            document.getElementById('painelMemoria').style.display = "block";
-            renderChart(labels, evaS, gadS);
-        }
-    }
-
-    function renderChart(labels, evaS, gadS) {
-        const ctx = document.getElementById('evolucaoChart').getContext('2d');
-        if(evolChart) evolChart.destroy();
-        evolChart = new Chart(ctx, {
-            type: 'line',
-            data: { labels: labels, datasets: [
-                { label: 'EVA Final', data: evaS, borderColor: 'red', tension: 0.3 },
-                { label: 'GAD-7', data: gadS, borderColor: 'blue', tension: 0.3 }
-            ]}
-        });
+    function autenticar() {
+        if(document.getElementById('pinInput').value === "1234") {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'block';
+            init();
+        } else alert("PIN Incorreto");
     }
 
     function init() {
         const ra = document.getElementById('reguaA'); const rd = document.getElementById('reguaD');
+        ra.innerHTML = ''; rd.innerHTML = '';
         for(let i=0; i<=10; i++) {
             ra.innerHTML += `<div id="evA${i}" class="eva-item" style="background:${colors[i]}" onclick="setEva('A',${i})">${i}</div>`;
             rd.innerHTML += `<div id="evD${i}" class="eva-item" style="background:${colors[i]}" onclick="setEva('D',${i})">${i}</div>`;
         }
-        // GAD/IGI/Língua/Pulsos renderização (simplificada para o exemplo)
-        const drawP = (cont, list, pref) => { list.forEach((p,i) => { document.getElementById(cont).innerHTML += `<small>${p}</small><div class="btn-group">${['+','ok','-'].map(v => `<button class="btn-opt" onclick="setPulse('${pref}${i}',this)">${v}</button>`).join('')}</div>`; }); };
-        drawP('pDir', ["P","IG","BP"], 'pd'); drawP('pEsq', ["C","ID","F"], 'pe');
-        
-        const tBody = document.getElementById('tongueBody');
-        tgData.forEach(cat => { tBody.innerHTML += `<tr class="row-cat"><td colspan="5">${cat.c}</td></tr>`; cat.s.forEach(sig => { tBody.innerHTML += `<tr><td>${sig}</td>${['P','L','C','R'].map(l => `<td><input type="checkbox"></td>`).join('')}</tr>`; }); });
+
+        const gb = document.getElementById('gadBox'); gb.innerHTML = '';
+        gadQuestions.forEach((q, i) => {
+            gb.innerHTML += `<div class="pergunta-full"><small>${i+1}. ${q}</small><div class="btn-group">${[0,1,2,3].map(v => `<button class="btn-opt" id="g${i}_${v}" onclick="setSc('g',${i},${v})">${v}</button>`).join('')}</div></div>`;
+        });
+
+        const ib = document.getElementById('igiBox'); ib.innerHTML = '';
+        igiQuestions.forEach((q, i) => {
+            ib.innerHTML += `<div class="pergunta-full"><small>${i+1}. ${q}</small><div class="btn-group">${[0,1,2,3,4].map(v => `<button class="btn-opt" id="i${i}_${v}" onclick="setSc('i',${i},${v})">${v}</button>`).join('')}</div></div>`;
+        });
+
+        const tBody = document.getElementById('tongueBody'); tBody.innerHTML = '';
+        tgData.forEach(cat => {
+            tBody.innerHTML += `<tr class="row-cat"><td colspan="5">${cat.c}</td></tr>`;
+            cat.s.forEach(sig => {
+                tBody.innerHTML += `<tr><td>${sig}</td>${['P','L','C','R'].map(l => `<td><input type="checkbox"></td>`).join('')}</tr>`;
+            });
+        });
+
+        const drawP = (contId, list, pref) => {
+            const cont = document.getElementById(contId); cont.innerHTML = '';
+            list.forEach((p, i) => {
+                cont.innerHTML += `<div style="margin-bottom:8px;"><small><b>${p}</b></small><div class="btn-group">${['+','ok','-'].map(v => `<button class="btn-opt" onclick="setPulse('${pref}${i}',this)">${v}</button>`).join('')}</div></div>`;
+            });
+        };
+        drawP('pDir', pD, 'pd'); drawP('pEsq', pE, 'pe');
     }
 
-    function setEva(t,v) { if(t==='A') evaA=v; else evaD=v; document.querySelectorAll(`#regua${t} .eva-item`).forEach(e => e.classList.remove('eva-sel')); document.getElementById(`ev${t}${v}`).classList.add('eva-sel'); }
-    function setPulse(r,b) { b.parentElement.querySelectorAll('.btn-opt').forEach(x => x.classList.remove('opt-sel')); b.classList.add('opt-sel'); }
-    function ir(n) { document.querySelectorAll('.etapa').forEach(e => e.classList.remove('ativa')); document.getElementById('e'+n).classList.add('ativa'); window.scrollTo(0,0); }
-    function copiarIA() { 
-        const txt = (document.getElementById('hma').value + " " + document.getElementById('diag').value).toLowerCase();
-        let adj = [];
-        if(txt.includes("chakra")) adj.push("Chakras");
-        if(txt.includes("herança")) adj.push("Epigenética");
-        const rel = `ID: ${document.getElementById('pacienteID').value}\nEVA: ${evaA}->${evaD}\nGAD: ${scG}\nDESAJUSTES: ${adj.join(' | ')}\nSÍNTESE: ${document.getElementById('diag').value}`;
+    function setEva(t, v) {
+        if(t==='A') evaA=v; else evaD=v;
+        document.querySelectorAll(`#regua${t} .eva-item`).forEach(e => e.classList.remove('eva-sel'));
+        document.getElementById(`ev${t}${v}`).classList.add('eva-sel');
+    }
+
+    function setSc(t, q, v) {
+        answers[t][q] = v;
+        document.querySelectorAll(`[id^="${t}${q}_"]`).forEach(b => b.classList.remove('opt-sel'));
+        document.getElementById(`${t}${q}_${v}`).classList.add('opt-sel');
+        scG = Object.values(answers.g).reduce((a, b) => a + b, 0);
+        scI = Object.values(answers.i).reduce((a, b) => a + b, 0);
+        document.getElementById('gadRes').innerText = "GAD-7 Score: " + scG;
+        document.getElementById('igiRes').innerText = "IGI Score: " + scI;
+    }
+
+    function setPulse(r, b) {
+        b.parentElement.querySelectorAll('.btn-opt').forEach(x => x.classList.remove('opt-sel'));
+        b.classList.add('opt-sel');
+    }
+
+    function ir(n) {
+        document.querySelectorAll('.etapa').forEach(e => e.classList.remove('ativa'));
+        document.getElementById('e'+n).classList.add('ativa');
+        window.scrollTo(0,0);
+    }
+
+    function copiarIA() {
+        const rel = `[360 PROMAX]\nID: ${document.getElementById('pacienteID').value}\nSESSÃO: ${document.getElementById('sessaoNum').value}\nEVA: ${evaA}->${evaD}\nGAD: ${scG} | IGI: ${scI}\nCONDUTA: ${document.getElementById('diag').value}`;
         navigator.clipboard.writeText(rel).then(() => alert("Copiado para IA Bridge!"));
     }
-    function salvarFB() { db.collection("atendimentos_360").add({ paciente: document.getElementById('pacienteID').value.toUpperCase(), data: new Date(), sessao: document.getElementById('sessaoNum').value, eva: [evaA, evaD], scores: { gad: scG, igi: scI }, diagnostico: document.getElementById('diag').value }).then(()=>location.reload()); }
+
+    function salvarFB() {
+        db.collection("atendimentos_360").add({
+            paciente: document.getElementById('pacienteID').value.toUpperCase(),
+            data: new Date(),
+            eva: [evaA, evaD],
+            scores: { gad: scG, igi: scI },
+            diagnostico: document.getElementById('diag').value
+        }).then(() => { alert("Salvo no Firebase!"); location.reload(); });
+    }
 </script>
 </body>
 </html>
