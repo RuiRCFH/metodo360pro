@@ -3,51 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MÉTODO 360 PRO | V. 46.0</title>
+    <title>MÉTODO 360 PRO | V. 47.0</title>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root { --dark: #000d1a; --primary: #002d58; --accent: #c5a059; --bg: #f4f7f9; --red: #d32f2f; --green: #2e7d32; }
-        body { background: var(--bg); font-family: 'Segoe UI', sans-serif; margin: 0; padding-bottom: 80px; }
+        body { background: var(--bg); font-family: 'Segoe UI', sans-serif; margin: 0; padding-bottom: 100px; }
         #loginScreen { background: var(--dark); height: 100vh; display: flex; align-items: center; justify-content: center; position: fixed; width: 100%; z-index: 9999; }
         .login-card { background: white; padding: 40px; border-radius: 20px; text-align: center; width: 300px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
-        #mainContent { display: none; padding: 20px; max-width: 1050px; margin: auto; }
+        #mainContent { display: none; padding: 20px; max-width: 1000px; margin: auto; }
         .card-pro { background: white; border-radius: 15px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-top: 10px solid var(--primary); margin-bottom: 25px; }
         .etapa { display: none; }
         .ativa { display: block; }
         .titulo-secao { color: var(--accent); font-weight: bold; border-bottom: 2px solid #eee; padding-bottom: 8px; margin-bottom: 20px; text-transform: uppercase; font-size: 0.9rem; }
         
-        /* Escalas */
-        .pergunta-box { background: #fdfdfd; border: 1px solid #eef0f2; border-radius: 12px; padding: 18px; margin-bottom: 12px; }
-        .btn-group { display: flex; gap: 5px; margin-top: 10px; flex-wrap: wrap; }
-        .btn-opt { flex: 1; padding: 10px 5px; font-size: 0.7rem; border: 1px solid var(--primary); background: white; cursor: pointer; border-radius: 8px; min-width: 80px; }
-        .opt-sel { background: var(--primary) !important; color: white !important; box-shadow: 0 4px 8px rgba(0,45,88,0.3); }
+        /* Escalas e Botões */
+        .pergunta-box { background: #fdfdfd; border: 1px solid #eef0f2; border-radius: 12px; padding: 15px; margin-bottom: 10px; }
+        .btn-group { display: flex; gap: 4px; margin-top: 10px; flex-wrap: wrap; }
+        .btn-opt { flex: 1; padding: 10px 5px; font-size: 0.7rem; border: 1px solid var(--primary); background: white; cursor: pointer; border-radius: 8px; min-width: 75px; }
+        .opt-sel { background: var(--primary) !important; color: white !important; }
         
-        /* Pulsologia Anatómica */
-        .pulse-section { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        /* Pulsologia */
+        .pulse-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .pulse-arm { background: #f8fafc; padding: 15px; border-radius: 15px; border: 1px solid #e2e8f0; }
-        .finger-pos { background: white; padding: 12px; border-radius: 10px; margin-bottom: 10px; border-left: 4px solid var(--accent); }
-        .meridian-name { font-weight: bold; color: var(--primary); display: block; font-size: 0.85rem; }
-        .finger-name { font-size: 0.65rem; color: #666; text-transform: uppercase; }
+        .finger-pos { background: white; padding: 10px; border-radius: 10px; margin-bottom: 10px; border-left: 4px solid var(--accent); }
+        
+        /* Navegação */
+        .nav-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 30px; }
+        .btn-pro { background: var(--primary); color: white; padding: 16px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; font-size: 1rem; }
+        .btn-back { background: #666; color: white; padding: 16px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; }
 
-        /* Geral */
-        .btn-pro { background: var(--primary); color: white; padding: 16px; border-radius: 10px; border: none; font-weight: bold; width: 100%; cursor: pointer; margin-top: 15px; font-size: 1rem; }
         .eva-regua { display: flex; height: 38px; border-radius: 8px; overflow: hidden; margin: 10px 0; border: 1px solid #ddd; }
-        .eva-item { flex: 1; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; font-size: 0.85rem; font-weight: bold; }
+        .eva-item { flex: 1; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; font-size: 0.8rem; font-weight: bold; }
         .eva-sel { border: 4px solid black !important; transform: scaleY(1.1); z-index: 2; }
         table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
         th, td { border: 1px solid #eee; padding: 10px; text-align: center; }
         textarea, input { width: 100%; padding: 14px; border: 1px solid #ccc; border-radius: 10px; box-sizing: border-box; }
-        #previewLingua { width: 100%; max-height: 250px; object-fit: contain; margin-top: 10px; border-radius: 10px; display: none; border: 2px solid var(--accent); }
+        #previewLingua { width: 100%; max-height: 200px; object-fit: contain; margin-top: 10px; border-radius: 10px; display: none; border: 2px solid var(--accent); }
     </style>
 </head>
 <body>
 
 <div id="loginScreen">
     <div class="login-card">
-        <h2 style="color:var(--primary); margin:0;">360 PRO</h2>
+        <h2 style="color:var(--primary); margin:0;">MÉTODO 360 PRO</h2>
         <input type="password" id="pinInput" placeholder="PIN (1234)" style="margin: 25px 0; text-align:center; font-size:1.3rem; width: 80%;">
         <button class="btn-pro" style="width: 80%;" onclick="autenticar()">ENTRAR</button>
     </div>
@@ -55,16 +56,19 @@
 
 <div id="mainContent">
     <div class="card-pro">
+        
         <div id="e1" class="etapa ativa">
             <h5 class="titulo-secao">1. Identificação & EVA Inicial</h5>
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
                 <input type="text" id="pacienteID" placeholder="ID Paciente">
                 <input type="number" id="sessaoNum" placeholder="Nº Sessão">
             </div>
-            <p style="color:var(--red); font-weight:bold; margin-top:20px;">EVA ENTRADA (Dor Inicial):</p>
+            <p style="color:var(--red); font-weight:bold; margin-top:20px;">EVA ENTRADA (Como o paciente chega):</p>
             <div class="eva-regua" id="reguaA"></div>
-            <textarea id="hma" placeholder="Anamnese / Queixa Principal..." rows="4" style="margin-top:15px;"></textarea>
-            <button class="btn-pro" onclick="ir(2)">PRÓXIMO: ESCALAS</button>
+            <textarea id="hma" placeholder="Queixa Principal / HMA..." rows="4" style="margin-top:15px;"></textarea>
+            <div class="nav-buttons">
+                <div></div> <button class="btn-pro" onclick="ir(2)">PRÓXIMO: ESCALAS ➔</button>
+            </div>
         </div>
 
         <div id="e2" class="etapa">
@@ -73,12 +77,14 @@
                 <span id="labelGad">GAD-7: 0</span> <span id="labelIgi">IGI: 0</span>
             </div>
             <div id="gadBox"></div><div id="igiBox" style="margin-top:20px;"></div>
-            <button class="btn-pro" onclick="ir(3)">PRÓXIMO: LÍNGUA</button>
+            <div class="nav-buttons">
+                <button class="btn-back" onclick="ir(1)">⬅ VOLTAR</button>
+                <button class="btn-pro" onclick="ir(3)">PRÓXIMO: LÍNGUA ➔</button>
+            </div>
         </div>
 
         <div id="e3" class="etapa">
-            <h5 class="titulo-secao">3. Matriz Lingual & Foto</h5>
-            
+            <h5 class="titulo-secao">3. Semiologia Lingual & Foto</h5>
             <div style="background:#f8f9fa; padding:20px; border-radius:12px; border:2px dashed var(--accent); text-align:center; margin-bottom:15px;">
                 <label for="fotoLingua" style="cursor:pointer; font-weight:bold; color:var(--primary);">📸 ANEXAR FOTO DA LÍNGUA</label>
                 <input type="file" id="fotoLingua" accept="image/*" style="display:none;" onchange="previewImage(this)">
@@ -86,42 +92,36 @@
             </div>
             <table>
                 <thead><tr><th>SINAL</th><th>Ponta</th><th>Laterais</th><th>Centro</th><th>Raiz</th></tr></thead>
-                <tbody>
-                    <tr><td>Pálida / Vermelha</td><td><input type="checkbox"></td><td><input type="checkbox"></td><td><input type="checkbox"></td><td><input type="checkbox"></td></tr>
-                    <tr><td>Inchada / Denteada</td><td><input type="checkbox"></td><td><input type="checkbox"></td><td><input type="checkbox"></td><td><input type="checkbox"></td></tr>
-                    <tr><td>Saburra (B/A)</td><td><input type="checkbox"></td><td><input type="checkbox"></td><td><input type="checkbox"></td><td><input type="checkbox"></td></tr>
-                </tbody>
+                <tbody id="tongueBody"></tbody>
             </table>
-            <button class="btn-pro mt-4" onclick="ir(4)">PRÓXIMO: PULSOS</button>
+            <div class="nav-buttons">
+                <button class="btn-back" onclick="ir(2)">⬅ VOLTAR</button>
+                <button class="btn-pro" onclick="ir(4)">PRÓXIMO: PULSOS ➔</button>
+            </div>
         </div>
 
         <div id="e4" class="etapa">
-            <h5 class="titulo-secao">4. Pulsologia Radial Anatómica</h5>
-            
-            <div class="pulse-section">
-                <div class="pulse-arm">
-                    <strong style="color:var(--red); display:block; text-align:center; margin-bottom:10px;">ESQUERDO (Yin)</strong>
-                    <div class="finger-pos"><span class="meridian-name">Coração / ID</span><span class="finger-name">Cun</span><div class="btn-group" id="pe1"></div></div>
-                    <div class="finger-pos"><span class="meridian-name">Fígado / VB</span><span class="finger-name">Guan</span><div class="btn-group" id="pe2"></div></div>
-                    <div class="finger-pos"><span class="meridian-name">Rim Yin / B</span><span class="finger-name">Chi</span><div class="btn-group" id="pe3"></div></div>
-                </div>
-                <div class="pulse-arm">
-                    <strong style="color:var(--green); display:block; text-align:center; margin-bottom:10px;">DIREITO (Yang)</strong>
-                    <div class="finger-pos"><span class="meridian-name">Pulmão / IG</span><span class="finger-name">Cun</span><div class="btn-group" id="pd1"></div></div>
-                    <div class="finger-pos"><span class="meridian-name">Baço / E</span><span class="finger-name">Guan</span><div class="btn-group" id="pd2"></div></div>
-                    <div class="finger-pos"><span class="meridian-name">Rim Yang / TA</span><span class="finger-name">Chi</span><div class="btn-group" id="pd3"></div></div>
-                </div>
+            <h5 class="titulo-secao">4. Pulsologia Radial (12 Canais)</h5>
+            <div class="pulse-grid">
+                <div class="pulse-arm" id="pDirCol"><strong style="color:var(--green); display:block; text-align:center; margin-bottom:10px;">DIREITO (Yang)</strong></div>
+                <div class="pulse-arm" id="pEsqCol"><strong style="color:var(--red); display:block; text-align:center; margin-bottom:10px;">ESQUERDO (Yin)</strong></div>
             </div>
-            <button class="btn-pro mt-4" onclick="ir(5)">PRÓXIMO: SÍNTESE</button>
+            <div class="nav-buttons">
+                <button class="btn-back" onclick="ir(3)">⬅ VOLTAR</button>
+                <button class="btn-pro" onclick="ir(5)">PRÓXIMO: SÍNTESE ➔</button>
+            </div>
         </div>
 
         <div id="e5" class="etapa">
             <h5 class="titulo-secao">5. Síntese & EVA Saída</h5>
-            <p style="color:var(--green); font-weight:bold;">EVA SAÍDA:</p>
+            <p style="color:var(--green); font-weight:bold;">EVA SAÍDA (Pós-Atendimento):</p>
             <div class="eva-regua" id="reguaD"></div>
             <textarea id="diag" placeholder="Conduta Tung / Notas Finais..." rows="8" style="margin-top:10px;"></textarea>
-            <button class="btn-pro" style="background:var(--green)" id="btnSave" onclick="salvarSessao()">SALVAR E FINALIZAR</button>
-            <button class="btn-pro" style="background:black; margin-top:8px;" onclick="copiarIA()">IA BRIDGE (COPIAR)</button>
+            <div class="nav-buttons">
+                <button class="btn-back" onclick="ir(4)">⬅ VOLTAR</button>
+                <button class="btn-pro" style="background:var(--green)" id="btnSave" onclick="salvarSessao()">FINALIZAR E SALVAR ✔</button>
+            </div>
+            <button class="btn-pro" style="background:black; width:100%; margin-top:10px;" onclick="copiarIA()">COPIAR IA BRIDGE</button>
         </div>
     </div>
 </div>
@@ -131,9 +131,11 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    const gadQ = ["Nervoso?", "Incontrolável?", "Excesso?", "Dificuldade relaxar?", "Inquieto?", "Irritável?", "Medo?"];
-    const igiQ = ["Dificuldade adormecer?", "Manter sono?", "Acordar cedo?", "Satisfação?", "Interferência?", "Visível?", "Angústia?"];
-    const pulseLevels = ['+++','ok','---'];
+    const gadQ = ["Nervoso?", "Controlo?", "Excesso?", "Relaxar?", "Inquieto?", "Irritável?", "Medo?"];
+    const igiQ = ["Adormecer?", "Manter sono?", "Acordar cedo?", "Satisfação?", "Interferência?", "Visível?", "Angústia?"];
+    const merD = ["P / IG (Cun)", "BP / E (Guan)", "PC / TA (Chi)"];
+    const merE = ["C / ID (Cun)", "F / VB (Guan)", "R / B (Chi)"];
+    const sinaisL = ["Pálida", "Vermelha", "Púrpura", "Inchada", "Denteada", "Fissurada", "Sab. Branca", "Sab. Amarela"];
 
     let evaA=0, evaD=0, gTot=0, iTot=0;
     const scores = { g: {}, i: {} };
@@ -141,20 +143,20 @@
     function autenticar() { if(document.getElementById('pinInput').value === "1234") { document.getElementById('loginScreen').style.display = 'none'; document.getElementById('mainContent').style.display = 'block'; initApp(); } }
 
     function initApp() {
-        // EVA
         const colors = ["#28a745", "#54b33d", "#7fbe35", "#abca2d", "#d6d524", "#ffff1c", "#ffd61c", "#ffac1c", "#ff831c", "#ff591c", "#dc3545"];
         ["reguaA", "reguaD"].forEach(id => {
             const r = document.getElementById(id); r.innerHTML = '';
             colors.forEach((c, i) => r.innerHTML += `<div class="eva-item" style="background:${c}" onclick="setEva('${id[5]}', ${i}, this)">${i}</div>`);
         });
-        // Escalas
+
         const gb = document.getElementById('gadBox'); gadQ.forEach((q,i) => { gb.innerHTML += `<div class="pergunta-box"><small>${i+1}. ${q}</small><div class="btn-group">${["Nunca", "Vários dias", "+ Metade", "Quase todos"].map((opt, v) => `<button class="btn-opt" id="g${i}_${v}" onclick="setSc('g',${i},${v})">${opt}</button>`).join('')}</div></div>`; });
         const ib = document.getElementById('igiBox'); igiQ.forEach((q,i) => { ib.innerHTML += `<div class="pergunta-box"><small>${i+1}. ${q}</small><div class="btn-group">${["Nenhuma", "Ligeira", "Moderada", "Grave", "M. Grave"].map((opt, v) => `<button class="btn-opt" id="i${i}_${v}" onclick="setSc('i',${i},${v})">${v}</button>`).join('')}</div></div>`; });
-        // Pulsos
-        ['pe1','pe2','pe3','pd1','pd2','pd3'].forEach(id => {
-            const container = document.getElementById(id);
-            pulseLevels.forEach(lvl => container.innerHTML += `<button class="btn-opt" style="min-width:40px;" onclick="selP(this)">${lvl}</button>`);
-        });
+
+        const tb = document.getElementById('tongueBody'); sinaisL.forEach(s => { tb.innerHTML += `<tr><td style="text-align:left">${s}</td>${[1,2,3,4].map(()=>`<td><input type="checkbox"></td>`).join('')}</tr>`; });
+
+        const pD = document.getElementById('pDirCol'); const pE = document.getElementById('pEsqCol');
+        merD.forEach(m => pD.innerHTML += `<div class="finger-pos"><small><b>${m}</b></small><div class="btn-group">${['+++','ok','---'].map(v => `<button class="btn-opt" style="min-width:40px;" onclick="selP(this)">${v}</button>`).join('')}</div></div>`);
+        merE.forEach(m => pE.innerHTML += `<div class="finger-pos"><small><b>${m}</b></small><div class="btn-group">${['+++','ok','---'].map(v => `<button class="btn-opt" style="min-width:40px;" onclick="selP(this)">${v}</button>`).join('')}</div></div>`);
     }
 
     function setEva(t, v, el) { if(t==='A') evaA=v; else evaD=v; el.parentElement.querySelectorAll('.eva-item').forEach(x => x.classList.remove('eva-sel')); el.classList.add('eva-sel'); }
