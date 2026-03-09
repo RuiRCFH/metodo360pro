@@ -1,188 +1,185 @@
-<!DOCTYPE html>
-<html lang="pt-pt">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MÉTODO 360 PRO | V. 44.0</title>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        :root { --dark: #000d1a; --primary: #002d58; --accent: #c5a059; --bg: #f4f7f9; --red: #d32f2f; --green: #2e7d32; }
-        body { background: var(--bg); font-family: sans-serif; margin: 0; padding-bottom: 80px; }
-        #loginScreen { background: var(--dark); height: 100vh; display: flex; align-items: center; justify-content: center; position: fixed; width: 100%; z-index: 9999; }
-        .login-card { background: white; padding: 40px; border-radius: 20px; text-align: center; width: 300px; }
-        #mainContent { display: none; padding: 20px; max-width: 1000px; margin: auto; }
-        .card-pro { background: white; border-radius: 15px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-top: 10px solid var(--primary); margin-bottom: 25px; }
-        .etapa { display: none; }
-        .ativa { display: block; }
-        .titulo-secao { color: var(--accent); font-weight: bold; border-bottom: 2px solid #eee; padding-bottom: 5px; margin-bottom: 20px; text-transform: uppercase; font-size: 0.85rem; }
-        .btn-pro { background: var(--primary); color: white; padding: 15px; border-radius: 10px; border: none; font-weight: bold; width: 100%; cursor: pointer; margin-top: 15px; }
-        .pergunta-box { background: #fdfdfd; border: 1px solid #eee; padding: 15px; border-radius: 10px; margin-bottom: 10px; }
-        .btn-group { display: flex; gap: 4px; margin-top: 10px; flex-wrap: wrap; }
-        .btn-opt { flex: 1; padding: 10px 5px; font-size: 0.7rem; border: 1px solid var(--primary); background: white; cursor: pointer; border-radius: 6px; min-width: 70px; }
-        .opt-sel { background: var(--primary) !important; color: white !important; }
-        .score-bar { background: var(--dark); color: var(--accent); padding: 15px; border-radius: 10px; display: flex; justify-content: space-around; font-weight: bold; margin-bottom: 20px; position: sticky; top: 10px; z-index: 100; }
-        table { width: 100%; border-collapse: collapse; font-size: 0.8rem; margin-top: 10px; }
-        th, td { border: 1px solid #eee; padding: 10px; text-align: center; }
-        .row-cat { background: #f4f4f4; font-weight: bold; text-align: left !important; }
-        .eva-regua { display: flex; height: 35px; border-radius: 6px; overflow: hidden; margin: 10px 0; border: 1px solid #ddd; }
-        .eva-item { flex: 1; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; font-size: 0.8rem; font-weight: bold; }
-        .eva-sel { border: 4px solid black !important; transform: scaleY(1.1); }
-        textarea, input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; }
-        .chart-container { height: 300px; width: 100%; margin-top: 20px; }
-    </style>
-</head>
-<body>
+<style>
+    /* Novo Design de Pulsologia */
+    .pulse-section {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+        background: #f0f2f5;
+        padding: 20px;
+        border-radius: 20px;
+    }
+    .pulse-arm {
+        background: white;
+        padding: 20px;
+        border-radius: 15px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        border-top: 5px solid var(--primary);
+    }
+    .finger-pos {
+        margin-bottom: 20px;
+        padding: 10px;
+        border-bottom: 1px solid #eee;
+    }
+    .finger-label {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+    }
+    .finger-name {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        color: var(--accent);
+        font-weight: 800;
+        letter-spacing: 1px;
+    }
+    .meridian-name {
+        font-size: 0.9rem;
+        font-weight: bold;
+        color: var(--primary);
+    }
+    .pulse-options {
+        display: flex;
+        gap: 4px;
+    }
+    .btn-pulse {
+        flex: 1;
+        padding: 10px 2px;
+        font-size: 0.65rem;
+        border: 1px solid #ddd;
+        background: #f8f9fa;
+        cursor: pointer;
+        border-radius: 6px;
+        transition: 0.2s;
+    }
+    .btn-pulse:hover { border-color: var(--accent); }
+    .pulse-sel {
+        background: var(--primary) !important;
+        color: white !important;
+        border-color: var(--primary) !important;
+        box-shadow: 0 4px 8px rgba(0,45,88,0.2);
+    }
+</style>
 
-<div id="loginScreen">
-    <div class="login-card">
-        <h2 style="color:var(--primary); margin:0;">360 PRO</h2>
-        <input type="password" id="pinInput" placeholder="PIN (1234)" style="margin: 25px 0; text-align:center; font-size:1.2rem; width:80%;">
-        <button class="btn-pro" style="width:80%;" onclick="autenticar()">ENTRAR</button>
-    </div>
-</div>
+<div id="e4" class="etapa">
+    <h5 class="titulo-secao">4. Pulsologia Radial (Palpação de 12 Canais)</h5>
+    
+    
 
-<div id="mainContent">
-    <div class="card-pro" style="border-top-color: var(--accent);">
-        <h5 class="titulo-secao">📊 Histórico do Paciente (Firebase)</h5>
-        <div style="display:flex; gap:10px;">
-            <input type="text" id="buscaID" placeholder="ID do Paciente">
-            <button onclick="buscarHistorico()" style="width:140px; background:var(--accent); color:white; border:none; border-radius:8px; cursor:pointer; font-weight:bold;">CARREGAR</button>
-        </div>
-        <div id="painelGrafico" style="display:none;" class="chart-container"><canvas id="graficoMaster"></canvas></div>
-    </div>
-
-    <div class="card-pro">
-        <div id="e1" class="etapa ativa">
-            <h5 class="titulo-secao">1. Identificação & EVA Inicial</h5>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                <input type="text" id="pacienteID" placeholder="ID Paciente">
-                <input type="number" id="sessaoNum" placeholder="Nº Sessão">
+    <div class="pulse-section">
+        <div class="pulse-arm">
+            <h4 style="color:var(--red); text-align:center; margin-top:0;">ESQUERDO (Yin)</h4>
+            
+            <div class="finger-pos">
+                <div class="finger-label">
+                    <span class="meridian-name">Coração / ID</span>
+                    <span class="finger-name">Cun (Indicador)</span>
+                </div>
+                <div class="pulse-options">
+                    <button class="btn-pulse" onclick="selPulse(this)">+++</button>
+                    <button class="btn-pulse" onclick="selPulse(this)">++</button>
+                    <button class="btn-pulse" onclick="selPulse(this)">+</button>
+                    <button class="btn-pulse" onclick="selPulse(this)">ok</button>
+                    <button class="btn-pulse" onclick="selPulse(this)">-</button>
+                    <button class="btn-pulse" onclick="selPulse(this)">--</button>
+                    <button class="btn-pulse" onclick="selPulse(this)">---</button>
+                </div>
             </div>
-            <p style="color:var(--red); font-weight:bold; margin-top:20px;">EVA ENTRADA (0-10):</p>
-            <div class="eva-regua" id="reguaA"></div>
-            <textarea id="hma" placeholder="Queixa Principal / HMA" rows="4" style="margin-top:15px;"></textarea>
-            <button class="btn-pro" onclick="ir(2)">PRÓXIMO: ESCALAS</button>
-        </div>
 
-        <div id="e2" class="etapa">
-            <div class="score-bar">
-                <span id="labelGad">GAD-7: 0</span> <span id="labelIgi">IGI: 0</span>
+            <div class="finger-pos">
+                <div class="finger-label">
+                    <span class="meridian-name">Fígado / VB</span>
+                    <span class="finger-name">Guan (Médio)</span>
+                </div>
+                <div class="pulse-options">
+                    <button class="btn-pulse" onclick="selPulse(this)">+++</button>
+                    <button class="btn-pulse" onclick="selPulse(this)">++</button>
+                    <button class="btn-pulse" onclick="selPulse(this)">+</button>
+                    <button class="btn-pulse" onclick="selPulse(this)">ok</button>
+                    <button class="btn-pulse" onclick="selPulse(this)">-</button>
+                    <button class="btn-pulse" onclick="selPulse(this)">--</button>
+                    <button class="btn-pulse" onclick="selPulse(this)">---</button>
+                </div>
             </div>
-            <h5 class="titulo-secao">2. Escalas Ansiedade (GAD-7) e Sono (IGI)</h5>
-            <div id="gadBox"></div>
-            <div id="igiBox" style="margin-top:30px;"></div>
-            <button class="btn-pro" onclick="ir(3)">PRÓXIMO: LÍNGUA</button>
-        </div>
 
-        <div id="e3" class="etapa">
-            <h5 class="titulo-secao">3. Semiologia Lingual 360</h5>
-            [Image of a TCM tongue diagnosis chart]
-            <table>
-                <thead><tr><th>SINAL</th><th>Ponta</th><th>Laterais</th><th>Centro</th><th>Raiz</th></tr></thead>
-                <tbody>
-                    <tr class="row-cat"><td colspan="5">COR / FORMA</td></tr>
-                    <tr><td>Pálida/Vermelha</td><td><input type="checkbox"></td><td><input type="checkbox"></td><td><input type="checkbox"></td><td><input type="checkbox"></td></tr>
-                    <tr><td>Inchada/Denteada</td><td><input type="checkbox"></td><td><input type="checkbox"></td><td><input type="checkbox"></td><td><input type="checkbox"></td></tr>
-                    <tr class="row-cat"><td colspan="5">SABURRA</td></tr>
-                    <tr><td>Branca/Amarela</td><td><input type="checkbox"></td><td><input type="checkbox"></td><td><input type="checkbox"></td><td><input type="checkbox"></td></tr>
-                    <tr><td>Gordurosa/Seca</td><td><input type="checkbox"></td><td><input type="checkbox"></td><td><input type="checkbox"></td><td><input type="checkbox"></td></tr>
-                </tbody>
-            </table>
-            <button class="btn-pro mt-4" onclick="ir(4)">PRÓXIMO: PULSOLOGIA</button>
-        </div>
-
-        <div id="e4" class="etapa">
-            <h5 class="titulo-secao">4. Pulsologia Radial (12 Meridianos)</h5>
-            [Image of the TCM pulse examination positions showing the Cun, Guan, and Chi locations on the wrist]
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
-                <div id="pDir"><strong>PULSO DIREITO</strong></div>
-                <div id="pEsq"><strong>PULSO ESQUERDO</strong></div>
+            <div class="finger-pos">
+                <div class="finger-label">
+                    <span class="meridian-name">Rim Yin / Bexiga</span>
+                    <span class="finger-name">Chi (Anular)</span>
+                </div>
+                <div class="pulse-options">
+                    <button class="btn-pulse" onclick="selPulse(this)">+++</button>
+                    <button class="btn-pulse" onclick="selPulse(this)">++</button>
+                    <button class="btn-pulse" onclick="selPulse(this)">+</button>
+                    <button class="btn-pulse" onclick="selPulse(this)">ok</button>
+                    <button class="btn-pulse" onclick="selPulse(this)">-</button>
+                    <button class="btn-pulse" onclick="selPulse(this)">--</button>
+                    <button class="btn-pulse" onclick="selPulse(this)">---</button>
+                </div>
             </div>
-            <button class="btn-pro mt-4" onclick="ir(5)">PRÓXIMO: FINALIZAR</button>
         </div>
 
-        <div id="e5" class="etapa">
-            <h5 class="titulo-secao">5. Síntese & EVA Saída</h5>
-            <p style="color:var(--green); font-weight:bold;">EVA SAÍDA (Pós-Atendimento):</p>
-            <div class="eva-regua" id="reguaD"></div>
-            <textarea id="diag" placeholder="Conduta Tung / Notas Finais..." rows="8" style="margin-top:10px;"></textarea>
-            <button class="btn-pro" style="background:var(--green)" id="btnSave" onclick="salvarSessao()">FINALIZAR E SALVAR</button>
-            <button class="btn-pro" style="background:black; margin-top:8px;" onclick="copiarIA()">COPIAR IA BRIDGE</button>
+        <div class="pulse-arm">
+            <h4 style="color:var(--green); text-align:center; margin-top:0;">DIREITO (Yang)</h4>
+            
+            <div class="finger-pos">
+                <div class="finger-label">
+                    <span class="meridian-name">Pulmão / IG</span>
+                    <span class="finger-name">Cun (Indicador)</span>
+                </div>
+                <div class="pulse-options">
+                    <button class="btn-pulse" onclick="selPulse(this)">+++</button>
+                    <button class="btn-pulse" onclick="selPulse(this)">++</button>
+                    <button class="btn-pulse" onclick="selPulse(this)">+</button>
+                    <button class="btn-pulse" onclick="selPulse(this)">ok</button>
+                    <button class="btn-pulse" onclick="selPulse(this)">-</button>
+                    <button class="btn-pulse" onclick="selPulse(this)">--</button>
+                    <button class="btn-pulse" onclick="selPulse(this)">---</button>
+                </div>
+            </div>
+
+            <div class="finger-pos">
+                <div class="finger-label">
+                    <span class="meridian-name">Baço / Estômago</span>
+                    <span class="finger-name">Guan (Médio)</span>
+                </div>
+                <div class="pulse-options">
+                    <button class="btn-pulse" onclick="selPulse(this)">+++</button>
+                    <button class="btn-pulse" onclick="selPulse(this)">++</button>
+                    <button class="btn-pulse" onclick="selPulse(this)">+</button>
+                    <button class="btn-pulse" onclick="selPulse(this)">ok</button>
+                    <button class="btn-pulse" onclick="selPulse(this)">-</button>
+                    <button class="btn-pulse" onclick="selPulse(this)">--</button>
+                    <button class="btn-pulse" onclick="selPulse(this)">---</button>
+                </div>
+            </div>
+
+            <div class="finger-pos">
+                <div class="finger-label">
+                    <span class="meridian-name">Rim Yang / TA</span>
+                    <span class="finger-name">Chi (Anular)</span>
+                </div>
+                <div class="pulse-options">
+                    <button class="btn-pulse" onclick="selPulse(this)">+++</button>
+                    <button class="btn-pulse" onclick="selPulse(this)">++</button>
+                    <button class="btn-pulse" onclick="selPulse(this)">+</button>
+                    <button class="btn-pulse" onclick="selPulse(this)">ok</button>
+                    <button class="btn-pulse" onclick="selPulse(this)">-</button>
+                    <button class="btn-pulse" onclick="selPulse(this)">--</button>
+                    <button class="btn-pulse" onclick="selPulse(this)">---</button>
+                </div>
+            </div>
         </div>
     </div>
+    
+    
+
+    <button class="btn-pro mt-4" onclick="ir(5)">AVANÇAR PARA SÍNTESE</button>
 </div>
 
 <script>
-    // Inicialização Firebase
-    const firebaseConfig = { apiKey: "AIzaSyAI5X-Cb0Xf0G_cRoBX9YWqW1bn0nv-RA", authDomain: "metodo360pro-db0aa.firebaseapp.com", projectId: "metodo360pro-db0aa", storageBucket: "metodo360pro-db0aa.appspot.com", messagingSenderId: "1088396585788", appId: "1:1088396585788:web:57853a7b0ff17c8306ec39" };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-
-    const gadProtocol = ["Nervoso?", "Incontrolável?", "Excesso?", "Dificuldade relaxar?", "Inquieto?", "Irritável?", "Medo?"];
-    const igiProtocol = ["Dificuldade adormecer?", "Manter sono?", "Acordar cedo?", "Satisfação?", "Interferência?", "Visível?", "Angústia?"];
-    const mD = ["P / IG (Cun)", "BP / E (Guan)", "PC / TA (Chi)"];
-    const mE = ["C / ID (Cun)", "F / VB (Guan)", "R / B (Chi)"];
-
-    let evaA=0, evaD=0, gTot=0, iTot=0, chartObj=null;
-    const scores = { g: {}, i: {} };
-
-    function autenticar() { if(document.getElementById('pinInput').value === "1234") { document.getElementById('loginScreen').style.display = 'none'; document.getElementById('mainContent').style.display = 'block'; initApp(); } }
-
-    function initApp() {
-        const colors = ["#28a745", "#54b33d", "#7fbe35", "#abca2d", "#d6d524", "#ffff1c", "#ffd61c", "#ffac1c", "#ff831c", "#ff591c", "#dc3545"];
-        ["reguaA", "reguaD"].forEach(id => {
-            const r = document.getElementById(id); r.innerHTML = '';
-            colors.forEach((c, i) => r.innerHTML += `<div class="eva-item" style="background:${c}" onclick="setEva('${id[5]}', ${i}, this)">${i}</div>`);
-        });
-
-        const gb = document.getElementById('gadBox');
-        gadProtocol.forEach((q, i) => {
-            gb.innerHTML += `<div class="pergunta-box"><small>${i+1}. ${q}</small><div class="btn-group">${["Nunca", "Vários dias", "Metade dias", "Quase todos"].map((opt, v) => `<button class="btn-opt" id="g${i}_${v}" onclick="setSc('g',${i},${v})">${opt}</button>`).join('')}</div></div>`;
-        });
-
-        const ib = document.getElementById('igiBox');
-        igiProtocol.forEach((q, i) => {
-            ib.innerHTML += `<div class="pergunta-box"><small>${i+1}. ${q}</small><div class="btn-group">${["Nenhuma", "Ligeira", "Moderada", "Grave", "M. Grave"].map((opt, v) => `<button class="btn-opt" id="i${i}_${v}" onclick="setSc('i',${i},${v})">${v}</button>`).join('')}</div></div>`;
-        });
-
-        const pD = document.getElementById('pDir'); const pE = document.getElementById('pEsq');
-        mD.forEach(m => pD.innerHTML += `<div style="margin-top:10px;"><small>${m}</small><div class="btn-group">${['+++','ok','---'].map(v => `<button class="btn-opt" onclick="selP(this)">${v}</button>`).join('')}</div></div>`);
-        mE.forEach(m => pE.innerHTML += `<div style="margin-top:10px;"><small>${m}</small><div class="btn-group">${['+++','ok','---'].map(v => `<button class="btn-opt" onclick="selP(this)">${v}</button>`).join('')}</div></div>`);
-    }
-
-    function setEva(t, v, el) { if(t==='A') evaA=v; else evaD=v; el.parentElement.querySelectorAll('.eva-item').forEach(x => x.classList.remove('eva-sel')); el.classList.add('eva-sel'); }
-    function setSc(t, q, v) { scores[t][q]=v; document.querySelectorAll(`[id^="${t}${q}_"]`).forEach(b => b.classList.remove('opt-sel')); document.getElementById(`${t}${q}_${v}`).classList.add('opt-sel'); gTot = Object.values(scores.g).reduce((a,b)=>a+b,0); iTot = Object.values(scores.i).reduce((a,b)=>a+b,0); document.getElementById('labelGad').innerText = `GAD-7: ${gTot}`; document.getElementById('labelIgi').innerText = `IGI: ${iTot}`; }
-    function selP(b) { b.parentElement.querySelectorAll('.btn-opt').forEach(x => x.classList.remove('opt-sel')); b.classList.add('opt-sel'); }
-    function ir(n) { document.querySelectorAll('.etapa').forEach(e => e.classList.remove('ativa')); document.getElementById('e'+n).classList.add('ativa'); window.scrollTo(0,0); }
-
-    async function buscarHistorico() {
-        const id = document.getElementById('buscaID').value.trim().toUpperCase();
-        const snap = await db.collection("atendimentos_360").where("paciente", "==", id).get();
-        let dds = []; snap.forEach(doc => { let d = doc.data(); let dt = d.data.seconds ? new Date(d.data.seconds * 1000) : new Date(d.data); dds.push({...d, dt: dt}) });
-        if(dds.length === 0) return alert("Sem dados.");
-        dds.sort((a,b) => a.dt - b.dt);
-        document.getElementById('painelGrafico').style.display = 'block';
-        if(chartObj) chartObj.destroy();
-        chartObj = new Chart(document.getElementById('graficoMaster'), {
-            type: 'line',
-            data: { labels: dds.map(d => d.dt.toLocaleDateString()), datasets: [{ label: 'EVA Pré', data: dds.map(d => d.eva[0]), borderColor: 'red', borderDash: [5,5] }, { label: 'EVA Pós', data: dds.map(d => d.eva[1]), borderColor: 'green' }, { label: 'GAD-7', data: dds.map(d => d.scores.gad), borderColor: 'blue' }, { label: 'IGI', data: dds.map(d => d.scores.igi), borderColor: 'orange' }] },
-            options: { responsive: true, maintainAspectRatio: false }
-        });
-    }
-
-    async function salvarSessao() {
-        const id = document.getElementById('pacienteID').value.trim().toUpperCase();
-        if(!id) return alert("ID obrigatório");
-        db.collection("atendimentos_360").add({ paciente: id, data: new Date(), sessao: document.getElementById('sessaoNum').value, eva: [evaA, evaD], scores: { gad: gTot, igi: iTot }, hma: document.getElementById('hma').value, diagnostico: document.getElementById('diag').value })
-        .then(() => { alert("Salvo!"); location.reload(); });
-    }
-
-    function copiarIA() {
-        const txt = `[MÉTODO 360]\nID: ${document.getElementById('pacienteID').value}\nEVA: ${evaA}->${evaD}\nGAD: ${gTot} | IGI: ${iTot}\nDIAG: ${document.getElementById('diag').value}`;
-        navigator.clipboard.writeText(txt).then(() => alert("Copiado!"));
+    function selPulse(btn) {
+        btn.parentElement.querySelectorAll('.btn-pulse').forEach(b => b.classList.remove('pulse-sel'));
+        btn.classList.add('pulse-sel');
     }
 </script>
-</body>
-</html>
